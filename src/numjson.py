@@ -32,17 +32,58 @@ while error_index < original_length and len(jsons) > 0:
     try: 
         numjson_obj, error_index = decoder.raw_decode(jsons)
         numjsons.append(numjson_obj)
-        print(error_index)
         jsons = jsons[error_index:]
     # When error, cut off a character and try again.
     except(json.decoder.JSONDecodeError):
         # Remove whitespace
-        print(len(jsons))
         jsons = jsons[1:]
-        print(jsons)
 
-# TODO: Apply the appropriate transform to the objects, then return via STDOUT probably.
+def mult(iter):
+    """Multiply all elements of the given iterable, treating strings as unit.
+    """
+    prod = 1
+    for i in iter:
+        if type(i) is str:
+            i = 1
+        prod *= i
+    return prod
 
-# Object -> dict, Array -> list, Number-int
-print(type(numjsons[0]) is dict)
-print(numjsons)
+def sum(iter):
+    """Add all elements of the given iterable, treating strings as unit.
+    """
+    prod = 0
+    for i in iter:
+        if type(i) is str:
+            i = 0
+        prod += i
+    return prod
+
+unit = 0 if flag == "--sum" else 1
+func = sum if flag == "--sum" else mult
+
+def calculate_total(obj):
+    """Calculates the total for the given NumJSON expression; the operation depends
+       on the command-line flag that was given by the user.
+    """
+    if type(obj) is int or type(obj) is float:
+        total = obj
+    elif type(obj) is list:
+        total = func(obj)
+    elif type(obj) is str:
+        total = unit
+    else: #calculate total for payload and ignore other keys in the object.
+        total = calculate_total(obj["payload"])
+    return total
+
+def process(items):
+    """Calculates the total for every NumJSON expression in the list, and returns a
+       JSON object representing the total value for each.
+    """
+    processed = [] 
+
+    for n in items:
+        processed.append({ "object": n, "total": calculate_total(n)})
+
+    return processed
+
+print(process(numjsons))
