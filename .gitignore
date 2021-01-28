@@ -1,0 +1,4 @@
+# ignore venv config since each user needs to recreate locally
+pyvenv.cfg
+/Scripts
+/Lib
