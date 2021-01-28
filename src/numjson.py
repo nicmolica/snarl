@@ -4,12 +4,16 @@ import json
 # Specifies valid flags for the program.
 valid_flags = ["--sum", "--product"]
 
+# End program if the user forgot the argument.
+if len(sys.argv) == 1:
+    print("No operation provided as command-line input!")
+    exit(1)
+
 # This should be --sum or --product
 flag = sys.argv[1]
-
 # End program if the flag isn't what we expect.
-if flag is None or flag not in valid_flags:
-    print("Invalid operation flag" + "'" + flag + "'")
+if flag not in valid_flags:
+    print("Invalid operation flag" + "'" + flag + "'!")
     exit(1)
 
 # This fetches the user input from STDIN and concatenates it into a
@@ -40,6 +44,12 @@ while error_index < original_length and len(jsons) > 0:
 
 def mult(iter):
     """Multiply all elements of the given iterable, treating strings as unit.
+
+        Parameters:
+            iter (iterable): An iterable object.
+
+        Returns:
+            prod (number): The product of all entries of iter.
     """
     prod = 1
     for i in iter:
@@ -50,20 +60,32 @@ def mult(iter):
 
 def sum(iter):
     """Add all elements of the given iterable, treating strings as unit.
+
+        Parameters:
+            iter (iterable): An iterable object.
+
+        Returns:
+            acc (number): The sum of all entries of iter.
     """
-    prod = 0
+    acc = 0
     for i in iter:
         if type(i) is str:
             i = 0
-        prod += i
-    return prod
+        acc += i
+    return acc
 
 unit = 0 if flag == "--sum" else 1
 func = sum if flag == "--sum" else mult
 
 def calculate_total(obj):
     """Calculates the total for the given NumJSON expression; the operation depends
-       on the command-line flag that was given by the user.
+    on the command-line flag that was given by the user.
+
+        Parameters:
+            obj (NumJSON): A NumJSON expression.
+        
+        Returns:
+            total (number): The total calculated value for obj.
     """
     if type(obj) is int or type(obj) is float:
         total = obj
@@ -77,7 +99,15 @@ def calculate_total(obj):
 
 def process(items):
     """Calculates the total for every NumJSON expression in the list, and returns a
-       JSON object representing the total value for each.
+    JSON object representing the total value for each.
+
+        Parameters:
+            items (list[NumJSON]): A list of NumJSON expressions.
+
+        Returns:
+            processed (list[dict]): A list of JSON objects that store the total value
+            for each given NumJSON expression in items. Given a NumJSON expression n,
+            the form of each object in this list is {"object": n, "total": calculate_total(n)}
     """
     processed = [] 
 
