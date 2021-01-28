@@ -1,5 +1,9 @@
 import sys
 import json
+import unittest
+import test_numjson
+suite = unittest.TestLoader().loadTestsFromModule(test_numjson)
+unittest.TextTestRunner(verbosity=2).run(suite)
 
 # Specifies valid flags for the program.
 valid_flags = ["--sum", "--product"]
