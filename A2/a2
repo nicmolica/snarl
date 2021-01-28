@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import json
 
@@ -29,7 +30,7 @@ decoder = json.JSONDecoder()
 # Used to record where the decoder stopped. Start at beginning of input.
 error_index = 0
 while error_index < original_length and len(jsons) > 0:
-    try: 
+    try:
         numjson_obj, error_index = decoder.raw_decode(jsons)
         numjsons.append(numjson_obj)
         jsons = jsons[error_index:]
@@ -79,7 +80,7 @@ def process(items):
     """Calculates the total for every NumJSON expression in the list, and returns a
        JSON object representing the total value for each.
     """
-    processed = [] 
+    processed = []
 
     for n in items:
         processed.append({ "object": n, "total": calculate_total(n)})
