@@ -87,4 +87,4 @@ def process(items):
 
     return processed
 
-print(process(numjsons))
+print(json.dumps(process(numjsons)))
