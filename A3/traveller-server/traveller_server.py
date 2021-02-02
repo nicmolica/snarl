@@ -122,26 +122,47 @@ def place_char(char, town):
 def is_unblocked(char, town):
     """return true if the character with given name is able to find a path to the
     designated town without visiting other characters.
+
+    Arguments:
+        char (str): The name of a character to place in town.
+        town (str): The name of the town in the network to check if char has a path to.
+
+    Returns:
+        has_path (bool): If char can reach town without running into other characters.
+
+    Throws:
+        TypeError: If the character or town name is not a string.
+        ValueError: If the given town does not exist in the network, or the given town
+        already has a character in it.
+
     """
-    g = nx.Graph()
-    for town in town_networks:
-        g.add_node(town["name"], characters = town["characters"])
-        if char in town[characters]:
-            start_node = town["name"]
+    # Check that arguments are of proper type.
+    if type(char) is not str:
+        raise TypeError('Character name must be a string!')
+    if type(town) is not str:
+        raise TypeError('Town name must be a string!')
 
-    for town in town_networks:
-        for neighbor in town["neighbors"]:
-            g.add_edge(town["name"], neighbor)
+    if town not in network_town_names:
+        raise ValueError("The town named'" + town + "' is not in the network!")
 
-    non_empty_nodes = [name for name, atts in g.nodes(data = True) if len(atts["characters"]) == 0]
+    # If the town network has no towns there is no path for the character
+    if len(town_networks) == 0:
+        return False
+
+    g = networkx.Graph()
+    for t in town_networks:
+        g.add_node(t["name"], characters = t["characters"])
+        if char in t["characters"]:
+            start_node = t["name"]
+
+    for t in town_networks:
+        for neighbor in t["neighbors"]:
+            g.add_edge(t["name"], neighbor)
+
+    non_empty_nodes = [name for name, atts in g.nodes(data = True) if len(atts["characters"]) != 0]
     selected_nodes = set(non_empty_nodes) - set([start_node])
 
-    return networkx.has_path(networkx.restricted_view(g, nodes = selected_nodes), source = start_node, target = town)
-
-create_towns([{"name": "Town 1", "neighbors": ["Town 2"], "characters": ["Bill"]}, \
-            {"name": "Town 2", "neighbors": ["Town 3"], "characters": ["Charlie"]}, \
-            {"name": "Town 3", "neighbors": ["Town 4"], "characters": ["April"]}, \
-            {"name": "Town 4", "neighbors": [], "characters": ["Alicia"]}])
-print(town_networks)
-# place_char('Jim', 'Town 2')
-print(is_unblocked("Bill", "Town 4"))
+    empty_towns = networkx.restricted_view(g, nodes = selected_nodes, edges = [])
+    
+    return empty_towns.has_node(town) and \
+        networkx.has_path(empty_towns, source = start_node, target = town)
