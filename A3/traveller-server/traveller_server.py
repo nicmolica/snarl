@@ -123,7 +123,25 @@ def is_unblocked(char, town):
     """return true if the character with given name is able to find a path to the
     designated town without visiting other characters.
     """
+    g = nx.Graph()
+    for town in town_networks:
+        g.add_node(town["name"], characters = town["characters"])
+        if char in town[characters]:
+            start_node = town["name"]
 
-create_towns([{"name": "Town 1", "neighbors": ["Town 2"], "characters": ["Bill"]}])
+    for town in town_networks:
+        for neighbor in town["neighbors"]:
+            g.add_edge(town["name"], neighbor)
+
+    non_empty_nodes = [name for name, atts in g.nodes(data = True) if len(atts["characters"]) == 0]
+    selected_nodes = set(non_empty_nodes) - set([start_node])
+
+    return networkx.has_path(networkx.restricted_view(g, nodes = selected_nodes), source = start_node, target = town)
+
+create_towns([{"name": "Town 1", "neighbors": ["Town 2"], "characters": ["Bill"]}, \
+            {"name": "Town 2", "neighbors": ["Town 3"], "characters": ["Charlie"]}, \
+            {"name": "Town 3", "neighbors": ["Town 4"], "characters": ["April"]}, \
+            {"name": "Town 4", "neighbors": [], "characters": ["Alicia"]}])
 print(town_networks)
-place_char('Jim', 'Town 2')
+# place_char('Jim', 'Town 2')
+print(is_unblocked("Bill", "Town 4"))
