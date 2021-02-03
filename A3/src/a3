@@ -24,4 +24,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         # run the a2 program with the input and send the result back to the client
         total = subprocess.run(["./../A2/a2", "--sum"], stdout = subprocess.PIPE, input = data, encoding = 'utf-8')
         conn.sendall(total.stdout.encode())
-
