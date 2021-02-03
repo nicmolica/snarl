@@ -3,10 +3,12 @@ import socket
 import subprocess
 import json
 
+# defaults for the host, port and username
 host = "127.0.0.1"
 port = 8000
 username = "Glorifrir Flintshoulder"
 
+# read command line input if user specified host, port or username
 if len(sys.argv) > 2:
     username = sys.argv[2]
 elif len(sys.argv) > 1:
@@ -14,6 +16,8 @@ elif len(sys.argv) > 1:
 elif len(sys.argv) > 0:
     host = sys.argv[0]
 
+# Recieve a message from the server by looping on recv
+# until the message constitutes a valid JSON object.
 def recieve(sock):
     response = ""
     while True:
@@ -34,6 +38,8 @@ def recieve(sock):
 #             break
 #     return user_input
 
+# Transform the user input for network creation
+# into a valid create command to send to the server.
 def transform_create_cmd(cmd):
     create_cmd = json.loads(cmd)
     output = {"roads": create_cmd["params"], "towns": []}
@@ -47,7 +53,7 @@ def transform_create_cmd(cmd):
 
 # open a server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    # try to connect to server, throw error if unsuccessful
+    # try to connect to server, throw error and exit if unsuccessful
     try:
         sock.connect((host, port))
     except:
@@ -71,3 +77,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         print(response)
 
     # shutdown steps
+    
