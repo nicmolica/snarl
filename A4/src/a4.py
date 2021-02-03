@@ -50,6 +50,22 @@ def transform_create_cmd(cmd):
             output["towns"].append(road["from"])
     return output
 
+def transform_batch_cmds(cmds):
+    # should already be list of jsons
+    batch_req = { "characters": [], "query": {}}
+    for json_cmd in cmds:
+        dict_cmd = json.loads(json_cmd)
+        cmd_type = dict_cmd["command"]
+        cmd_params = dict_cmd["params"]
+        if cmd_type == "place":
+            batch_req["characters"].append( \
+                {"name": cmd_params["name"], \
+                    "town": cmd_params["town"]})
+        elif cmd_type = "passage-safe?":
+            batch_req["query"]["character"] = cmd_params["character"]
+            batch_req["query"]["destination"] = cmd_params["town"]
+    return batch_req
+
 
 # open a server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
