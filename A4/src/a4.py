@@ -34,7 +34,7 @@ def validate_json_input(json_input):
     try:
         json.loads(json_input.strip())
     except:
-        print('{"error" : "not a request", "object" : <JSON> }')
+        print('{"error" : "not a request", "object" :' + json_input.strip() + '}')
         json_input = ""
     return json_input
 
@@ -54,12 +54,11 @@ def transform_batch_cmds(cmds):
     # should already be list of jsons
     batch_req = { "characters": [], "query": {}}
     for json_cmd in cmds:
-        dict_cmd = json.loads(json_cmd)
-        cmd_type = dict_cmd["command"]
-        cmd_params = dict_cmd["params"]
+        cmd_type = json_cmd["command"]
+        cmd_params = json_cmd["params"]
         if cmd_type == "place":
             batch_req["characters"].append( \
-                {"name": cmd_params["name"], \
+                {"name": cmd_params["character"], \
                     "town": cmd_params["town"]})
         elif cmd_type == "passage-safe?":
             batch_req["query"]["character"] = cmd_params["character"]
@@ -71,10 +70,10 @@ def process_response(response, character_request):
     for invalid_item in response_json["invalid"]:
         print('["invalid placement", ' + json.dumps(invalid_item) + ']')
     
-    request_json = json.loads(character_request)
+    request_json = json.loads(character_request)["params"]
     print('["the response for", { "character" : ' + request_json["character"] + \
          ', "destination" : ' + request_json["town"] + '} , "is", ' + \
-             json.dumps(response["response"]))
+             json.dumps(response_json["response"]) + ']')
 
 def startup(sock):
     sock.sendall(username.encode())
