@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import socket
 import json
@@ -15,10 +16,9 @@ elif len(sys.argv) > 2:
 elif len(sys.argv) > 1:
     host = sys.argv[1]
 
+# Recieve a message from the server by looping on recv
+# until we find a newline. Complain if it's invalid JSON.
 def recieve(sock):
-    """Recieve a message from the server by looping on recv 
-    until we find a newline. Complain if it's invalid JSON.
-    """
     response = ""
     while response == "" or response[len(response) - 1] != "\n":
         packet = sock.recv(8192)
@@ -30,10 +30,9 @@ def recieve(sock):
         exit(1)
     return response
 
+# Transform the user input for network creation
+# into a valid create command to send to the server.
 def transform_create_cmd(cmd):
-    """Transform the user input for network creation 
-    into a valid create command to send to the server.
-    """
     create_cmd = json.loads(cmd)
     output = {"roads": create_cmd["params"], "towns": []}
     for road in create_cmd["params"]:
@@ -44,9 +43,7 @@ def transform_create_cmd(cmd):
     return json.dumps(output)
 
 def transform_batch_cmds(cmds):
-    """Transforms a list of dictionaries that are json commands into a single
-    batch command in the specified format.
-    """
+    # should already be list of jsons
     batch_req = { "characters": [], "query": {}}
     for json_cmd in cmds:
         cmd_type = json_cmd["command"]
@@ -61,9 +58,6 @@ def transform_batch_cmds(cmds):
     return json.dumps(batch_req)
 
 def process_response(response, character_request):
-    """Prints the response in the specified format, with lines for invalid placements and
-    the value of the passage-safe? query.
-    """
     response_json = json.loads(response)
     for invalid_item in response_json["invalid"]:
         print('["invalid placement", ' + json.dumps(invalid_item) + ']')
@@ -74,14 +68,9 @@ def process_response(response, character_request):
              json.dumps(response_json["response"]) + ']')
 
 def print_not_request(json_input):
-    """Prints a message notifying the user that their request wasn't valid.
-    """
     print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
 
 def startup(sock):
-    """Connect to the server, get the session ID, and get the create network
-    command from the user.
-    """
     sock.sendall(username.encode())
     session_id = recieve(sock)
     print('["the server will call me", ' + session_id.strip() + ']')
@@ -99,9 +88,6 @@ def startup(sock):
     sock.sendall(create_cmd.encode())
 
 def validate_batch_cmd(json_input):
-    """Check that this input is a valid JSON command for making a batch command out of.
-    Should be either a character placement or a query about safe passage.
-    """
     try:
         dict_input = json.loads(json_input)
         is_cmd = "command" in dict_input and "params" in dict_input
@@ -114,14 +100,10 @@ def validate_batch_cmd(json_input):
         return False
 
 def process(sock):
-    """Handles the sequence of user commands. These will be sent to the server
-    in batches that end with a query about passage safety.
-    """
     batch = []
     for line in sys.stdin:
         cmd = ""
         valid = False
-        # Don't allow this command to be added until it's a well-formed command.
         while not valid:
             json_input = sys.stdin.readline()
             valid = validate_batch_cmd(json_input)
@@ -137,8 +119,6 @@ def process(sock):
             batch = []
 
 def shutdown(sock):
-    """Shut down the program, closing the server connection.
-    """
     sock.close()
 
 # open a server
