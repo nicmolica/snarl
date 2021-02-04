@@ -34,7 +34,7 @@ def validate_json_input(json_input):
     try:
         json.loads(json_input.strip())
     except:
-        print('{"error" : "not a request", "object" :' + json_input.strip() + '}')
+        print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
         json_input = ""
     return json_input
 
