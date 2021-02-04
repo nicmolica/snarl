@@ -67,6 +67,9 @@ def process_response(response, character_request):
          ', "destination" : ' + request_json["town"] + '} , "is", ' + \
              json.dumps(response_json["response"]) + ']')
 
+def print_not_request(json_input):
+    print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
+
 def startup(sock):
     sock.sendall(username.encode())
     session_id = recieve(sock)
@@ -80,7 +83,7 @@ def startup(sock):
             create_cmd = transform_create_cmd(json_input)
             valid = True
         except:
-            print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
+            print_not_request(json_input)
     
     sock.sendall(create_cmd.encode())
 
@@ -105,7 +108,7 @@ def process(sock):
             json_input = sys.stdin.readline()
             valid = validate_batch_cmd(json_input)
             if not valid:
-                print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
+                print_not_request(json_input)
 
         batch.append(json.loads(cmd))
 
