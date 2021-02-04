@@ -4,17 +4,17 @@ import subprocess
 import json
 
 # defaults for the host, port and username
-host = "127.0.0.1"
+host = "localhost"
 port = 8000
 username = "Glorifrir Flintshoulder"
 
 # read command line input if user specified host, port or username
-if len(sys.argv) > 2:
-    username = sys.argv[2]
+if len(sys.argv) > 3:
+    username = sys.argv[3]
+elif len(sys.argv) > 2:
+    port = sys.argv[2]
 elif len(sys.argv) > 1:
-    port = sys.argv[1]
-elif len(sys.argv) > 0:
-    host = sys.argv[0]
+    host = sys.argv[1]
 
 # Recieve a message from the server by looping on recv
 # until we find a newline. Complain if it's invalid JSON.
@@ -79,7 +79,7 @@ def process_response(response, character_request):
 def startup(sock):
     sock.sendall(username.encode())
     session_id = recieve(sock)
-    print('["the server will call me", ' + session_id + ']')
+    print('["the server will call me", ' + session_id.strip() + ']')
     print("Please enter JSON for road network:")
     create_cmd = ""
     while create_cmd == "":
