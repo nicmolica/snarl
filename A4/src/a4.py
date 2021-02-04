@@ -1,6 +1,6 @@
+#!/usr/bin/env python3
 import sys
 import socket
-import subprocess
 import json
 
 # defaults for the host, port and username
