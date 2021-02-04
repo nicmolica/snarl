@@ -30,14 +30,6 @@ def recieve(sock):
         exit(1)
     return response
 
-def validate_json_input(json_input):
-    try:
-        json.loads(json_input.strip())
-    except:
-        print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
-        json_input = ""
-    return json_input
-
 # Transform the user input for network creation
 # into a valid create command to send to the server.
 def transform_create_cmd(cmd):
@@ -80,19 +72,41 @@ def startup(sock):
     session_id = recieve(sock)
     print('["the server will call me", ' + session_id.strip() + ']')
     print("Please enter JSON for road network:")
+    valid = False
     create_cmd = ""
-    while create_cmd == "":
-        json_input = sys.stdin.readline()
-        create_cmd = validate_json_input(json_input)
-    create_cmd = transform_create_cmd(create_cmd)
+    while not valid:
+        try:
+            json_input = sys.stdin.readline()
+            create_cmd = transform_create_cmd(json_input)
+            valid = True
+        except:
+            print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
+    
     sock.sendall(create_cmd.encode())
+
+def validate_batch_cmd(json_input):
+    try:
+        dict_input = json.loads(json_input)
+        is_cmd = "command" in dict_input and "params" in dict_input
+        params = dict_input["params"]
+        has_params = type(params) is dict and "character" in params and "town" in params
+        is_place = dict_input["command"] == "place" and has_params
+        is_safe = dict_input["command"] == "passage-safe?" and has_params
+        return is_place or is_safe
+    except:
+        return False
 
 def process(sock):
     batch = []
     for line in sys.stdin:
         cmd = ""
-        while cmd == "":
-            cmd = validate_json_input(line)
+        valid = False
+        while not valid:
+            json_input = sys.stdin.readline()
+            valid = validate_batch_cmd(json_input)
+            if not valid:
+                print('{"error" : "not a request", "object" : ' + json_input.strip() + ' }')
+
         batch.append(json.loads(cmd))
 
         if json.loads(cmd)["command"] == "passage-safe?":
