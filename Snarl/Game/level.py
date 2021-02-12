@@ -1,7 +1,5 @@
-
+import itertools
 class Level:
-    rooms
-    hallways
     def __init__(self, rooms, hallways):
         """Creates the given level layout. Requires that no two rooms
         or hallways overlap and that all hallways connect two room doors.
@@ -14,19 +12,46 @@ class Level:
         self.rooms = rooms
         self.hallways = hallways
 
-    def any_overlaps():
+    def any_overlaps(self):
         """Do any two rooms/hallways overlap with each other?
         """
+        # 3 checks:
+        # - For all pairs of 2 rooms, do the rooms intersect?
+        # - For all waypoints, is the waypoint inside of a room?
+        # - For all consecutive pairs of waypoints, does the line between them
+        #   intersect with a line made by another pair of consecutive waypoints?
 
-    def are_hallways_connected_to_doors():
+        # 1st check:
+        room_combos = itertools.combinations(self.rooms, 2)
+        for (room1, room2) in room_combos:
+            if room1 != room2 and room1.does_it_intersect(room2):
+                return True
+
+        # 2nd check:
+        waypoints = []
+        for hall in self.hallways:
+            waypoints.extend(hall.waypoints)
+        
+        for way in waypoints:
+            for room in self.rooms:
+                if room.contains(way):
+                    return True
+
+        # 3rd check:
+        hall_combos = itertools.combinations(self.hallways, 2)
+        for (hall1, hall2) in hall_combos:
+            if hall1 != hall2 and hall1.does_it_intersect(hall2):
+                return True
+        
+        return False
+
+    def are_hallways_connected_to_doors(self):
         """Do all hallways have their endpoints at room doors?
         """
 
 class Posn:
     """Represents an x-y position in a natural-valued 2D Cartesian grid.
     """
-    x
-    y
     def __init__(self, x, y):
         """Construct a new Posn with the given x-y coordinates.
 
@@ -46,6 +71,9 @@ class Posn:
         else:
             raise TypeError("Position coordinates must be integers!")
 
+    def __eq__(self, other):
+        return type(other) == Posn and self.x == other.x and self.y == other.y
+
 class Occupant:
     """Represents any entity that can occupy a Tile.
     """
@@ -54,26 +82,28 @@ class Occupant:
 class Player(Occupant):
     """Represents a player.
     """
-    pass
+    def __eq__(self, other):
+        pass 
 
 class Adversary(Occupant):
     """Represents an enemy.
     """
-    pass
+    def __eq__(self, other):
+        pass
 
 class LevelKey(Occupant):
     """Represents the key to unlock a level exit.
     """
-    pass
+    def __eq__(self, other):
+        pass
 
 class LevelExit(Occupant):
     """Represents the exit for a level.
     """
-    pass
+    def __eq__(self, other):
+        pass
 
 class Tile:
-    occupant
-    
     def __init__(self, occupant):
         """Constructs a new tile, possibly with an occupant.
 
@@ -87,7 +117,7 @@ class Tile:
             if type(occupant) is Occupant:
                 self.occupant = occupant
             else:
-                raise: TypeError("Occupant of a tile must be an Occupant object!")
+                raise TypeError("Occupant of a tile must be an Occupant object!")
 
 class Space:
     """This class represents an enclosed space. It currently is only responsible
@@ -96,13 +126,7 @@ class Space:
     pass
 
 class Room(Space):
-    position
-    width
-    height
-    objects
-    room_doors
-
-    def __init__(self, position, width, height, objects, room_doors):
+    def __init__(self, position, width, height, occupants, room_doors):
         """Constructs a new room.
 
         Arguments:
@@ -120,10 +144,15 @@ class Room(Space):
         self.position = position
         self.width = width
         self.height = height
-        self.objects = objects
+        self.occupants = occupants
         self.room_doors = room_doors
         if not self.is_valid():
             raise ValueError("Invalid room parameters")
+
+    def __eq__(self, other):
+        return type(other) == Room and self.position == other.position and \
+            self.width == other.width and self.occupants == other.occupants and \
+                self.room_doors == other.room_doors
 
     def is_valid(self):
         """Determine if the given parameters constitute a valid room.
@@ -132,7 +161,7 @@ class Room(Space):
         boundary dimensions of the room. 
         """
         if self.room_doors == []:
-            return false
+            return False
 
         return self.are_dimensions_positive() and self.are_doors_on_walls()
 
@@ -155,15 +184,28 @@ class Room(Space):
             elif door.y == y_min or door.y == y_max:
                 return door.x in range(x_min, x_max + 1)
             else:
-                return false
+                return False
+
+    def does_it_intersect(self, other):
+        """ Does this room intersect with the other room?
+        """
+        x1_min, x1_max = self.position.x, self.position.x + self.width
+        x2_min, x2_max = other.position.x, other.position.x + other.width
+        y1_min, y1_max = self.position.y, self.position.y + self.height
+        y2_min, y2_max = other.position.y, other.position.y + other.height
+
+        xflag = set(range(x1_min, x1_max)).intersection(set(range(x2_min, x2_max))) != set()
+        yflag = set(range(y1_min, y1_max)).intersection(set(range(y2_min, y2_max))) != set()
+        return xflag and yflag
+    
+    def contains(self, posn):
+        return posn.x in range(self.position.x, self.position.x + self.width) and \
+            posn.y in range(self.position.y, self.position.y + self.height)
 
 class Hallway(Space):
     """Represents a hallway that connects two rooms. Hallways are composed of
     vertical and horizontal segments.
     """
-    waypoints
-    tiles
-
     def __init__(self, waypoints):
         """Create a new hallway that follows the given waypoints.
 
@@ -184,18 +226,20 @@ class Hallway(Space):
         self.waypoints = waypoints
         self.generate_segments()
 
+    def __eq__(self, other):
+        return type(other) is Hallway and self.waypoints == other.waypoints
+
     def are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
         for i in range(0, len(self.waypoints) - 1):
-            else:
-                this_waypoint = self.waypoints[i]
-                next_waypoint = self.waypoints[i + 1]
-                if not self.do_waypoints_share_axis(this_waypoint, next_waypoint):
-                    return False
+            this_waypoint = self.waypoints[i]
+            next_waypoint = self.waypoints[i + 1]
+            if not self.do_waypoints_share_axis(this_waypoint, next_waypoint):
+                return False
 
-    def do_waypoints_share_axis(waypoint1, waypoint2):
+    def do_waypoints_share_axis(self, waypoint1, waypoint2):
         """Do the given waypoints have at least one axis that is equal?
         """
         return waypoint1.x == waypoint2.x or waypoint1.y == waypoint2.y
@@ -223,9 +267,6 @@ class Hallway(Space):
             this_waypoint = self.waypoints[i]
             next_waypoint = self.waypoints[i + 1]
 
-            width = this_waypoint.x - next_waypoint.x
-            height = this_waypoint.y - next_waypoint.y
-
             least_x = min(this_waypoint.x, next_waypoint.x)
             most_x = max(this_waypoint.x, next_waypoint.x)
             least_y = min(this_waypoint.y, next_waypoint.y)
@@ -234,9 +275,19 @@ class Hallway(Space):
             for x in range(least_x, most_x + 1):
                 for y in range(least_y, most_y + 1):
                     self.tiles[x][y] = True
-
-
-        
-
-
     
+    def does_it_intersect(self, other):
+        for i in range(0, len(self.waypoints) - 1):
+            this_w = self.waypoints[i]
+            next_w = self.waypoints[i + 1]
+            for j in range(0, len(other.waypoints) - 1):
+                this_p = other.waypoints[j]
+                next_p = other.waypoints[j + 1]
+                if self.does_segment_intersect(this_w, next_w, this_p, next_p):
+                    return True
+        return False
+    
+    def does_segment_intersect(self, w1, w2, p1, p2):
+        xflag = set(range(w1.x, w2.x)).intersection(set(range(p1.x, p2.x))) != set()
+        yflag = set(range(w1.y, w2.y)).intersection(set(range(p1.y, p2.y))) != set()
+        return xflag and yflag
