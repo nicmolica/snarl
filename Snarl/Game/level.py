@@ -103,8 +103,8 @@ class LevelExit(Occupant):
     def __eq__(self, other):
         pass
 
-class Tile:
-    def __init__(self, occupant):
+class Tile:   
+    def __init__(self, occupant=None):
         """Constructs a new tile, possibly with an occupant.
 
         Arguments:
@@ -118,6 +118,8 @@ class Tile:
                 self.occupant = occupant
             else:
                 raise TypeError("Occupant of a tile must be an Occupant object!")
+        else:
+            self.occupant = None
 
 class Space:
     """This class represents an enclosed space. It currently is only responsible
@@ -140,7 +142,6 @@ class Room(Space):
         Returns:
             None
         """
-
         self.position = position
         self.width = width
         self.height = height
