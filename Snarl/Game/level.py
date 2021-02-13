@@ -1,5 +1,6 @@
 import itertools
 from room import Room
+from hallway import Hallway
 
 class Level:
     def __init__(self, rooms, hallways):
@@ -85,11 +86,11 @@ class Level:
         """Alters self.tiles to have room walls, objects, and doors in the coordinates
         specified by self.rooms
         """
-        for room in rooms:
+        for room in self.rooms:
             # Set the boundary tiles to a wall
             room_tiles = room.render()
-            for x in range(room.position.x, room.positon.x + width + 1):
-                for y in range(room.position.y, room.position.y + height + 1):
+            for x in range(room.position.x, room.positon.x + room.width + 1):
+                for y in range(room.position.y, room.position.y + room.height + 1):
                     self.tiles[x][y] = room_tiles[x - room.position.x][y - room.position.y]
 
     def calculate_level_dimenions(self):
@@ -99,8 +100,8 @@ class Level:
         max_width = 0
         max_height = 0
         for room in self.rooms:
-            room_max_x = room.position.x + width
-            room_max_y = room.position.y + height
+            room_max_x = room.position.x + room.width
+            room_max_y = room.position.y + room.height
             if max_width < room_max_x:
                 max_width = room_max_x
             if max_height < room_max_y:
