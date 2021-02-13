@@ -24,7 +24,7 @@ class TestPosn(unittest.TestCase):
         self.assertEqual(p.y, y)
 
     def test_posn_requires_integers(self):
-        non_integers = [0.32, "small cats", [3,4, 5], {"dictionary": "value"}]
+        non_integers = [0.32, "small cats", [3, 4, 5], {"dictionary": "value"}]
         with self.assertRaises(TypeError):
             Posn(random.choice(non_integers), random.choice(non_integers))
             

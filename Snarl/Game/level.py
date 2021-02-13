@@ -161,10 +161,10 @@ class Room(Space):
         A room is invalid if the given exit_door location is not at the
         boundary dimensions of the room. 
         """
-        if self.room_doors == []:
-            return False
-
-        return self.are_dimensions_positive() and self.are_doors_on_walls()
+        return type(self.occupants) == list and type(self.position) == Posn and \
+            not self.room_doors == [] and self.are_dimensions_positive() and \
+            self.are_doors_on_walls()
+                
 
     def are_dimensions_positive(self):
         """Are the width and height positive?
