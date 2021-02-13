@@ -4,7 +4,7 @@ class Hallway:
     """Represents a hallway that connects two rooms. Hallways are composed of
     vertical and horizontal segments.
     """
-    def __init__(self, waypoints, start, end):
+    def __init__(self, waypoints, door1, door2):
         """Create a new hallway that follows the given waypoints to connect door1 to door2.
 
         Arguments:
@@ -15,16 +15,36 @@ class Hallway:
         """ 
         if type(waypoints) is not list:
             raise TypeError("Waypoints must be a list!")
-        if not all([type(waypoint) is Tile for waypoint in waypoints]):
-            raise TypeError("Waypoints must be a list of Posns!")
-        if not type(start) == Tile and type(end) == Tile:
+        if not all([isinstance(waypoint, Tile) for waypoint in waypoints]):
+            raise TypeError("Waypoints must be a list of Tiles!")
+        if not type(door1) == Tile and type(door2) == Tile:
             raise TypeError("Doors must be Posns!")
         
-        self.start = start
-        self.end = end
+        self.door1 = door1
+        self.door2 = door2
         self.waypoints = waypoints
-        self.waypoints.insert(0, self.start)
-        self.waypoints.append(self.end)
+
+        # place start and end waypoints inside the hallway and adjacent to the
+        # entrance doors and allowing duplicate waypoints to exist
+        if waypoints == []:
+            start_x = door1.x + (0 if door2.x == door1.x else ((door2.x - door1.x) / abs(door2.x - door1.x)))
+            start_y = door1.y + (0 if door2.y == door1.y else ((door2.y - door1.y) / abs(door2.y - door1.y)))
+            end_x = door2.x + (0 if door2.x == door1.x else ((door1.x - door2.x) / abs(door1.x - door2.x)))
+            end_y = door2.y + (0 if door2.y == door1.y else ((door1.y - door2.y) / abs(door1.y - door2.y)))
+            start = Tile(int(start_x), int(start_y))
+            end = Tile(int(end_x), int(end_y))
+        else:
+            first_wp = waypoints[0]
+            last_wp = waypoints[len(waypoints) - 1]
+            start_x = door1.x + (0 if first_wp.x == door1.x else ((first_wp.x - door1.x) / abs(first_wp.x - door1.x)))
+            start_y = door1.y + (0 if first_wp.y == door1.y else ((first_wp.y - door1.y) / abs(first_wp.y - door1.y)))
+            end_x = door2.x + (0 if last_wp.x == door2.x else ((last_wp.x - door2.x) / abs(last_wp.x - door2.x)))
+            end_y = door2.y + (0 if last_wp.y == door2.y else ((last_wp.y - door2.y) / abs(last_wp.y - door2.y)))
+            start = Tile(int(start_x), int(start_y))
+            end = Tile(int(end_x), int(end_y))
+        self.waypoints.insert(0, start)
+        self.waypoints.append(end)
+
 
         if not self.are_waypoints_valid():
             raise ValueError("Waypoints must form a sequence of horizontal and vertical segments!")
@@ -37,12 +57,15 @@ class Hallway:
     def __hash__(self):
         """ Overwriting hash for Hallways because we overwrote ==.
         """
-        return hash((self.waypoints, self.start, self.end))
+        return hash((self.waypoints, self.door1, self.door2))
 
     def are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
+        if len(self.waypoints) < 2:
+            return False
+        
         for i in range(0, len(self.waypoints) - 1):
             this_waypoint = self.waypoints[i]
             next_waypoint = self.waypoints[i + 1]
