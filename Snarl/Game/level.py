@@ -89,6 +89,11 @@ class Posn:
         """ Overwriting == for Posns in order to directly compare equality.
         """
         return type(other) == Posn and self.x == other.x and self.y == other.y
+    
+    def __hash__(self):
+        """ Overwriting hash for Posns because we overwrote ==.
+        """
+        return hash((self.x, self.y))
 
 class Occupant:
     """Represents any entity that can occupy a Tile.
@@ -173,6 +178,11 @@ class Room(Space):
             self.width == other.width and self.occupants == other.occupants and \
                 self.room_doors == other.room_doors
 
+    def __hash__(self):
+        """ Overwriting hash for Rooms because we overwrote ==.
+        """
+        return hash((self.position, self.width, self.height, self.occupants, self.room_doors))
+
     def is_valid(self):
         """Determine if the given parameters constitute a valid room.
 
@@ -181,7 +191,8 @@ class Room(Space):
         """
         return type(self.occupants) == list and type(self.position) == Posn and \
             not self.room_doors == [] and self.are_dimensions_positive() and \
-            self.are_doors_on_walls()
+                self.are_doors_on_walls() or not all([type(o) is Occupant for o in self.occupants]) \
+                    or not all([type(d) is Posn for d in self.room_doors])
 
     def are_dimensions_positive(self):
         """Are the width and height positive?
@@ -256,6 +267,11 @@ class Hallway(Space):
         """
         return type(other) is Hallway and self.waypoints == other.waypoints
 
+    def __hash__(self):
+        """ Overwriting hash for Hallways because we overwrote ==.
+        """
+        return hash((self.waypoints, self.start, self.end))
+
     def are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
@@ -265,6 +281,7 @@ class Hallway(Space):
             next_waypoint = self.waypoints[i + 1]
             if not self.do_waypoints_share_axis(this_waypoint, next_waypoint):
                 return False
+        return True
 
     def do_waypoints_share_axis(self, waypoint1, waypoint2):
         """Do the given waypoints have at least one axis that is equal?
@@ -288,6 +305,10 @@ class Hallway(Space):
         """ Does the row of tiles between w1 and w2 intersect with the row of tiles
         between p1 and p2?
         """
-        xflag = set(range(w1.x, w2.x)).intersection(set(range(p1.x, p2.x))) != set()
-        yflag = set(range(w1.y, w2.y)).intersection(set(range(p1.y, p2.y))) != set()
+        w_x = range(min(w1.x, w2.x), max(w1.x, w2.x) + 1)
+        w_y = range(min(w1.y, w2.y), max(w1.y, w2.y) + 1)
+        p_x = range(min(p1.x, p2.x), max(p1.x, p2.x) + 1)
+        p_y = range(min(p1.y, p2.y), max(p1.y, p2.y) + 1)
+        xflag = set(w_x).intersection(set(p_x)) != set()
+        yflag = set(w_y).intersection(set(p_y)) != set()
         return xflag and yflag
