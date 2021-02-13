@@ -4,7 +4,8 @@ import unittest
 import random
 from room import Room
 from tile import Tile
-from occupants import Occupant
+from occupants import Occupant, Player, Adversary, LevelExit, LevelKey
+from utils import grid_to_string
 
 class TestRoom(unittest.TestCase):
     def test_room_creates_with_all_arguments(self):
@@ -31,11 +32,20 @@ class TestRoom(unittest.TestCase):
         self.assertTrue(room1 == room2)
 
     def test_room_printing(self):
-        open_tiles = [Tile(4, 5), Tile(4, 6), Tile(4, 7), Tile(5, 6), Tile(5, 7), Tile(6, 7)]
+        player = Player()
+        enemy1 = Adversary()
+        enemy2 = Adversary()
+        level_key = LevelKey()
+        level_exit = LevelExit()
+        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
+            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
         room1 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
         tiles = room1.render()
-        print('\n')
-        print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in tiles]))
+        expected_string = "-   D   -   -   -   -   \n|   P   K   A   X   |   \n" + \
+            "|   X       A   X   |   \n|   X   X   E   X   |   \n-   -   -   -   -   -   "
+        print(expected_string)
+        print(grid_to_string(tiles))
+        self.assertEqual(expected_string, grid_to_string(tiles))
 
 if __name__ == '__main__':
     unittest.main()

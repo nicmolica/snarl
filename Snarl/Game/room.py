@@ -1,6 +1,10 @@
 from tile import Tile
 
 class Room:
+    """Represents a Room. Rooms are enclosed rectangles with a position in the
+    grid, positive width and height, at least one room door on the room's boundary,
+    and a list of non-wall tiles inside the room.
+    """
     def __init__(self, position, width, height, room_doors, open_tiles = []):
         """Constructs a new room.
 
@@ -26,7 +30,7 @@ class Room:
     def __eq__(self, other):
         """ Overwrite == for Rooms to directly check equality.
         """
-        return type(other) == Room and self.position == other.position and \
+        return isinstance(other, Room) and self.position == other.position and \
             self.width == other.width and \
                 self.room_doors == other.room_doors
 
@@ -39,11 +43,12 @@ class Room:
         """Determine if the given parameters constitute a valid room.
 
         A room is invalid if the given exit_door location is not at the
-        boundary dimensions of the room. 
+        boundary dimensions of the room, if the room domensions are not positive,
+        if there is no room door, or if the given room door is not a Tile.
         """
-        return type(self.position) == Tile and \
+        return isinstance(self.position, Tile) and \
             not self.room_doors == [] and self.are_dimensions_positive() and \
-                self.are_doors_on_walls() or not all([type(d) is Tile for d in self.room_doors])
+                self.are_doors_on_walls() or not all([isinstance(d, Tile) for d in self.room_doors])
 
     def are_dimensions_positive(self):
         """Are the width and height positive?
@@ -78,16 +83,18 @@ class Room:
         yflag = set(range(y1_min, y1_max)).intersection(set(range(y2_min, y2_max))) != set()
         return xflag and yflag
     
-    def contains(self, posn):
+    def contains(self, tile):
         """ Is the given Tile inside of this room?
         """
-        return posn.x in range(self.position.x, self.position.x + self.width) and \
-            posn.y in range(self.position.y, self.position.y + self.height)
+        return tile.x in range(self.position.x, self.position.x + self.width) and \
+            tile.y in range(self.position.y, self.position.y + self.height)
 
     def render(self):
-        """Renders this room as a 2D list of ASCII characters.
+        """Renders this room as a 2D list of ASCII characters. Also stores the result
+        in self.tiles
         """
-        self.tiles =  [[' ' for y in range(self.height)] for x in range(self.width)]
+        # Make sure the tiles array is the proper size; inits to empty strings
+        self.tiles =  [[' ' for x in range(self.width + 1)] for y in range(self.height + 1)]
         self.render_walls()
         self.render_doors()
         self.render_open_tiles()
@@ -95,24 +102,35 @@ class Room:
         return self.tiles
 
     def render_doors(self):
-        """Alters self.tiles to have appropriate characters for the doors.
+        """Alters self.tiles to contain appropriate characters for the doors.
         """
+
         for door in self.room_doors:
-            self.tiles[door.x - self.position.x][door.y - self.position.y] = 'D'
+            relative_x = door.x - self.position.x
+            relative_y = door.y - self.position.y
+            self.tiles[relative_y][relative_x] = 'D'
 
     def render_open_tiles(self):
+        """Alters self.tiles to contain appropriate characters for open tiles,
+        including any of their occupants.
+        """
         for tile in self.open_tiles:
-            self.tiles[tile.x - self.position.x][tile.y - self.position.y] = ' '
+            relative_x = tile.x - self.position.x - 1
+            relative_y = tile.y - self.position.y - 1
+            if tile.occupant:
+                self.tiles[relative_y][relative_x] = tile.occupant.render()
+            else:
+                self.tiles[relative_y][relative_x] = ' '
 
     def render_walls(self):
-        """Alters self.tiles to have appropriate characters for this room's walls.
+        """Alters self.tiles to contain appropriate characters for this room's walls.
         """
         for x in range(self.width):
             for y in range(self.height):
                 # This tile is a horizontal wall.
-                if x == 0 or x == self.width - 1:
-                    self.tiles[x][y] = '-'
-                elif y == 0 or y == self.height - 1:
-                    self.tiles[x][y] = '|'
+                if y == 0 or y == self.height - 1:
+                    self.tiles[y][x] = '-'
+                elif x == 0 or x == self.width - 1:
+                    self.tiles[y][x] = '|'
                 else:
-                    self.tiles[x][y] = 'X'
+                    self.tiles[y][x] = 'X'

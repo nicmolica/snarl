@@ -5,6 +5,7 @@ from level import Level
 from room import Room
 from hallway import Hallway
 from tile import Tile
+from utils import grid_to_string
 
 class TestLevel(unittest.TestCase):
     def test_rooms_field_rejects_nonrooms(self):
@@ -44,7 +45,20 @@ class TestLevel(unittest.TestCase):
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(10, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        Level([room1, room2, room3], [hallway1, hallway2])
+        try:
+            Level([room1, room2, room3], [hallway1, hallway2])
+        except:
+            self.fail("Level.any_overlaps improperly rejected valid level!")
+
+    def test_level_render(self):
+        # TODO: Something with this door is not correct. It should break, or maybe our constructor should.
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 5)])
+        hallway1 = Hallway([], Tile(3, 6), Tile(3, 19))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
+        print(grid_to_string(room1.render()))
+        level = Level([room1, room2], [hallway1])
+        print(grid_to_string(level.render()))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -17,8 +17,8 @@ class Level:
 
         if self.any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
-        if not self.are_hallways_connected_to_doors():
-            raise ValueError("There are disconnected hallways on this level.")
+        # if not self.are_hallways_connected_to_doors():
+        #     raise ValueError("There are disconnected hallways on this level.")
 
     def any_overlaps(self):
         """Do any two rooms/hallways overlap with each other? Uses 3 checks to verify this:
@@ -55,8 +55,8 @@ class Level:
         """
         hall_ends = []
         for hall in self.hallways:
-            hall_ends.append(hall.start)
-            hall_ends.append(hall.end)
+            hall_ends.append(hall.door1)
+            hall_ends.append(hall.door2)
         
         room_doors = []
         for room in self.rooms:
@@ -70,8 +70,11 @@ class Level:
         corresponds to a single ASCII character.
         """
         width, height = self.calculate_level_dimenions()
-        self.tiles = [['-' for x in range(width)] for y in range(height)]
-        # Render hallways
+        self.tiles = [['X' for x in range(width)] for y in range(height)]
+        # Render rooms
+        self.set_rooms_tiles()
+
+        return self.tiles
 
     def set_hallways_tiles(self):
         """Alters self.tiles to have walkable tiles in the coordinates where the hallways
@@ -89,10 +92,9 @@ class Level:
         for room in self.rooms:
             # Set the boundary tiles to a wall
             room_tiles = room.render()
-            for x in range(room.position.x, room.positon.x + room.width + 1):
-                for y in range(room.position.y, room.position.y + room.height + 1):
-                    self.tiles[x][y] = room_tiles[x - room.position.x][y - room.position.y]
-
+            for x in range(room.position.x, room.position.x + room.width):
+                for y in range(room.position.y, room.position.y + room.height):
+                    self.tiles[y][x] = room_tiles[y - room.position.y][x - room.position.x]
     def calculate_level_dimenions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
         the maximum coordinates needed by all of the level's rooms and hallways.

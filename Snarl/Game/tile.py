@@ -1,6 +1,9 @@
 from occupants import Occupant
 
-class Tile:   
+class Tile:
+    """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
+    May be occupied by an Occupant.
+    """
     def __init__(self, x, y, occupant=None):
         """Constructs a new tile, possibly with an occupant.
 
@@ -20,7 +23,7 @@ class Tile:
         self.y = y
 
         if occupant:
-            if type(occupant) is Occupant:
+            if isinstance(occupant, Occupant):
                 self.occupant = occupant
             else:
                 raise TypeError("Occupant of a tile must be an Occupant object!")
