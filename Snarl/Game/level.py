@@ -1,4 +1,5 @@
 import itertools
+
 class Level:
     def __init__(self, rooms, hallways):
         """Creates the given level layout. Requires that no two rooms
@@ -12,15 +13,18 @@ class Level:
         self.rooms = rooms
         self.hallways = hallways
 
-    def any_overlaps(self):
-        """Do any two rooms/hallways overlap with each other?
-        """
-        # 3 checks:
-        # - For all pairs of 2 rooms, do the rooms intersect?
-        # - For all waypoints, is the waypoint inside of a room?
-        # - For all consecutive pairs of waypoints, does the line between them
-        #   intersect with a line made by another pair of consecutive waypoints?
+        if self.any_overlaps():
+            raise ValueError("There are overlapping rooms or hallways in this level.")
+        if not self.are_hallways_connected_to_doors():
+            raise ValueError("There are disconnected hallways on this level.")
 
+    def any_overlaps(self):
+        """Do any two rooms/hallways overlap with each other? Uses 3 checks to verify this:
+           - For all pairs of 2 rooms, do the rooms intersect? If yes for any, return true.
+           - For all waypoints, is the waypoint inside of a room? If yes for any, return true.
+           - For all consecutive pairs of waypoints, does the line between them intersect with
+             a line made by another pair of consecutive waypoints? If yes for any, return true.
+        """
         # 1st check:
         room_combos = itertools.combinations(self.rooms, 2)
         for (room1, room2) in room_combos:
@@ -31,7 +35,6 @@ class Level:
         waypoints = []
         for hall in self.hallways:
             waypoints.extend(hall.waypoints)
-        
         for way in waypoints:
             for room in self.rooms:
                 if room.contains(way):
@@ -48,6 +51,17 @@ class Level:
     def are_hallways_connected_to_doors(self):
         """Do all hallways have their endpoints at room doors?
         """
+        hall_ends = []
+        for hall in self.hallways:
+            hall_ends.append(hall.start)
+            hall_ends.append(hall.end)
+        
+        room_doors = []
+        for room in self.rooms:
+            for door in room.room_doors:
+                room_doors.append(door)
+
+        return set(hall_ends).issubset(set(room_doors))
 
 class Posn:
     """Represents an x-y position in a natural-valued 2D Cartesian grid.
@@ -72,6 +86,8 @@ class Posn:
             raise TypeError("Position coordinates must be integers!")
 
     def __eq__(self, other):
+        """ Overwriting == for Posns in order to directly compare equality.
+        """
         return type(other) == Posn and self.x == other.x and self.y == other.y
 
 class Occupant:
@@ -151,6 +167,8 @@ class Room(Space):
             raise ValueError("Invalid room parameters")
 
     def __eq__(self, other):
+        """ Overwrite == for Rooms to directly check equality.
+        """
         return type(other) == Room and self.position == other.position and \
             self.width == other.width and self.occupants == other.occupants and \
                 self.room_doors == other.room_doors
@@ -164,7 +182,6 @@ class Room(Space):
         return type(self.occupants) == list and type(self.position) == Posn and \
             not self.room_doors == [] and self.are_dimensions_positive() and \
             self.are_doors_on_walls()
-                
 
     def are_dimensions_positive(self):
         """Are the width and height positive?
@@ -200,6 +217,8 @@ class Room(Space):
         return xflag and yflag
     
     def contains(self, posn):
+        """ Is the given Posn inside of this room?
+        """
         return posn.x in range(self.position.x, self.position.x + self.width) and \
             posn.y in range(self.position.y, self.position.y + self.height)
 
@@ -207,8 +226,8 @@ class Hallway(Space):
     """Represents a hallway that connects two rooms. Hallways are composed of
     vertical and horizontal segments.
     """
-    def __init__(self, waypoints):
-        """Create a new hallway that follows the given waypoints.
+    def __init__(self, waypoints, start, end):
+        """Create a new hallway that follows the given waypoints to connect door1 to door2.
 
         Arguments:
             waypoints(list[Posn]): the list of corners in the hallway.
@@ -220,14 +239,21 @@ class Hallway(Space):
             raise TypeError("Waypoints must be a list!")
         if not all([type(waypoint) is Posn for waypoint in waypoints]):
             raise TypeError("Waypoints must be a list of Posns!")
-        if len(waypoints) < 2:
-            raise ValueError("Waypoints list must contain at least two endpoints!")
+        if not type(start) == Posn and type(end) == Posn:
+            raise TypeError("Doors must be Posns!")
+        
+        self.start = start
+        self.end = end
+        self.waypoints = waypoints
+        self.waypoints.insert(0, self.start)
+        self.waypoints.append(self.end)
+
         if not self.are_waypoints_valid():
             raise ValueError("Waypoints must form a sequence of horizontal and vertical segments!")
-        self.waypoints = waypoints
-        self.generate_segments()
 
     def __eq__(self, other):
+        """ Overwrite == for Hallways to enable directly checking equality.
+        """
         return type(other) is Hallway and self.waypoints == other.waypoints
 
     def are_waypoints_valid(self):
@@ -244,40 +270,10 @@ class Hallway(Space):
         """Do the given waypoints have at least one axis that is equal?
         """
         return waypoint1.x == waypoint2.x or waypoint1.y == waypoint2.y
-
-    def initialize_tiles_size(self):
-        """Sets the tiles field to sufficient dimensions to hold all waypoint
-        coordinates.
-        """
-        max_width = max([waypoint.x for waypoint in self.waypoints])
-        max_height = max([waypoint.y for waypoint in self.waypoints])
-        self.tiles = [[None for i in range(max_height + 1)] \
-            for j in range(max_width + 1)]
-
-    def generate_segments(self):
-        """Use this Hallway's waypoints to specify the positions of its
-        walls and traversable tiles. This will place True in every index
-        of self.tiles that corresponds to an index where this hallway has
-        a wall or tile.
-        """
-        # Make sure our tiles array is big enough to hold coordinates for
-        # all of the spaces that this hallway is going to occupy.
-        self.initialize_tiles_size()
-        # skips the last waypoint, because there's nowhere else to go
-        for i in range(0, len(self.waypoints) - 1):
-            this_waypoint = self.waypoints[i]
-            next_waypoint = self.waypoints[i + 1]
-
-            least_x = min(this_waypoint.x, next_waypoint.x)
-            most_x = max(this_waypoint.x, next_waypoint.x)
-            least_y = min(this_waypoint.y, next_waypoint.y)
-            most_y = max(this_waypoint.y, next_waypoint.y)
-
-            for x in range(least_x, most_x + 1):
-                for y in range(least_y, most_y + 1):
-                    self.tiles[x][y] = True
     
     def does_it_intersect(self, other):
+        """ Does this hallway intersect with the other provided hallway?
+        """
         for i in range(0, len(self.waypoints) - 1):
             this_w = self.waypoints[i]
             next_w = self.waypoints[i + 1]
@@ -289,6 +285,9 @@ class Hallway(Space):
         return False
     
     def does_segment_intersect(self, w1, w2, p1, p2):
+        """ Does the row of tiles between w1 and w2 intersect with the row of tiles
+        between p1 and p2?
+        """
         xflag = set(range(w1.x, w2.x)).intersection(set(range(p1.x, p2.x))) != set()
         yflag = set(range(w1.y, w2.y)).intersection(set(range(p1.y, p2.y))) != set()
         return xflag and yflag
