@@ -52,10 +52,10 @@ class TestLevel(unittest.TestCase):
 
     def test_level_render(self):
         # TODO: Something with this door is not correct. It should break, or maybe our constructor should.
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 5)])
+        # Room is 5 x 5, with a door on the bottom side. 
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
         hallway1 = Hallway([], Tile(3, 6), Tile(3, 19))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        print(grid_to_string(room1.render()))
         level = Level([room1, room2], [hallway1])
         print(grid_to_string(level.render()))
 

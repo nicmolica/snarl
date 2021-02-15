@@ -46,28 +46,48 @@ class Room:
         boundary dimensions of the room, if the room domensions are not positive,
         if there is no room door, or if the given room door is not a Tile.
         """
-        return isinstance(self.position, Tile) and \
-            not self.room_doors == [] and self.are_dimensions_positive() and \
-                self.are_doors_on_walls() or not all([isinstance(d, Tile) for d in self.room_doors])
+        room_has_door = self.room_doors != []
+        room_doors_are_tiles = all([isinstance(d, Tile) for d in self.room_doors])
+        return isinstance(self.position, Tile) and room_has_door and self.are_dimensions_positive() \
+                and self.are_doors_on_walls() and room_doors_are_tiles and self.tiles_are_valid()
 
     def are_dimensions_positive(self):
         """Are the width and height positive?
         """
         return self.width > 0 and self.height > 0
 
+    def tiles_are_valid(self):
+        """Makes sure that all of the open tiles given in the open tile layout are actually valid.
+        """
+        # Should not allow open tiles on the boundary.
+        x_min = self.position.x + 1
+        x_max = self.position.x + self.width - 1
+        y_min = self.position.y + 1
+        y_max = self.position.y + self.height - 1
+
+        for tile in self.open_tiles:
+            if not isinstance(tile, Tile):
+                return False
+            if tile.x not in range(x_min, x_max):
+                return False
+            if tile.y not in range(y_min, y_max):
+                return False
+
+        return True
+
     def are_doors_on_walls(self):
         """Are the doors of this room on the room's walls?
         """
         x_min = self.position.x
-        x_max = self.position.x + self.width
+        x_max = self.position.x + self.width - 1
         y_min = self.position.y
-        y_max = self.position.y + self.height
+        y_max = self.position.y + self.height - 1
 
         for door in self.room_doors:
             if door.x == x_min or door.x == x_max:
-                return door.y in range(y_min, y_max + 1)
+                return door.y in range(y_min, y_max)
             elif door.y == y_min or door.y == y_max:
-                return door.x in range(x_min, x_max + 1)
+                return door.x in range(x_min, x_max)
             else:
                 return False
 
@@ -115,8 +135,8 @@ class Room:
         including any of their occupants.
         """
         for tile in self.open_tiles:
-            relative_x = tile.x - self.position.x - 1
-            relative_y = tile.y - self.position.y - 1
+            relative_x = tile.x - self.position.x 
+            relative_y = tile.y - self.position.y
             if tile.occupant:
                 self.tiles[relative_y][relative_x] = tile.occupant.render()
             else:

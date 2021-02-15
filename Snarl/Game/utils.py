@@ -14,4 +14,4 @@ def grid_to_string(grid):
     Returns:
         grid_str (str): A string formatted to display the grid.
     """
-    return '\n'.join([''.join(['{:4}'.format(character) for character in row]) for row in grid])
+    return '\n'.join([''.join(['{:4}'.format(character) for character in row]).strip() for row in grid])

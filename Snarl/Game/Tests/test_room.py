@@ -41,10 +41,8 @@ class TestRoom(unittest.TestCase):
             Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
         room1 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
         tiles = room1.render()
-        expected_string = "-   D   -   -   -   -   \n|   P   K   A   X   |   \n" + \
-            "|   X       A   X   |   \n|   X   X   E   X   |   \n-   -   -   -   -   -   "
-        print(expected_string)
-        print(grid_to_string(tiles))
+        expected_string = "-   -   -   -   -" + "\nD   P   X   X   |" + "\n|   K       X   |" \
+            + "\n|   A   A   E   |" + "\n|   X   X   X   |" + "\n-   -   -   -   -\n"
         self.assertEqual(expected_string, grid_to_string(tiles))
 
 if __name__ == '__main__':
