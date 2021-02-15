@@ -1,4 +1,5 @@
-"""This file holds utility methods.
+"""This file holds utility methods. When adding functions to this file, please be very thorough
+with the docstrings.
 """
 
 def grid_to_string(grid):

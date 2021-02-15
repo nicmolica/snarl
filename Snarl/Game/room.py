@@ -111,7 +111,12 @@ class Room:
 
     def render(self):
         """Renders this room as a 2D list of ASCII characters. Also stores the result
-        in self.tiles
+        in self.tiles.
+
+        Returns:
+            tiles (list[list[character]]): A 2D list of the strings representing this level's
+                tiles. The list is referenced [y][x]-the entries of the outer list are each
+                a single row of the room.
         """
         # Make sure the tiles array is the proper size; inits to empty strings
         self.tiles =  [[' ' for x in range(self.width + 1)] for y in range(self.height + 1)]

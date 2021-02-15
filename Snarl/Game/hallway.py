@@ -55,6 +55,8 @@ class Hallway:
             end_y = door2.y + (0 if door2.y == door1.y else ((door1.y - door2.y) / abs(door1.y - door2.y)))
             start = Tile(int(start_x), int(start_y))
             end = Tile(int(end_x), int(end_y))
+            self.waypoints.insert(0, start)
+            self.waypoints.append(end)
         else:
             first_wp = self.waypoints[0]
             last_wp = self.waypoints[len(self.waypoints) - 1]
@@ -64,8 +66,8 @@ class Hallway:
             end_y = door2.y + (0 if last_wp.y == door2.y else ((last_wp.y - door2.y) / abs(last_wp.y - door2.y)))
             start = Tile(int(start_x), int(start_y))
             end = Tile(int(end_x), int(end_y))
-        self.waypoints.insert(0, start)
-        self.waypoints.append(end)
+            self.waypoints.insert(0, start)
+            self.waypoints.append(end)
 
     def are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
@@ -93,7 +95,6 @@ class Hallway:
         for i in range(0, len(self.waypoints) - 1):
             this_w = self.waypoints[i]
             next_w = self.waypoints[i + 1]
-            print(this_w.x)
             for j in range(0, len(other.waypoints) - 1):
                 this_p = other.waypoints[j]
                 next_p = other.waypoints[j + 1]

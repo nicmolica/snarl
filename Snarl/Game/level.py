@@ -17,8 +17,8 @@ class Level:
 
         if self.any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
-        # if not self.are_hallways_connected_to_doors():
-        #     raise ValueError("There are disconnected hallways on this level.")
+        if not self.are_hallways_connected_to_doors():
+            raise ValueError("There are disconnected hallways on this level.")
 
     def any_overlaps(self):
         """Do any two rooms/hallways overlap with each other? Uses 3 checks to verify this:
@@ -28,12 +28,27 @@ class Level:
              a line made by another pair of consecutive waypoints? If yes for any, return true.
         """
         # 1st check:
+        any_room_intersections = self.do_any_rooms_intersect()
+        # 2nd check:
+        any_hallways_inside_rooms = self.do_any_hallways_intersect_rooms()
+        # 3rd check:
+        any_hallways_intersect_hallways = self.do_any_hallways_intersect_hallways()
+
+        return any_room_intersections or any_hallways_inside_rooms or any_hallways_intersect_hallways
+    
+    def do_any_rooms_intersect(self):
+        """Are there any two rooms in this level that share coordinates?
+        """
         room_combos = itertools.combinations(self.rooms, 2)
         for (room1, room2) in room_combos:
             if room1 != room2 and room1.does_it_intersect(room2):
                 return True
-
-        # 2nd check:
+        return False
+    
+    def do_any_hallways_intersect_rooms(self):
+        """Do any hallways have coordinates that are inside any room?
+        For this, it suffices to check the hallway's waypoints.
+        """
         waypoints = []
         for hall in self.hallways:
             waypoints.extend(hall.waypoints)
@@ -41,13 +56,15 @@ class Level:
             for room in self.rooms:
                 if room.contains(way):
                     return True
+        return False
 
-        # 3rd check:
+    def do_any_hallways_intersect_hallways(self):
+        """Will any hallways intersect each other?
+        """
         hall_combos = itertools.combinations(self.hallways, 2)
         for (hall1, hall2) in hall_combos:
             if hall1 != hall2 and hall1.does_it_intersect(hall2):
                 return True
-        
         return False
 
     def are_hallways_connected_to_doors(self):
@@ -67,12 +84,16 @@ class Level:
 
     def render(self):
         """Renders an ASCII representation of this level. Each coordinate in the level
-        corresponds to a single ASCII character.
+        corresponds to a single ASCII character. Stores this grid of characters in self.tiles.
+
+        Returns:
+            tiles (list[list[character]]): A 2D list storing each character representing the level.
+                Each element of the outer list contains a single row.
         """
         width, height = self.calculate_level_dimenions()
         self.tiles = [['X' for x in range(width)] for y in range(height)]
         # Render rooms
-        self.set_rooms_tiles()
+        self.render_rooms_tiles()
         self.set_hallways_tiles()
 
         return self.tiles
@@ -88,6 +109,14 @@ class Level:
                 self.render_hallway_segment(this_w, next_w)
     
     def render_hallway_segment(self, start, end):
+        """Renders a single segment of the hallway, given the start and end coordinates.
+        Does not require that start coordinates are less than end coordinates. Stores
+        its result in self.tiles.
+
+        Arguments:
+            start (Tile): the position of the segment start.
+            end (Tile): the position of the segment end.
+        """
         self.tiles[start.y][start.x] = ' '
         self.tiles[end.y][end.x] = ' '
         y_min = min(start.y, end.y)
@@ -98,10 +127,9 @@ class Level:
             for x in range(x_min, x_max + 1):
                 self.tiles[y][x] = ' '
 
-
-    def set_rooms_tiles(self):
+    def render_rooms_tiles(self):
         """Alters self.tiles to have room walls, objects, and doors in the coordinates
-        specified by self.rooms
+        specified by self.rooms.
         """
         for room in self.rooms:
             # Set the boundary tiles to a wall
