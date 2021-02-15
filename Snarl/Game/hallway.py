@@ -17,8 +17,8 @@ class Hallway:
             raise TypeError("Waypoints must be a list!")
         if not all([isinstance(waypoint, Tile) for waypoint in waypoints]):
             raise TypeError("Waypoints must be a list of Tiles!")
-        if not type(door1) == Tile and type(door2) == Tile:
-            raise TypeError("Doors must be Posns!")
+        if not (isinstance(door1, Tile) and isinstance(door2, Tile)):
+            raise TypeError("Doors must be Tiles!")
         
         self.door1 = door1
         self.door2 = door2
