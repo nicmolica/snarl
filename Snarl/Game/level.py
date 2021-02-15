@@ -73,6 +73,7 @@ class Level:
         self.tiles = [['X' for x in range(width)] for y in range(height)]
         # Render rooms
         self.set_rooms_tiles()
+        self.set_hallways_tiles()
 
         return self.tiles
 
@@ -84,6 +85,19 @@ class Level:
             for i in range(0, len(hall.waypoints) - 1):
                 this_w = hall.waypoints[i]
                 next_w = hall.waypoints[i + 1]
+                self.render_hallway_segment(this_w, next_w)
+    
+    def render_hallway_segment(self, start, end):
+        self.tiles[start.y][start.x] = ' '
+        self.tiles[end.y][end.x] = ' '
+        y_min = min(start.y, end.y)
+        y_max = max(start.y, end.y)
+        x_min = min(start.x, end.x)
+        x_max = max(start.x, end.x)
+        for y in range(y_min, y_max + 1):
+            for x in range(x_min, x_max + 1):
+                self.tiles[y][x] = ' '
+
 
     def set_rooms_tiles(self):
         """Alters self.tiles to have room walls, objects, and doors in the coordinates
@@ -95,6 +109,7 @@ class Level:
             for x in range(room.position.x, room.position.x + room.width):
                 for y in range(room.position.y, room.position.y + room.height):
                     self.tiles[y][x] = room_tiles[y - room.position.y][x - room.position.x]
+
     def calculate_level_dimenions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
         the maximum coordinates needed by all of the level's rooms and hallways.

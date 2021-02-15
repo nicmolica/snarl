@@ -51,13 +51,20 @@ class TestLevel(unittest.TestCase):
             self.fail("Level.any_overlaps improperly rejected valid level!")
 
     def test_level_render(self):
-        # TODO: Something with this door is not correct. It should break, or maybe our constructor should.
-        # Room is 5 x 5, with a door on the bottom side. 
         room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
-        hallway1 = Hallway([], Tile(3, 6), Tile(3, 19))
+        hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        print(grid_to_string(level.render()))
+        expected = "-   -   -   -   -\n|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
+            "-   -   -   D   -\nX   X   X       X\nX               X\nX       X   X   X\n" + \
+                "X       X   X   X\nX       X   X   X\nX       X   X   X\nX       X   X   X\n" + \
+                    "X       X   X   X\nX       X   X   X\nX       X   X   X\nX       X   X   X\n" + \
+                        "X       X   X   X\nX       X   X   X\nX               X\nX   X   X       X\n" + \
+                            "-   -   -   D   -\n|   X   X   X   |\n|   X   X   X   |\n" + \
+                                "|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
+                                    "|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
+                                        "-   -   -   -   -"
+        self.assertEqual(expected, grid_to_string(level.render()))
 
 
 if __name__ == '__main__':
