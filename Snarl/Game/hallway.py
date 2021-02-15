@@ -23,31 +23,10 @@ class Hallway:
         self.door1 = door1
         self.door2 = door2
         self.waypoints = waypoints
-
-        # place start and end waypoints inside the hallway and adjacent to the
-        # entrance doors and allowing duplicate waypoints to exist
-        if waypoints == []:
-            start_x = door1.x + (0 if door2.x == door1.x else ((door2.x - door1.x) / abs(door2.x - door1.x)))
-            start_y = door1.y + (0 if door2.y == door1.y else ((door2.y - door1.y) / abs(door2.y - door1.y)))
-            end_x = door2.x + (0 if door2.x == door1.x else ((door1.x - door2.x) / abs(door1.x - door2.x)))
-            end_y = door2.y + (0 if door2.y == door1.y else ((door1.y - door2.y) / abs(door1.y - door2.y)))
-            start = Tile(int(start_x), int(start_y))
-            end = Tile(int(end_x), int(end_y))
-        else:
-            first_wp = waypoints[0]
-            last_wp = waypoints[len(waypoints) - 1]
-            start_x = door1.x + (0 if first_wp.x == door1.x else ((first_wp.x - door1.x) / abs(first_wp.x - door1.x)))
-            start_y = door1.y + (0 if first_wp.y == door1.y else ((first_wp.y - door1.y) / abs(first_wp.y - door1.y)))
-            end_x = door2.x + (0 if last_wp.x == door2.x else ((last_wp.x - door2.x) / abs(last_wp.x - door2.x)))
-            end_y = door2.y + (0 if last_wp.y == door2.y else ((last_wp.y - door2.y) / abs(last_wp.y - door2.y)))
-            start = Tile(int(start_x), int(start_y))
-            end = Tile(int(end_x), int(end_y))
-        self.waypoints.insert(0, start)
-        self.waypoints.append(end)
-
+        self.assign_start_end_waypoints(door1, door2)
 
         if not self.are_waypoints_valid():
-            raise ValueError("Waypoints must form a sequence of horizontal and vertical segments!")
+            raise ValueError("Waypoints must form a sequence of horizontal and vertical segments connecting two rooms!")
 
     def __eq__(self, other):
         """ Overwrite == for Hallways to enable directly checking equality.
@@ -59,11 +38,41 @@ class Hallway:
         """
         return hash((self.waypoints, self.door1, self.door2))
 
+    def assign_start_end_waypoints(self, door1, door2):
+        """ Place start and end waypoints inside the hallway and adjacent to the
+        entrance doors, allowing duplicate waypoints to exist. If doors are
+        adjacent, ensure list of waypoints is empty.
+        """
+        if abs(door1.x - door2.x) <= 1 and abs(door1.y - door2.y) <= 1:
+            if self.waypoints != []:
+                raise ValueError("Cannot have waypoints in a zero-length hallway!")
+            else:
+                pass
+        elif self.waypoints == []:
+            start_x = door1.x + (0 if door2.x == door1.x else ((door2.x - door1.x) / abs(door2.x - door1.x)))
+            start_y = door1.y + (0 if door2.y == door1.y else ((door2.y - door1.y) / abs(door2.y - door1.y)))
+            end_x = door2.x + (0 if door2.x == door1.x else ((door1.x - door2.x) / abs(door1.x - door2.x)))
+            end_y = door2.y + (0 if door2.y == door1.y else ((door1.y - door2.y) / abs(door1.y - door2.y)))
+            start = Tile(int(start_x), int(start_y))
+            end = Tile(int(end_x), int(end_y))
+        else:
+            first_wp = self.waypoints[0]
+            last_wp = self.waypoints[len(self.waypoints) - 1]
+            start_x = door1.x + (0 if first_wp.x == door1.x else ((first_wp.x - door1.x) / abs(first_wp.x - door1.x)))
+            start_y = door1.y + (0 if first_wp.y == door1.y else ((first_wp.y - door1.y) / abs(first_wp.y - door1.y)))
+            end_x = door2.x + (0 if last_wp.x == door2.x else ((last_wp.x - door2.x) / abs(last_wp.x - door2.x)))
+            end_y = door2.y + (0 if last_wp.y == door2.y else ((last_wp.y - door2.y) / abs(last_wp.y - door2.y)))
+            start = Tile(int(start_x), int(start_y))
+            end = Tile(int(end_x), int(end_y))
+        self.waypoints.insert(0, start)
+        self.waypoints.append(end)
+
     def are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
-        if len(self.waypoints) < 2:
+        if len(self.waypoints) < 2 and not \
+            (abs(self.door1.x - self.door2.x) <= 1 and abs(self.door1.y - self.door2.y) <= 1):
             return False
         
         for i in range(0, len(self.waypoints) - 1):
