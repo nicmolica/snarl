@@ -1,6 +1,8 @@
 import itertools
 from room import Room
 from hallway import Hallway
+from occupants import Adversary
+from occupants import Player
 
 class Level:
     def __init__(self, rooms, hallways):
@@ -14,6 +16,9 @@ class Level:
 
         self.rooms = rooms
         self.hallways = hallways
+        self.is_completed = False
+        self.players = {}
+        self.adversaries = {}
 
         if self.any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
@@ -57,6 +62,7 @@ class Level:
                 if room.contains(way):
                     return True
         return False
+        # TODO deal with hallway segments that straddle rooms
 
     def do_any_hallways_intersect_hallways(self):
         """Will any hallways intersect each other?
@@ -161,3 +167,28 @@ class Level:
         
         return max_width, max_height
     
+    def locate_occupant(self, occupant):
+        """ Locate the given occupant on the current level if it is a Player or Adversary.
+        """
+        if isinstance(occupant, Adversary):
+            return self.adversaries[occupant]
+        elif isinstance(occupant, Player):
+            return self.players[occupant]
+        else:
+            return None
+
+    def move_occupant(self, occupant, dest):
+        """ Move the given occupant to the given destination if it is a Player or Adversary.
+        """
+        if isinstance(occupant, Adversary):
+            self.adversaries[occupant].occupant = None
+            dest.occupant = occupant
+            self.adversaries[occupant] = dest
+            # TODO: have adversary interact with other occupants on the tile (player that they kill or something)
+        elif isinstance(occupant, Player):
+            self.players[occupant].occupant = None
+            dest.occupant = occupant
+            self.players[occupant] = dest
+            # TODO: have player interact with other occupants on the tile (key or exit)
+        else:
+            raise TypeError("You can't move something that isn't a Player or an Adversary!")

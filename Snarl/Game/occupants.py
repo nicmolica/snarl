@@ -13,7 +13,7 @@ class Player(Occupant):
     def __eq__(self, other):
         pass 
 
-    def __hash__(self, other):
+    def __hash__(self):
         pass
     
     def render(self):
@@ -25,7 +25,7 @@ class Adversary(Occupant):
     def __eq__(self, other):
         pass
 
-    def __hash__(self, other):
+    def __hash__(self):
         pass
 
     def render(self):
@@ -37,7 +37,7 @@ class LevelKey(Occupant):
     def __eq__(self, other):
         pass
 
-    def __hash__(self, other):
+    def __hash__(self):
         pass
 
     def render(self):
@@ -49,7 +49,7 @@ class LevelExit(Occupant):
     def __eq__(self, other):
         pass
 
-    def __hash__(self, other):
+    def __hash__(self):
         pass
 
     def render(self):
