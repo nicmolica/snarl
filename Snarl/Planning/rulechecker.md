@@ -14,15 +14,12 @@ adversary, or nothing.
 Is the adversary at `src` Tile allowed to move to the given `dest` Tile? An adversary may move
 to an adjacent tile that is traversable.
 
-### `is_level_over(level: Level) -> (bool, bool)`
-Given the current state of the level, is the level over, and did the players win?
-Returns a pair of `bool`; the first is if the level is over, the second is if a player reached
-the unlocked exit. The level ends when either all players are expelled, or one player
-interacts with the unlocked exit. If the player interacted with the unlocked exit,
-all players will be moved to the beginning of the next level. 
+### `is_level_over(level: Level) -> bool`
+Given the current state of the level, is the level over?
 
-### `is_game_over(state: GameState) -> (bool, bool)`
-Given the current state of the game, is the game over, and did the players win?
-Returns a pair of `bool`; the first is if the game is over, the second is if the players won.
-The game ends when either the players complete the final level or when
-all players are expelled from a level. 
+### `is_game_over(state: GameState) -> bool`
+Given the current state of the game, is the game over?
+
+### `did_players_win(state: GameState) -> bool`
+Given the current state of the game, did the players win? This function assumes that the game
+has ended.
