@@ -54,3 +54,47 @@ class LevelExit(Occupant):
 
     def render(self):
         return 'E'
+
+class Door(Occupant):
+    """Represents the exit for a level.
+    """
+    def __eq__(self, other):
+        pass
+
+    def __hash__(self):
+        pass
+
+    def render(self):
+        return 'D'
+
+class Wall(Occupant):
+    """Represents the exit for a level.
+    """
+    def __eq__(self, other):
+        pass
+
+    def __hash__(self):
+        pass
+
+    def render(self):
+        return '#'
+
+class VerticalWall(Wall):
+    def render(self):
+        return '|'
+
+class HorizontalWall(Wall):
+    def render(self):
+        return '-'
+
+class Block(Occupant):
+    """Represents the exit for a level.
+    """
+    def __eq__(self, other):
+        pass
+
+    def __hash__(self):
+        pass
+
+    def render(self):
+        return 'X'

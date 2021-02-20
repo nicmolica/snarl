@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../')
+sys.path.append('./')
 import unittest
 import random
 from room import Room
@@ -31,7 +31,7 @@ class TestRoom(unittest.TestCase):
         room2 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)])
         self.assertTrue(room1 == room2)
 
-    def test_room_printing(self):
+    def test_room_rendering(self):
         player = Player()
         enemy1 = Adversary()
         enemy2 = Adversary()
@@ -42,7 +42,7 @@ class TestRoom(unittest.TestCase):
         room1 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
         tiles = room1.render()
         expected_string = "-   -   -   -   -" + "\nD   P   X   X   |" + "\n|   K       X   |" \
-            + "\n|   A   A   E   |" + "\n|   X   X   X   |" + "\n-   -   -   -   -\n"
+            + "\n|   A   A   E   |" + "\n|   X   X   X   |" + "\n-   -   -   -   -"
         self.assertEqual(expected_string, grid_to_string(tiles))
 
 if __name__ == '__main__':

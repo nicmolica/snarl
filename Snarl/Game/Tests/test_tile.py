@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../')
+sys.path.append('./')
 import unittest
 import random
 from tile import Tile
@@ -9,7 +9,7 @@ class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):
         try:
             t = Tile(0, 0)
-            self.assertIsNone(t.occupant)
+            self.assertIsNone(t.occupants)
         except TypeError:
             self.fail("Tile without occupant could not be created!")
 
@@ -18,9 +18,9 @@ class TestPosn(unittest.TestCase):
         with self.assertRaises(TypeError):
             Tile(0, 0, random.choice(non_occupants))
         
-    def test_tile_can_be_created_with_occupant(self):
+    def test_tile_can_be_created_with_occupants(self):
         try:
-            Tile(0, 0, Occupant())
+            Tile(0, 0, [Occupant(), Occupant()])
         except:
             self.fail("Tile with occupant could not be created!")
 

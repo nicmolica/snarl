@@ -15,7 +15,9 @@ class Gamestate:
         else:
             raise ValueError("There must be 1-4 players.")
 
-        # TODO: check valid number of adversaries
+        if (num_of_adversaries < 0):
+            raise ValueError("Cannot pass a negative quantity of adversaries!")
+
         self.num_of_adversaries = num_of_adversaries
     
     def move_player(self, player, dest):
@@ -45,7 +47,6 @@ class Gamestate:
         # mark current level as complete
         self.current_level.is_completed = True
 
-        # TODO generate next level (if not are_we_done)
-
+        # TODO generate next level (if not are_we_done)-this will happen when we have level gen
         # TODO move all players to next level
         

@@ -1,4 +1,5 @@
 from tile import Tile
+from occupants import Door, Adversary, Player, HorizontalWall, VerticalWall, Block
 
 class Room:
     """Represents a Room. Rooms are enclosed rectangles with a position in the
@@ -109,7 +110,7 @@ class Room:
         return tile.x in range(self.position.x, self.position.x + self.width) and \
             tile.y in range(self.position.y, self.position.y + self.height)
 
-    def render(self):
+    def update_tiles(self):
         """Renders this room as a 2D list of ASCII characters. Also stores the result
         in self.tiles.
 
@@ -119,43 +120,53 @@ class Room:
                 a single row of the room.
         """
         # Make sure the tiles array is the proper size; inits to empty strings
-        self.tiles =  [[' ' for x in range(self.width + 1)] for y in range(self.height + 1)]
-        self.render_walls()
-        self.render_doors()
-        self.render_open_tiles()
+        self.tiles = [[Tile(x, y) for x in range(self.width)] for y in range(self.height)]
+        self.update_walls()
+        self.update_doors()
+        self.update_open_tiles()
 
         return self.tiles
 
-    def render_doors(self):
+    def update_doors(self):
         """Alters self.tiles to contain appropriate characters for the doors.
         """
 
         for door in self.room_doors:
             relative_x = door.x - self.position.x
             relative_y = door.y - self.position.y
-            self.tiles[relative_y][relative_x] = 'D'
+            if Door not in [type(occ) for occ in door.occupants]:
+                door.occupants.append(Door())
+            self.tiles[relative_y][relative_x] = door
 
-    def render_open_tiles(self):
+    def update_open_tiles(self):
         """Alters self.tiles to contain appropriate characters for open tiles,
         including any of their occupants.
         """
         for tile in self.open_tiles:
             relative_x = tile.x - self.position.x 
             relative_y = tile.y - self.position.y
-            if tile.occupant:
-                self.tiles[relative_y][relative_x] = tile.occupant.render()
-            else:
-                self.tiles[relative_y][relative_x] = ' '
+            self.tiles[relative_y][relative_x] = tile
 
-    def render_walls(self):
+    def update_walls(self):
         """Alters self.tiles to contain appropriate characters for this room's walls.
         """
         for x in range(self.width):
             for y in range(self.height):
+                abs_x = self.position.x + x
+                abs_y = self.position.y + y
                 # This tile is a horizontal wall.
                 if y == 0 or y == self.height - 1:
-                    self.tiles[y][x] = '-'
+                    self.tiles[y][x] = Tile(abs_x, abs_y, HorizontalWall())
                 elif x == 0 or x == self.width - 1:
-                    self.tiles[y][x] = '|'
+                    self.tiles[y][x] = Tile(abs_x, abs_y, VerticalWall())
                 else:
-                    self.tiles[y][x] = 'X'
+                    self.tiles[y][x] = Tile(abs_x, abs_y, [Block()])
+
+    def render(self):
+        self.update_tiles()
+        render_grid = [['X' for x in range(self.width)] for y in range(self.height)]
+        for y in range(self.height):
+            for x in range(self.width):
+                render_grid[y][x] = self.tiles[y][x].render()
+        
+        return render_grid

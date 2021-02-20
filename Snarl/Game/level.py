@@ -1,8 +1,8 @@
 import itertools
 from room import Room
 from hallway import Hallway
-from occupants import Adversary
-from occupants import Player
+from occupants import Adversary, Player, Block
+from tile import Tile
 
 class Level:
     def __init__(self, rooms, hallways):
@@ -19,6 +19,8 @@ class Level:
         self.is_completed = False
         self.players = {}
         self.adversaries = {}
+        self.level_exit_unlocked = False
+        self.tiles = self.update_tiles()
 
         if self.any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
@@ -88,63 +90,72 @@ class Level:
 
         return set(hall_ends).issubset(set(room_doors))
 
-    def render(self):
-        """Renders an ASCII representation of this level. Each coordinate in the level
-        corresponds to a single ASCII character. Stores this grid of characters in self.tiles.
-
-        Returns:
-            tiles (list[list[character]]): A 2D list storing each character representing the level.
-                Each element of the outer list contains a single row.
+    def update_tiles(self):
+        """Updates the self.tiles field with the current tile information.
         """
-        width, height = self.calculate_level_dimenions()
-        self.tiles = [['X' for x in range(width)] for y in range(height)]
-        # Render rooms
-        self.render_rooms_tiles()
-        self.set_hallways_tiles()
+        width, height = self.calculate_level_dimensions()
+        self.tiles = [[Tile(x, y, Block()) for x in range(width)] for y in range(height)]
+        self.update_rooms_tiles()
+        self.update_hallways_tiles()
 
-        return self.tiles
-
-    def set_hallways_tiles(self):
-        """Alters self.tiles to have walkable tiles in the coordinates where the hallways
-        are.
+    def update_hallways_tiles(self):
+        """Alters self.tiles to contain the correct Tile information for all hallways in the level.
         """
         for hall in self.hallways:
             for i in range(0, len(hall.waypoints) - 1):
                 this_w = hall.waypoints[i]
                 next_w = hall.waypoints[i + 1]
-                self.render_hallway_segment(this_w, next_w)
-    
-    def render_hallway_segment(self, start, end):
+                self.update_hallway_segment(this_w, next_w)
+
+    def update_hallway_segment(self, start, end):
         """Renders a single segment of the hallway, given the start and end coordinates.
         Does not require that start coordinates are less than end coordinates. Stores
-        its result in self.tiles.
+        its result in self.rendered_tiles.
 
         Arguments:
             start (Tile): the position of the segment start.
             end (Tile): the position of the segment end.
         """
-        self.tiles[start.y][start.x] = ' '
-        self.tiles[end.y][end.x] = ' '
+        self.tiles[start.y][start.x] = Tile(start.x, start.y)
+        self.tiles[end.y][end.x] = Tile(end.x, end.y)
         y_min = min(start.y, end.y)
         y_max = max(start.y, end.y)
         x_min = min(start.x, end.x)
         x_max = max(start.x, end.x)
         for y in range(y_min, y_max + 1):
             for x in range(x_min, x_max + 1):
-                self.tiles[y][x] = ' '
+                self.tiles[y][x] = Tile(x, y)
 
-    def render_rooms_tiles(self):
-        """Alters self.tiles to have room walls, objects, and doors in the coordinates
+    def update_rooms_tiles(self):
+        """Alters self.rendered_tiles to have room walls, objects, and doors in the coordinates
         specified by self.rooms.
         """
+        # TODO: Fix this and the render method up. Throwing unexpected hallway errors.
         for room in self.rooms:
-            # Set the boundary tiles to a wall
-            room_tiles = room.render()
+            # Set the boundary rendered_tiles to a wall
+            room_tiles = room.update_tiles()
             for x in range(room.position.x, room.position.x + room.width):
                 for y in range(room.position.y, room.position.y + room.height):
                     self.tiles[y][x] = room_tiles[y - room.position.y][x - room.position.x]
 
-    def calculate_level_dimenions(self):
+    def render(self):
+        """Renders an ASCII representation of this level. Each coordinate in the level
+        corresponds to a single ASCII character. Stores this grid of characters in self.rendered_tiles.
+
+        Returns:
+            rendered_tiles (list[list[character]]): A 2D list storing each character representing the level.
+                Each element of the outer list contains a single row.
+        """
+        width, height = self.calculate_level_dimensions()
+        rendered_tiles = [['X' for x in range(width)] for y in range(height)]
+        # Render rooms
+        render_tiles = self.render_rooms_tiles(rendered_tiles)
+        render_tiles = self.set_hallways_tiles(rendered_tiles)
+
+        return rendered_tiles
+
+
+    def calculate_level_dimensions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
         the maximum coordinates needed by all of the level's rooms and hallways.
         """
@@ -181,14 +192,40 @@ class Level:
         """ Move the given occupant to the given destination if it is a Player or Adversary.
         """
         if isinstance(occupant, Adversary):
-            self.adversaries[occupant].occupant = None
-            dest.occupant = occupant
+            self.adversaries[occupant].occupants = []
+            dest.occupants.append(occupant)
             self.adversaries[occupant] = dest
-            # TODO: have adversary interact with other occupants on the tile (player that they kill or something)
         elif isinstance(occupant, Player):
-            self.players[occupant].occupant = None
-            dest.occupant = occupant
+            self.players[occupant].occupants = []
+            dest.occupants.append(occupant)
             self.players[occupant] = dest
-            # TODO: have player interact with other occupants on the tile (key or exit)
         else:
             raise TypeError("You can't move something that isn't a Player or an Adversary!")
+        self.interact(dest)
+
+    def interact(self, dest):
+        """Triggers any necessary interactions between the occupants of this tile. The interactions
+        are as follows:
+        1. Player + Key = unlock the level exit
+        2. Player + Adversary = kill the player
+        3. Player + Exit and level unlocked = complete the level
+        """
+        types = [type(occupant) for occupant in occupants]
+        has_player = Player in types
+        has_adv = Adversary in types
+        has_key = LevelKey in types
+        has_exit = LevelExit in types
+
+        if has_player and has_key:
+            self.unlock_level_exit()
+        if has_player and has_adv:
+            players = [occupant for occupant in occupants if isinstance(occupant, player)]
+            for player in players:
+                self.players.remove(player)
+        if has_player and has_exit and self.level_exit_unlocked:
+            self.is_completed = True
+        
+    def unlock_level_exit(self):
+        """Unlocks the level exit tile.
+        """
+        self.level_exit_unlocked = True
