@@ -10,11 +10,14 @@ class Occupant:
 class Player(Occupant):
     """Represents a player.
     """
+    def __init__(self, name):
+        self.name = name
+
     def __eq__(self, other):
-        pass 
+        return self.name == other.name
 
     def __hash__(self):
-        return 0
+        return hash((self.name))
     
     def render(self):
         return 'P'

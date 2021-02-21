@@ -1,4 +1,4 @@
-from occupants import Occupant
+from occupants import Occupant, Player
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
@@ -59,3 +59,13 @@ class Tile:
             self.occupants.append(occupant)
         else:
             raise TypeError("Cannot add a non-Occupant to a tile.")
+
+    def get_player(self):
+        """ Return the player on this Tile, if there is one. Assume there will never be
+        more than one.
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, Player):
+                return occupant
+
+        return None

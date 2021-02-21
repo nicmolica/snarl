@@ -27,7 +27,7 @@ class Gamestate:
         if not self.rule_checker.is_valid_player_move(src, dest, self.current_level):
             raise ValueError("Invalid player move!")
         
-        self.current_level.move_occupant(src, dest)
+        self.current_level.move_occupant(src.get_player(), dest)
         
     def move_adversary(self, src, dest):
         """ Uses the rule checker to verify an Adversary move is valid,

@@ -232,5 +232,10 @@ class Level:
         self.level_exit_unlocked = True
 
     def add_player(self, player, location):
+        """ Add a player to this level at the specified location. Enforce
+        uniqueness of player names.
+        """
+        if player in set(self.players.keys()):
+            raise ValueError("Cannot have duplicate players!")
         self.players[player] = location
         self.tiles[location.y][location.x].add_occupant(player)
