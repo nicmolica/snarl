@@ -9,7 +9,7 @@ class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):
         try:
             t = Tile(0, 0)
-            self.assertIsNone(t.occupants)
+            self.assertListEqual(t.occupants, [])
         except TypeError:
             self.fail("Tile without occupant could not be created!")
 

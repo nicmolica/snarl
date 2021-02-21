@@ -20,12 +20,14 @@ class Level:
         self.players = {}
         self.adversaries = {}
         self.level_exit_unlocked = False
-        self.tiles = self.update_tiles()
 
         if self.any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
         if not self.are_hallways_connected_to_doors():
             raise ValueError("There are disconnected hallways on this level.")
+
+        # This is done after we know that the room is valid.
+        self.update_tiles()
 
     def any_overlaps(self):
         """Do any two rooms/hallways overlap with each other? Uses 3 checks to verify this:
@@ -149,8 +151,9 @@ class Level:
         width, height = self.calculate_level_dimensions()
         rendered_tiles = [['X' for x in range(width)] for y in range(height)]
         # Render rooms
-        render_tiles = self.render_rooms_tiles(rendered_tiles)
-        render_tiles = self.set_hallways_tiles(rendered_tiles)
+        for y in range(height):
+            for x in range(width):
+                rendered_tiles[y][x] = self.tiles[y][x].render()
 
         return rendered_tiles
 
