@@ -193,16 +193,22 @@ class Level:
         """ Move the given occupant to the given destination if it is a Player or Adversary.
         """
         if isinstance(occupant, Adversary):
-            self.adversaries[occupant].occupants = []
-            dest.occupants.append(occupant)
-            self.adversaries[occupant] = dest
+            self.get_tile(self.adversaries[occupant]).occupants = []
+            self.get_tile(dest).occupants.append(occupant)
+            self.adversaries[occupant] = self.get_tile(dest)
         elif isinstance(occupant, Player):
-            self.players[occupant].occupants = []
-            dest.occupants.append(occupant)
-            self.players[occupant] = dest
+            self.get_tile(self.players[occupant]).occupants = []
+            self.get_tile(dest).occupants.append(occupant)
+            self.players[occupant] = self.get_tile(dest)
         else:
             raise TypeError("You can't move something that isn't a Player or an Adversary!")
-        self.interact(dest)
+        self.interact(self.get_tile(dest))
+
+    def get_tile(self, tile):
+        """ Given a tile, returns the actual Tile object in the grid associated with the same
+        indices as the passed tile.
+        """
+        return self.tiles[tile.y][tile.x]
 
     def interact(self, dest):
         """Triggers any necessary interactions between the occupants of this tile. The interactions
@@ -211,7 +217,7 @@ class Level:
         2. Player + Adversary = kill the player
         3. Player + Exit and level unlocked = complete the level
         """
-        types = [type(occupant) for occupant in dest.occupants]
+        types = [type(occupant) for occupant in self.get_tile(dest).occupants]
         has_player = Player in types
         has_adv = Adversary in types
         has_key = LevelKey in types
@@ -220,7 +226,7 @@ class Level:
         if has_player and has_key:
             self.unlock_level_exit()
         if has_player and has_adv:
-            players = [occupant for occupant in dest.occupants if isinstance(occupant, Player)]
+            players = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Player)]
             for player in players:
                 self.players.pop(player)
         if has_player and has_exit and self.level_exit_unlocked:
@@ -237,5 +243,5 @@ class Level:
         """
         if player in set(self.players.keys()):
             raise ValueError("Cannot have duplicate players!")
-        self.players[player] = location
-        self.tiles[location.y][location.x].add_occupant(player)
+        self.players[player] = self.get_tile(location)
+        self.get_tile(location).add_occupant(player)
