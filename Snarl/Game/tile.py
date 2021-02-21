@@ -1,4 +1,4 @@
-from occupants import Occupant, Player, Adversary
+from occupants import Occupant, Player, Adversary, Block
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
@@ -79,3 +79,12 @@ class Tile:
                 return occupant
 
         return None
+
+    def has_block(self):
+        """ Does this tile have a block on it?
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, Block):
+                return True
+
+        return False
