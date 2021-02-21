@@ -14,7 +14,7 @@ class Player(Occupant):
         pass 
 
     def __hash__(self):
-        pass
+        return 0
     
     def render(self):
         return 'P'

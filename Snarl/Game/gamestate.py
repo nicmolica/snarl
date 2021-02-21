@@ -24,8 +24,7 @@ class Gamestate:
         """ Uses the rule checker to verify a Player move is valid,
         then performs that move if it is.
         """
-        if not self.rule_checker.is_valid_player_move(src, \
-            self.current_level.locate_occupant(src), dest, self.current_level):
+        if not self.rule_checker.is_valid_player_move(src, dest, self.current_level):
             raise ValueError("Invalid player move!")
         
         self.current_level.move_occupant(src, dest)
@@ -34,8 +33,7 @@ class Gamestate:
         """ Uses the rule checker to verify an Adversary move is valid,
         then performs that move if it is.
         """
-        if not self.rule_checker.is_valid_adversary_move(src, \
-            self.current_level.locate_occupant(src), dest, self.current_level):
+        if not self.rule_checker.is_valid_adversary_move(src, dest, self.current_level):
             raise ValueError("Invalid adversary move!")
 
         self.current_level.move_occupant(src, dest)

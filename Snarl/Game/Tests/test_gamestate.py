@@ -34,7 +34,7 @@ class TestGamestate(unittest.TestCase):
             Gamestate(level, 1, -1)
 
     def test_move_player_succeeds(self):
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(2, 2), Tile(3, 3)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])

@@ -11,7 +11,7 @@ class Rulechecker:
             has_player = False
         has_wall = any([isinstance(occ, Wall) for occ in tile.occupants])
         has_block = any([isinstance(occ, Block) for occ in tile.occupants])
-
+        
         return not has_player and not has_block and not has_wall
 
     def is_valid_player_move(self, src, dest, current_level):
@@ -21,7 +21,7 @@ class Rulechecker:
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.tiles[dest.y][dest.x])
-         
+        
         return x_dist + y_dist < 3 and dest_open
 
     def is_valid_adversary_move(self, src, dest, current_level):

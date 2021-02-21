@@ -56,6 +56,6 @@ class Tile:
         other Occupants already there.
         """
         if isinstance(occupant, Occupant):
-            self.occupants.add(occupant)
+            self.occupants.append(occupant)
         else:
             raise TypeError("Cannot add a non-Occupant to a tile.")
