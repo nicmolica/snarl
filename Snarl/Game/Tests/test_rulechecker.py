@@ -13,12 +13,12 @@ from gamestate import Gamestate
 class TestRulechecker(unittest.TestCase):
     def test_is_not_open_when_player_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player()]))
+        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player("Player 1")]))
         self.assertFalse(is_open)
 
     def test_is_open_when_adversary_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player()]), Adversary)
+        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player("Player 1")]), Adversary)
         self.assertTrue(is_open)
 
     def test_valid_player_move_2_steps_diagonal(self):

@@ -170,3 +170,22 @@ class Room:
                 render_grid[y][x] = self.tiles[y][x].render()
         
         return render_grid
+
+    def open_tiles_around(self, src, radius):
+        """Returns all open tiles in this room around the src Tile in a cardinal radius.
+        """
+        if not self.contains(src):
+            raise ValueError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
+        if radius < 1:
+            raise ValueError(f"Radius must be positive, received {radius}")
+        
+        def cardinal_diff(src, tile):
+            return abs(src.x - tile.x) + abs(src.y - tile.y)
+
+        def nearby(src, tile):
+            return cardinal_diff(src, tile) <= radius and cardinal_diff(src, tile) > 0
+
+        open_tile_nearby = [tile for tile in self.open_tiles if nearby(src, tile)]
+        door_nearby = [tile for tile in self.room_doors if nearby(src, tile)]
+        
+        return open_tile_nearby + door_nearby
