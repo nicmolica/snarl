@@ -54,7 +54,7 @@ class TestPosn(unittest.TestCase):
         self.assertEqual(' ', open_tile.render())
 
     def test_tile_render_multiple_occupants_renders_first_occupant(self):
-        tile = Tile(0, 0, [Player(), Adversary()])
+        tile = Tile(0, 0, [Player("Player 1"), Adversary()])
         self.assertEqual('P', tile.render())
 
 if __name__ == '__main__':

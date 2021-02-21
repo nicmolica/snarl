@@ -31,8 +31,60 @@ class TestRoom(unittest.TestCase):
         room2 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)])
         self.assertTrue(room1 == room2)
 
+    def test_room_open_tiles_around_0_radius_fails(self):
+        room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
+        with self.assertRaises(ValueError):
+            room1.open_tiles_around(Tile(1, 1), 0)
+
+    def test_room_open_tiles_around_outside_room_fails(self):
+        room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
+        with self.assertRaises(ValueError):
+            room1.open_tiles_around(Tile(100, 100), 2)
+    
+    def test_room_open_tiles_around_1_radius_does_not_return_self(self):
+        player = Player("Player 1")
+        enemy1 = Adversary()
+        enemy2 = Adversary()
+        level_key = LevelKey()
+        level_exit = LevelExit()
+        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
+            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
+        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
+        tiles = room.render()
+        open_tiles_around = room.open_tiles_around(Tile(5, 6), 1)
+        self.assertNotIn((5, 6), [(tile.x, tile.y) for tile in open_tiles_around])
+
+    def test_room_open_tiles_around_1_radius_returns_correct_tiles(self):
+        player = Player("Player 1")
+        enemy1 = Adversary()
+        enemy2 = Adversary()
+        level_key = LevelKey()
+        level_exit = LevelExit()
+        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
+            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
+        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
+        tiles = room.render()
+        open_tiles_around = room.open_tiles_around(Tile(5, 6), 1)
+        coords = [(tile.x, tile.y) for tile in open_tiles_around]
+        self.assertIn((4, 6), coords)
+        self.assertIn((5, 7), coords)
+
+    def test_room_open_tiles_around_radius_returns_door(self):
+        player = Player("Player 1")
+        enemy1 = Adversary()
+        enemy2 = Adversary()
+        level_key = LevelKey()
+        level_exit = LevelExit()
+        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
+            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
+        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
+        tiles = room.render()
+        open_tiles_around = room.open_tiles_around(Tile(4, 5), 1)
+        coords = [(tile.x, tile.y) for tile in open_tiles_around]
+        self.assertIn((3, 5), coords)
+
     def test_room_rendering(self):
-        player = Player()
+        player = Player("Player 1")
         enemy1 = Adversary()
         enemy2 = Adversary()
         level_key = LevelKey()
