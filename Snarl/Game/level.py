@@ -1,7 +1,7 @@
 import itertools
 from room import Room
 from hallway import Hallway
-from occupants import Adversary, Player, Block
+from occupants import Adversary, Player, Block, LevelKey, LevelExit
 from tile import Tile
 
 class Level:
@@ -211,7 +211,7 @@ class Level:
         2. Player + Adversary = kill the player
         3. Player + Exit and level unlocked = complete the level
         """
-        types = [type(occupant) for occupant in occupants]
+        types = [type(occupant) for occupant in dest.occupants]
         has_player = Player in types
         has_adv = Adversary in types
         has_key = LevelKey in types
@@ -220,9 +220,9 @@ class Level:
         if has_player and has_key:
             self.unlock_level_exit()
         if has_player and has_adv:
-            players = [occupant for occupant in occupants if isinstance(occupant, player)]
+            players = [occupant for occupant in dest.occupants if isinstance(occupant, Player)]
             for player in players:
-                self.players.remove(player)
+                self.players.pop(player)
         if has_player and has_exit and self.level_exit_unlocked:
             self.is_completed = True
         
