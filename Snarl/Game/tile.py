@@ -50,3 +50,12 @@ class Tile:
             return self.occupants[0].render()
         else:
             return ' '
+
+    def add_occupant(self, occupant):
+        """ Blindly add the passed Occupant to this Tile, without verifying if there are
+        other Occupants already there.
+        """
+        if isinstance(occupant, Occupant):
+            self.occupants.add(occupant)
+        else:
+            raise TypeError("Cannot add a non-Occupant to a tile.")

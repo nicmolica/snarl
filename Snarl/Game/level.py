@@ -230,3 +230,7 @@ class Level:
         """Unlocks the level exit tile.
         """
         self.level_exit_unlocked = True
+
+    def add_player(self, player, location):
+        self.players[player] = location
+        self.tiles[location.y][location.x].add_occupant(player)

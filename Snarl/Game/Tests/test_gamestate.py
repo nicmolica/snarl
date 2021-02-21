@@ -6,6 +6,7 @@ from level import Level
 from hallway import Hallway
 from room import Room
 from tile import Tile
+from occupants import Player
 
 class TestGamestate(unittest.TestCase):
     def test_gamestate_rejects_too_many_players(self):
@@ -38,7 +39,8 @@ class TestGamestate(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
         gs = Gamestate(level, 1, 0)
-        gs.current_level.players
+        gs.current_level.add_player(Player(), Tile(2, 2))
+        gs.move_player(Tile(2, 2), Tile(3, 3))
 
 if __name__ == '__main__':
     unittest.main()
