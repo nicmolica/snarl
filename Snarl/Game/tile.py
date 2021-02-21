@@ -1,4 +1,4 @@
-from occupants import Occupant, Player
+from occupants import Occupant, Player, Adversary
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
@@ -66,6 +66,16 @@ class Tile:
         """
         for occupant in self.occupants:
             if isinstance(occupant, Player):
+                return occupant
+
+        return None
+
+    def get_adversary(self):
+        """ Return the adversary on this Tile, if there is one. Assume there will never be
+        more than one.
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, Adversary):
                 return occupant
 
         return None

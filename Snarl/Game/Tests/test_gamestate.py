@@ -41,6 +41,7 @@ class TestGamestate(unittest.TestCase):
         gs = Gamestate(level, 1, 0)
         gs.current_level.add_player(Player("Dumbledore"), Tile(2, 2))
         gs.move_player(Tile(2, 2), Tile(3, 3))
+        self.assertEqual(gs.current_level.tiles[3][3].get_player(), Player("Dumbledore"))
 
 if __name__ == '__main__':
     unittest.main()

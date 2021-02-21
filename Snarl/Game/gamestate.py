@@ -24,19 +24,22 @@ class Gamestate:
         """ Uses the rule checker to verify a Player move is valid,
         then performs that move if it is.
         """
-        if not self.rule_checker.is_valid_player_move(src, dest, self.current_level):
+        if not self.rule_checker.is_valid_player_move(self.current_level.tiles[src.y][src.x], \
+            self.current_level.tiles[dest.y][dest.x], self.current_level):
             raise ValueError("Invalid player move!")
         
-        self.current_level.move_occupant(src.get_player(), dest)
+        self.current_level.move_occupant(self.current_level.tiles[src.y][src.x].get_player(), \
+            self.current_level.tiles[dest.y][dest.x])
         
     def move_adversary(self, src, dest):
         """ Uses the rule checker to verify an Adversary move is valid,
         then performs that move if it is.
         """
-        if not self.rule_checker.is_valid_adversary_move(src, dest, self.current_level):
+        if not self.rule_checker.is_valid_adversary_move(self.current_level.tiles[src.y][src.x], \
+            self.current_level.tiles[dest.y][dest.x], self.current_level):
             raise ValueError("Invalid adversary move!")
 
-        self.current_level.move_occupant(src, dest)
+        self.current_level.move_occupant(src.get_adversary(), self.current_level.tiles[dest.y][dest.x])
 
     def complete_level(self, are_we_done):
         """ After a level has been completed, mark it as completed, generate
