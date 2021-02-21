@@ -132,7 +132,6 @@ class Level:
         """Alters self.rendered_tiles to have room walls, objects, and doors in the coordinates
         specified by self.rooms.
         """
-        # TODO: Fix this and the render method up. Throwing unexpected hallway errors.
         for room in self.rooms:
             # Set the boundary rendered_tiles to a wall
             room_tiles = room.update_tiles()
@@ -156,7 +155,6 @@ class Level:
                 rendered_tiles[y][x] = self.tiles[y][x].render()
 
         return rendered_tiles
-
 
     def calculate_level_dimensions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
