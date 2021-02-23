@@ -30,11 +30,13 @@ class Level:
         self.update_tiles()
 
     def any_overlaps(self):
-        """Do any two rooms/hallways overlap with each other? Uses 3 checks to verify this:
+        """Do any two rooms/hallways overlap with each other? Uses 4 checks to verify this:
            - For all pairs of 2 rooms, do the rooms intersect? If yes for any, return true.
            - For all waypoints, is the waypoint inside of a room? If yes for any, return true.
            - For all consecutive pairs of waypoints, does the line between them intersect with
              a line made by another pair of consecutive waypoints? If yes for any, return true.
+           - For all consecutive pairs of waypoints, does the segment they form intersect with
+             a room? If yes for any, return true.
         """
         # 1st check:
         any_room_intersections = self.do_any_rooms_intersect()
@@ -42,8 +44,11 @@ class Level:
         any_hallways_inside_rooms = self.do_any_hallways_intersect_rooms()
         # 3rd check:
         any_hallways_intersect_hallways = self.do_any_hallways_intersect_hallways()
+        # 4th check:
+        does_hallway_straddle_room = self.does_any_hallway_straddle_room()
 
-        return any_room_intersections or any_hallways_inside_rooms or any_hallways_intersect_hallways
+        return any_room_intersections or any_hallways_inside_rooms or \
+            any_hallways_intersect_hallways or does_hallway_straddle_room
     
     def do_any_rooms_intersect(self):
         """Are there any two rooms in this level that share coordinates?
@@ -75,6 +80,19 @@ class Level:
         for (hall1, hall2) in hall_combos:
             if hall1 != hall2 and hall1.does_it_intersect(hall2):
                 return True
+        return False
+
+    def does_any_hallway_straddle_room(self):
+        """ Does any pair of waypoints in the set of hallways straddle
+        any one of the rooms?
+        """
+        waypoints = []
+        for hall in self.hallways:
+            waypoints.extend(hall.waypoints)
+        for i in range(0, len(waypoints) - 1):
+            for room in self.rooms:
+                if room.is_straddled_by(waypoints[i], waypoints[i + 1]):
+                    return True
         return False
 
     def are_hallways_connected_to_doors(self):
@@ -245,3 +263,9 @@ class Level:
             raise ValueError("Cannot have duplicate players!")
         self.players[player] = self.get_tile(location)
         self.get_tile(location).add_occupant(player)
+
+    def add_adversary(self, adversary, location):
+        """ Adds an adversary to this level at the specified location.
+        """
+        self.adversaries[adversary] = self.get_tile(location)
+        self.get_tile(location).add_occupant(adversary)

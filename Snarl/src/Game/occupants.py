@@ -26,10 +26,10 @@ class Adversary(Occupant):
     """Represents an enemy.
     """
     def __eq__(self, other):
-        pass
+        return True
 
     def __hash__(self):
-        pass
+        return 0
 
     def render(self):
         return 'A'
