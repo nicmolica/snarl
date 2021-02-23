@@ -3,7 +3,7 @@ sys.path.append('../')
 import unittest
 import random
 from tile import Tile
-from occupants import Occupant, Player, Adversary
+from occupants import Occupant, Player, Adversary, Block
 
 class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):
@@ -48,6 +48,36 @@ class TestPosn(unittest.TestCase):
         non_integers = [0.32, "small cats", [3, 4, 5], {"dictionary": "value"}]
         with self.assertRaises(TypeError):
             Tile(random.choice(non_integers), random.choice(non_integers))
+
+    def test_add_occupant(self):
+        tile = Tile(1, 1)
+        player = Player("Nic")
+        tile.add_occupant(player)
+        self.assertEqual(tile.get_player(), player)
+    
+    def test_get_player(self):
+        tile = Tile(1, 1)
+        player = Player("Nic")
+        adversary = Adversary()
+        tile.add_occupant(player)
+        tile.add_occupant(adversary)
+        self.assertEqual(tile.get_player(), player)
+
+    def test_get_adversary(self):
+        tile = Tile(1, 1)
+        player = Player("Nic")
+        adversary = Adversary()
+        tile.add_occupant(player)
+        tile.add_occupant(adversary)
+        self.assertEqual(tile.get_adversary(), adversary)
+
+    def test_has_block_true(self):
+        tile = Tile(1, 1, [Block()])
+        self.assertTrue(tile.has_block())
+
+    def test_has_block_false(self):
+        tile = Tile(1, 1)
+        self.assertFalse(tile.has_block())
 
     def test_tile_render_no_occupants_renders_blank(self):
         open_tile = Tile(0, 0)

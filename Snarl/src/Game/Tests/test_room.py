@@ -83,6 +83,24 @@ class TestRoom(unittest.TestCase):
         coords = [(tile.x, tile.y) for tile in open_tiles_around]
         self.assertIn((3, 5), coords)
 
+    def test_nonstraddled_room(self):
+        room = Room(Tile(2, 2), 5, 5, [Tile(2, 4)], [])
+        way1 = Tile(1, 1)
+        way2 = Tile(1, 2)
+        self.assertFalse(room.is_straddled_by(way1, way2))
+
+    def test_vertical_straddled_room(self):
+        room = Room(Tile(2, 2), 5, 5, [Tile(2, 4)], [])
+        way1 = Tile(4, 1)
+        way2 = Tile(4, 10)
+        self.assertTrue(room.is_straddled_by(way1, way2))
+
+    def test_horizontal_straddled_room(self):
+        room = Room(Tile(2, 2), 5, 5, [Tile(2, 4)], [])
+        way1 = Tile(1, 4)
+        way2 = Tile(10, 4)
+        self.assertTrue(room.is_straddled_by(way1, way2))
+
     def test_room_rendering(self):
         player = Player("Player 1")
         enemy1 = Adversary()
