@@ -1,5 +1,5 @@
 import sys
-sys.path.append('./')
+sys.path.append('../')
 import unittest
 import random
 from tile import Tile
@@ -40,6 +40,20 @@ class TestHallway(unittest.TestCase):
         hall1 = Hallway([Tile(3, 8)], Tile(3, 4), Tile(3, 10))
         hall2 = Hallway([Tile(3, 7)], Tile(3, 4), Tile(3, 10))
         self.assertFalse(hall1 == hall2)
+
+    def test_assign_start_end_waypoints_vertical(self):
+        hall = Hallway([], Tile(5, 5), Tile(5, 10))
+        self.assertEqual(hall.waypoints[0], Tile(5, 6))
+        self.assertEqual(hall.waypoints[1], Tile(5, 9))
+
+    def test_assign_start_end_waypoints_horizontal(self):
+        hall = Hallway([], Tile(5, 5), Tile(10, 5))
+        self.assertEqual(hall.waypoints[0], Tile(6, 5))
+        self.assertEqual(hall.waypoints[1], Tile(9, 5))
+
+    def test_zero_length_hallway(self):
+        hall = Hallway([], Tile(5, 5), Tile(5, 6))
+        self.assertEqual(len(hall.waypoints), 0)
 
 if __name__ == '__main__':
     unittest.main()

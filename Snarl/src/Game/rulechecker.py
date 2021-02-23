@@ -17,7 +17,8 @@ class Rulechecker:
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.get_tile(dest), Adversary)
-        return x_dist + y_dist < 2 & dest_open
+        
+        return x_dist + y_dist < 2 and dest_open
 
     def is_level_over(self, level):
         """ Has the given level been completed?

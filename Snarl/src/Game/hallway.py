@@ -31,12 +31,13 @@ class Hallway:
     def __eq__(self, other):
         """ Overwrite == for Hallways to enable directly checking equality.
         """
-        return type(other) is Hallway and self.waypoints == other.waypoints
+        return type(other) is Hallway and self.waypoints == other.waypoints and \
+            self.door1 == other.door1 and self.door2 == other.door2
 
     def __hash__(self):
         """ Overwriting hash for Hallways because we overwrote ==.
         """
-        return hash((self.waypoints, self.door1, self.door2))
+        return hash((str(self.waypoints), self.door1, self.door2))
 
     def assign_start_end_waypoints(self, door1, door2):
         """ Place start and end waypoints inside the hallway and adjacent to the

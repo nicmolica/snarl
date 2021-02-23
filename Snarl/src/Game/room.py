@@ -189,3 +189,16 @@ class Room:
         door_nearby = [tile for tile in self.room_doors if nearby(src, tile)]
         
         return open_tile_nearby + door_nearby
+
+    def is_straddled_by(self, way1, way2):
+        """ Is this room straddled by the two waypoints?
+        """
+        y_straddle = (way1.y <= self.position.y and way2.y >= self.position.y + self.height) or \
+            (way2.y <= self.position.y and way1.y >= self.position.y + self.height)
+        vertical_straddle = way1.x == way2.x and y_straddle
+
+        x_straddle = (way1.x <= self.position.x and way2.x >= self.position.x + self.width) or \
+            (way2.x <= self.position.x and way1.x >= self.position.x + self.width)
+        horizontal_straddle = way1.y == way2.y and x_straddle
+
+        return vertical_straddle or horizontal_straddle
