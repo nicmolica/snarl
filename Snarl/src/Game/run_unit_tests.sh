@@ -1,1 +1,1 @@
-python -B -m unittest discover Tests
+python3 -B -m unittest discover Tests
