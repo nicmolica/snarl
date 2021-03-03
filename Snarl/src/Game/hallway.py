@@ -114,3 +114,15 @@ class Hallway:
         xflag = set(w_x).intersection(set(p_x)) != set()
         yflag = set(w_y).intersection(set(p_y)) != set()
         return xflag and yflag
+
+    def contains(self, tile):
+        """Does this hallway contain the given tile?
+        """
+        for i in range(0, len(self.waypoints) - 1):
+            this_w = self.waypoints[i]
+            next_w = self.waypoints[i + 1]
+            if self.does_segment_intersect(this_w, next_w, tile, tile):
+                return True
+                
+        return False
+            

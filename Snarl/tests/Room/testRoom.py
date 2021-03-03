@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../Game')
+sys.path.append('../../src/Game')
 import json
 from room import Room
 from tile import Tile

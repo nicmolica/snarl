@@ -92,6 +92,8 @@ class Level:
         for i in range(0, len(waypoints) - 1):
             for room in self.rooms:
                 if room.is_straddled_by(waypoints[i], waypoints[i + 1]):
+                    print("waypoints: " + str(waypoints[i].x) + ", " + str(waypoints[i].y) + " to " + str(waypoints[i+1].x) + ", " + str(waypoints[i + 1].y))
+                    print("room posn: " + str(room.position.x) + ", " + str(room.position.y))
                     return True
         return False
 
