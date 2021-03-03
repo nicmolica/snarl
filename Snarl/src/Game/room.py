@@ -193,12 +193,16 @@ class Room:
     def is_straddled_by(self, way1, way2):
         """ Is this room straddled by the two waypoints?
         """
+        min_x = self.position.x
+        max_x = min_x + self.width
+        min_y = self.position.y
+        max_y = min_y + self.height
         y_straddle = (way1.y <= self.position.y and way2.y >= self.position.y + self.height) or \
             (way2.y <= self.position.y and way1.y >= self.position.y + self.height)
-        vertical_straddle = way1.x == way2.x and y_straddle
+        vertical_straddle = way1.x == way2.x and way1.x in range(min_x, max_x) and y_straddle
 
         x_straddle = (way1.x <= self.position.x and way2.x >= self.position.x + self.width) or \
             (way2.x <= self.position.x and way1.x >= self.position.x + self.width)
-        horizontal_straddle = way1.y == way2.y and x_straddle
+        horizontal_straddle = way1.y == way2.y and way1.y in range(min_y, max_y) and x_straddle
 
         return vertical_straddle or horizontal_straddle
