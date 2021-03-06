@@ -4,10 +4,16 @@ to be anything that can occupy a tile; for example, a Level Key is an occupant.
 class Occupant:
     """Represents any entity that can occupy a Tile.
     """
-    def render(self):
-        return ' '
+    def __init__(self):
+        pass
 
-class Player(Occupant):
+class Entity(Occupant):
+    """ Represents either a Player or an Adversary.
+    """
+    def __init__(self):
+        pass
+
+class Player(Entity):
     """Represents a player.
     """
     def __init__(self, name):
@@ -22,7 +28,7 @@ class Player(Occupant):
     def render(self):
         return 'P'
 
-class Adversary(Occupant):
+class Adversary(Entity):
     """Represents an enemy.
     """
     def __eq__(self, other):

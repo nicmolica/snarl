@@ -51,4 +51,14 @@ class Gamestate:
 
         # TODO generate next level (if not are_we_done)-this will happen when we have level gen
         # TODO move all players to next level
+
+    def get_tiles(self):
+        """ Return the full array of tiles in the current level.
+        """
+        return self.current_level.get_tiles()
+        
+    def get_tiles_range(self, tile1, tile2):
+        """ Return the array of tiles between the two provided tiles in the current level.
+        """
+        return self.current_level.get_tiles_range(tile1, tile2)
         

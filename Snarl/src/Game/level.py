@@ -176,6 +176,32 @@ class Level:
 
         return rendered_tiles
 
+    def render_vicinity(self):
+        """Renders an ASCII representation of part of this level. Each coordinate in the level
+        corresponds to a single ASCII character. Stores this grid of characters in self.rendered_tiles.
+
+        Returns:
+            rendered_tiles (list[list[character]]): A 2D list storing each character representing the level.
+                Each element of the outer list contains a single row.
+        """
+        pass
+        # TODO write this method
+
+    def get_tiles(self):
+        """ Return the array of tiles.
+        """
+        return self.tiles.copy()
+
+    def get_tiles_range(self, tile1, tile2):
+        """ Return the rectangle of tiles between the specified tiles.
+        """
+        min_x = min(tile1.x, tile2.x)
+        min_y = min(tile1.y, tile2.y)
+        max_x = max(tile1.x, tile2.x) + 1
+        max_y = max(tile1.y, tile2.y) + 1
+        # TODO test this method
+        return [row[min_x:max_x] for row in self.tiles.copy()[min_y:max_y]]
+
     def calculate_level_dimensions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
         the maximum coordinates needed by all of the level's rooms and hallways.
