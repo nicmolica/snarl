@@ -6,7 +6,7 @@ from level import Level
 from hallway import Hallway
 from room import Room
 from tile import Tile
-from occupants import Player, Adversary
+from occupants import Character, Adversary
 
 class TestGamestate(unittest.TestCase):
     def test_gamestate_rejects_too_many_players(self):
@@ -39,10 +39,10 @@ class TestGamestate(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
         gs = Gamestate(level, 1, 0)
-        gs.current_level.add_player(Player("Dumbledore"), Tile(2, 2))
+        gs.current_level.add_character(Character("Dumbledore"), Tile(2, 2))
         gs.move_player(Tile(2, 2), Tile(3, 3))
         # player was successfully added to new tile
-        self.assertEqual(gs.current_level.get_tile(Tile(3, 3)).get_player(), Player("Dumbledore"))
+        self.assertEqual(gs.current_level.get_tile(Tile(3, 3)).get_player(), Character("Dumbledore"))
         # player was successfully removed from old tile
         self.assertEqual(gs.current_level.get_tile(Tile(2, 2)).get_player(), None)
     
@@ -52,10 +52,10 @@ class TestGamestate(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
         gs = Gamestate(level, 1, 0)
-        gs.current_level.add_player(Player("Dumbledore"), Tile(3, 4))
+        gs.current_level.add_character(Character("Dumbledore"), Tile(3, 4))
         gs.move_player(Tile(3, 4), Tile(3, 6))
         # player was successfully added to new tile
-        self.assertEqual(gs.current_level.get_tile(Tile(3, 6)).get_player(), Player("Dumbledore"))
+        self.assertEqual(gs.current_level.get_tile(Tile(3, 6)).get_player(), Character("Dumbledore"))
         # player was successfully removed from old tile
         self.assertEqual(gs.current_level.get_tile(Tile(3, 4)).get_player(), None)
 
@@ -65,10 +65,10 @@ class TestGamestate(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
         gs = Gamestate(level, 1, 0)
-        gs.current_level.add_player(Player("Dumbledore"), Tile(3, 6))
+        gs.current_level.add_character(Character("Dumbledore"), Tile(3, 6))
         gs.move_player(Tile(3, 6), Tile(1, 6))
         # player was successfully added to new tile
-        self.assertEqual(gs.current_level.get_tile(Tile(1, 6)).get_player(), Player("Dumbledore"))
+        self.assertEqual(gs.current_level.get_tile(Tile(1, 6)).get_player(), Character("Dumbledore"))
         # player was successfully removed from old tile
         self.assertEqual(gs.current_level.get_tile(Tile(3, 6)).get_player(), None)
 

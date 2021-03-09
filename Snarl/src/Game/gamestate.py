@@ -19,11 +19,18 @@ class Gamestate:
             raise ValueError("Cannot pass a negative quantity of adversaries!")
 
         self.num_of_adversaries = num_of_adversaries
+
+    def move(self, dest):
+        """ Move the player/adversary to the new location.
+        """
+        # TODO write this method (should simply do type checking and call move_player or move_adversary)
+        pass
     
     def move_player(self, src, dest):
-        """ Uses the rule checker to verify a Player move is valid,
+        """ Uses the rule checker to verify a Character move is valid,
         then performs that move if it is.
         """
+        # TODO remove rule_checker validation from here and put it in gamemanagers
         if not self.rule_checker.is_valid_player_move(self.current_level.get_tile(src), \
             self.current_level.get_tile(dest), self.current_level):
             raise ValueError("Invalid player move!")
@@ -35,6 +42,7 @@ class Gamestate:
         """ Uses the rule checker to verify an Adversary move is valid,
         then performs that move if it is.
         """
+        # TODO remove rule_checker validation from here and put it in gamemanagers
         if not self.rule_checker.is_valid_adversary_move(self.current_level.get_tile(src), \
             self.current_level.get_tile(dest), self.current_level):
             raise ValueError("Invalid adversary move!")
@@ -62,3 +70,12 @@ class Gamestate:
         """
         return self.current_level.get_tiles_range(tile1, tile2)
         
+    def add_character(self, character, location):
+        """ Add a character to the current Level.
+        """
+        self.current_level.add_character(character, location)
+
+    def get_top_left_room(self):
+        """ Get the top left room of the current Level.
+        """
+        return self.current_level.get_top_left_room()

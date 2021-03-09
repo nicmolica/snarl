@@ -1,7 +1,7 @@
 import itertools
 from room import Room
 from hallway import Hallway
-from occupants import Adversary, Player, Block, LevelKey, LevelExit
+from occupants import Adversary, Character, Block, LevelKey, LevelExit
 from tile import Tile
 
 class Level:
@@ -226,28 +226,28 @@ class Level:
         return max_width, max_height
     
     def locate_occupant(self, occupant):
-        """ Locate the given occupant on the current level if it is a Player or Adversary.
+        """ Locate the given occupant on the current level if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
             return self.adversaries[occupant]
-        elif isinstance(occupant, Player):
+        elif isinstance(occupant, Character):
             return self.players[occupant]
         else:
             return None
 
     def move_occupant(self, occupant, dest):
-        """ Move the given occupant to the given destination if it is a Player or Adversary.
+        """ Move the given occupant to the given destination if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
             self.get_tile(self.adversaries[occupant]).occupants = []
             self.get_tile(dest).occupants.append(occupant)
             self.adversaries[occupant] = self.get_tile(dest)
-        elif isinstance(occupant, Player):
+        elif isinstance(occupant, Character):
             self.get_tile(self.players[occupant]).occupants = []
             self.get_tile(dest).occupants.append(occupant)
             self.players[occupant] = self.get_tile(dest)
         else:
-            raise TypeError("You can't move something that isn't a Player or an Adversary!")
+            raise TypeError("You can't move something that isn't a Character or an Adversary!")
         self.interact(self.get_tile(dest))
 
     def get_tile(self, tile):
@@ -259,12 +259,12 @@ class Level:
     def interact(self, dest):
         """Triggers any necessary interactions between the occupants of this tile. The interactions
         are as follows:
-        1. Player + Key = unlock the level exit
-        2. Player + Adversary = kill the player
-        3. Player + Exit and level unlocked = complete the level
+        1. Character + Key = unlock the level exit
+        2. Character + Adversary = kill the player
+        3. Character + Exit and level unlocked = complete the level
         """
         types = [type(occupant) for occupant in self.get_tile(dest).occupants]
-        has_player = Player in types
+        has_player = Character in types
         has_adv = Adversary in types
         has_key = LevelKey in types
         has_exit = LevelExit in types
@@ -272,7 +272,7 @@ class Level:
         if has_player and has_key:
             self.unlock_level_exit()
         if has_player and has_adv:
-            players = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Player)]
+            players = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for player in players:
                 self.players.pop(player)
         if has_player and has_exit and self.level_exit_unlocked:
@@ -283,7 +283,7 @@ class Level:
         """
         self.level_exit_unlocked = True
 
-    def add_player(self, player, location):
+    def add_character(self, player, location):
         """ Add a player to this level at the specified location. Enforce
         uniqueness of player names.
         """
@@ -297,3 +297,9 @@ class Level:
         """
         self.adversaries[adversary] = self.get_tile(location)
         self.get_tile(location).add_occupant(adversary)
+
+    def get_top_left_room(self):
+        """ Get the top left room of this Level. Note that this function takes
+        advantage of rich comparison provided by __lt__ on the Room class.
+        """
+        return sorted(self.rooms.copy())[0]

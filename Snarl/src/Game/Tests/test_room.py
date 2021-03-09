@@ -4,7 +4,7 @@ import unittest
 import random
 from room import Room
 from tile import Tile
-from occupants import Occupant, Player, Adversary, LevelExit, LevelKey
+from occupants import Occupant, Character, Adversary, LevelExit, LevelKey
 from utils import grid_to_string
 
 class TestRoom(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestRoom(unittest.TestCase):
             room1.open_tiles_around(Tile(100, 100), 2)
     
     def test_room_open_tiles_around_1_radius_does_not_return_self(self):
-        player = Player("Player 1")
+        player = Character("Character 1")
         enemy1 = Adversary()
         enemy2 = Adversary()
         level_key = LevelKey()
@@ -55,7 +55,7 @@ class TestRoom(unittest.TestCase):
         self.assertNotIn((5, 6), [(tile.x, tile.y) for tile in open_tiles_around])
 
     def test_room_open_tiles_around_1_radius_returns_correct_tiles(self):
-        player = Player("Player 1")
+        player = Character("Character 1")
         enemy1 = Adversary()
         enemy2 = Adversary()
         level_key = LevelKey()
@@ -70,7 +70,7 @@ class TestRoom(unittest.TestCase):
         self.assertIn((5, 7), coords)
 
     def test_room_open_tiles_around_radius_returns_door(self):
-        player = Player("Player 1")
+        player = Character("Character 1")
         enemy1 = Adversary()
         enemy2 = Adversary()
         level_key = LevelKey()
@@ -102,7 +102,7 @@ class TestRoom(unittest.TestCase):
         self.assertTrue(room.is_straddled_by(way1, way2))
 
     def test_room_rendering(self):
-        player = Player("Player 1")
+        player = Character("Character 1")
         enemy1 = Adversary()
         enemy2 = Adversary()
         level_key = LevelKey()

@@ -5,7 +5,7 @@ from level import Level
 from room import Room
 from hallway import Hallway
 from tile import Tile
-from occupants import Player, Adversary, LevelKey, LevelExit
+from occupants import Character, Adversary, LevelKey, LevelExit
 from utils import grid_to_string
 
 class TestLevel(unittest.TestCase):
@@ -67,8 +67,8 @@ class TestLevel(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2])
-        level.add_player(Player("Nic"), Tile(5, 5))
-        self.assertEqual(level.get_tile(Tile(5, 5)).get_player(), Player("Nic"))
+        level.add_character(Character("Nic"), Tile(5, 5))
+        self.assertEqual(level.get_tile(Tile(5, 5)).get_player(), Character("Nic"))
 
     def test_add_adversary(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5)])
@@ -97,8 +97,8 @@ class TestLevel(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2])
-        level.add_player(Player("Nic"), Tile(5, 5))
-        self.assertEqual(level.locate_occupant(Player("Nic")), level.get_tile(Tile(5, 5)))
+        level.add_character(Character("Nic"), Tile(5, 5))
+        self.assertEqual(level.locate_occupant(Character("Nic")), level.get_tile(Tile(5, 5)))
 
     def test_move_occupant_player(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
@@ -107,10 +107,10 @@ class TestLevel(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2])
-        level.add_player(Player("Nic"), Tile(5, 5))
-        level.move_occupant(Player("Nic"), Tile(7, 5))
+        level.add_character(Character("Nic"), Tile(5, 5))
+        level.move_occupant(Character("Nic"), Tile(7, 5))
         # player is now in correct position
-        self.assertEqual(level.get_tile(Tile(7, 5)).get_player(), Player("Nic"))
+        self.assertEqual(level.get_tile(Tile(7, 5)).get_player(), Character("Nic"))
         # player is removed from old position
         self.assertEqual(level.get_tile(Tile(5, 5)).get_player(), None)
 
@@ -135,11 +135,11 @@ class TestLevel(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2])
-        level.add_player(Player("Nic"), Tile(5, 5))
+        level.add_character(Character("Nic"), Tile(5, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
         # exit is locked prior to interaction
         self.assertFalse(level.level_exit_unlocked)
-        level.move_occupant(Player("Nic"), Tile(7, 5))
+        level.move_occupant(Character("Nic"), Tile(7, 5))
         # exit is unlocked after interaction
         self.assertTrue(level.level_exit_unlocked)
 
@@ -150,13 +150,13 @@ class TestLevel(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2])
-        level.add_player(Player("Nic"), Tile(5, 5))
+        level.add_character(Character("Nic"), Tile(5, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
         level.get_tile(Tile(8, 5)).add_occupant(LevelExit())
-        level.move_occupant(Player("Nic"), Tile(7, 5))
+        level.move_occupant(Character("Nic"), Tile(7, 5))
         # level is not completed prior to reaching exit
         self.assertFalse(level.is_completed)
-        level.move_occupant(Player("Nic"), Tile(8, 5))
+        level.move_occupant(Character("Nic"), Tile(8, 5))
         # level is completed after reaching exit
         self.assertTrue(level.is_completed)
 

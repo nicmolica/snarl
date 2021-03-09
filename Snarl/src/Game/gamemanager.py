@@ -1,6 +1,8 @@
+import random
 from gamestate import Gamestate
 from rulechecker import Rulechecker
-from occupants import Entity, Player, Adversary
+from occupants import Entity, Character, Adversary
+from turnorder import Turnorder
 # from observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
@@ -22,7 +24,7 @@ class Gamemanager:
 
         self.rule_checker = Rulechecker()
         self.game_state = None # TODO fix this so there's an actual gamestate
-        self.turn_order = []
+        self.turn_order = Turnorder([])
         self.current_turn = None
         self.player_list = []
         self.adversary_list = []
@@ -31,7 +33,30 @@ class Gamemanager:
     def start_game(self):
         """ Begin the game by placing all the players in the top left room of the first level.
         """
-        pass
+        top_left_room = self.game_state.get_top_left_room()
+        open_tiles = top_left_room.open_tiles.copy()
+
+        if len(self.player_list) < len(open_tiles):
+            raise ValueError("There are not enough tiles in the first room for each player to have a spot.")
+
+        random.shuffle(open_tiles)
+
+        for player in self.player_list:
+            character_location = open_tiles.pop()
+            self.game_state.add_character(player, character_location)
+
+        # TODO make a gamestate and set self.game_state to it
+        self.run()
+
+    def get_move(self):
+        """ Determine the type of the entity currently moving and get the move they want to make.
+        """
+        if isinstance(self.current_turn, Character):
+            return self.get_player_move()
+        elif isinstance(self.current_turn, Adversary):
+            return self.get_adversary_move()
+        else:
+            raise TypeError("You're trying to move something that isn't a character or an adversary.")
 
     def get_player_move(self):
         """ Receive the next move from a player either from STDIN or from some other entry
@@ -39,10 +64,10 @@ class Gamemanager:
         """
         pass
 
-    def move_adversaries(self):
-        """ Once the players are done moving, let all the adversaries take their turns.
+    def get_adversary_move(self):
+        """ Receive the next move from an adversary either from STDIN or from some other entry
+        method/client.
         """
-        # TODO change this so that it only moves a single adversary to allow more freedom with turn order
         pass
 
     def update_players(self):
@@ -68,7 +93,7 @@ class Gamemanager:
         """
         pass
 
-    def add_player(self, player):
+    def add_character(self, player):
         """ Register a new player to the game and add it to the correct spot in the turn order.
         """
         if player in set(self.player_list.copy()):
@@ -77,7 +102,7 @@ class Gamemanager:
             raise ValueError("Cannot add more than " + str(self.max_players) + " players to a game!")
         
         self.player_list.append(player)
-        self.turn_order.append(player)
+        self.turn_order.add(player)
 
     def add_adveraries(self, adversaries = []):
         """ Add all the provided adversaries to the adversary_list field and put them in the correct
@@ -88,7 +113,7 @@ class Gamemanager:
         elif all([isinstance(adversary, Adversary) for adversary in adversaries]):
             for adversary in adversaries:
                 self.adversary_list.append(adversary)
-                self.turn_order.append(adversary)
+                self.turn_order.add(adversary)
         else:
             raise TypeError("All adversaries must be of the type \"Adversary.\"")
 
@@ -102,3 +127,24 @@ class Gamemanager:
         """
         for observer in self.observers:
             observer.notify(self.game_state)
+
+    def move(self, move):
+        """ Determine if the provided move is valid. If so, perform it.
+        """
+        # throws exception with helpful message if move is invalid
+        self.rule_checker.is_valid_move(self.current_turn, move, self.game_state.current_level)
+        self.game_state.move(self.current_turn, move)
+
+    def run(self):
+        """ Main game loop.
+        """
+        # TODO finish writing this loop
+        while not self.rule_checker.is_game_over(self.game_state):
+            move = self.get_move()
+            try:
+                self.move(move)
+            except Exception as e:
+                print("You can't do that! " + e)
+            self.update_players() # might be deprecated and replaced with notify_observers
+            self.notify_observers()
+            self.current_turn = self.turn_order.next()

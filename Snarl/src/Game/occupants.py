@@ -8,13 +8,13 @@ class Occupant:
         pass
 
 class Entity(Occupant):
-    """ Represents either a Player or an Adversary.
+    """ Represents either a Character or an Adversary.
     """
     def __init__(self):
         pass
 
-class Player(Entity):
-    """Represents a player.
+class Character(Entity):
+    """Represents a character controlled by a player.
     """
     def __init__(self, name):
         self.name = name

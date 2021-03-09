@@ -6,19 +6,19 @@ from tile import Tile
 from room import Room
 from hallway import Hallway
 from level import Level
-from occupants import Player, Adversary
+from occupants import Character, Adversary
 from rulechecker import Rulechecker
 from gamestate import Gamestate
 
 class TestRulechecker(unittest.TestCase):
     def test_is_not_open_when_player_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player("Player 1")]))
+        is_open = rulechecker.is_open_tile(Tile(3, 4, [Character("Character 1")]))
         self.assertFalse(is_open)
 
     def test_is_open_when_adversary_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        is_open = rulechecker.is_open_tile(Tile(3, 4, [Player("Player 1")]), Adversary)
+        is_open = rulechecker.is_open_tile(Tile(3, 4, [Character("Character 1")]), Adversary)
         self.assertTrue(is_open)
 
     def test_valid_player_move_2_steps_diagonal(self):

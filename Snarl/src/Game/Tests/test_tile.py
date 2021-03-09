@@ -3,7 +3,7 @@ sys.path.append('../')
 import unittest
 import random
 from tile import Tile
-from occupants import Occupant, Player, Adversary, Block
+from occupants import Occupant, Character, Adversary, Block
 
 class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):
@@ -51,13 +51,13 @@ class TestPosn(unittest.TestCase):
 
     def test_add_occupant(self):
         tile = Tile(1, 1)
-        player = Player("Nic")
+        player = Character("Nic")
         tile.add_occupant(player)
         self.assertEqual(tile.get_player(), player)
     
     def test_get_player(self):
         tile = Tile(1, 1)
-        player = Player("Nic")
+        player = Character("Nic")
         adversary = Adversary()
         tile.add_occupant(player)
         tile.add_occupant(adversary)
@@ -65,7 +65,7 @@ class TestPosn(unittest.TestCase):
 
     def test_get_adversary(self):
         tile = Tile(1, 1)
-        player = Player("Nic")
+        player = Character("Nic")
         adversary = Adversary()
         tile.add_occupant(player)
         tile.add_occupant(adversary)
@@ -84,7 +84,7 @@ class TestPosn(unittest.TestCase):
         self.assertEqual(' ', open_tile.render())
 
     def test_tile_render_multiple_occupants_renders_first_occupant(self):
-        tile = Tile(0, 0, [Player("Player 1"), Adversary()])
+        tile = Tile(0, 0, [Character("Character 1"), Adversary()])
         self.assertEqual('P', tile.render())
 
 if __name__ == '__main__':

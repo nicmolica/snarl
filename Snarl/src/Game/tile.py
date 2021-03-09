@@ -1,4 +1,4 @@
-from occupants import Occupant, Player, Adversary, Block
+from occupants import Occupant, Character, Adversary, Block
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
@@ -65,7 +65,7 @@ class Tile:
         more than one.
         """
         for occupant in self.occupants:
-            if isinstance(occupant, Player):
+            if isinstance(occupant, Character):
                 return occupant
 
         return None

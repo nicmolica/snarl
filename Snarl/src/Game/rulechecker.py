@@ -1,7 +1,13 @@
-from occupants import Player, Wall, Block, Adversary
+from occupants import Character, Wall, Block, Adversary
 
 class Rulechecker:
-    def is_valid_player_move(self, src, dest, current_level):
+    def is_valid_move(self, entity, dest, current_level):
+        """ Is moving the entity from src to dest a valid move on the provided level?
+        """
+        # TODO write this (should simply do type checking and call appropriate method)
+        pass
+
+    def is_valid_player_move(self, player, dest, current_level):
         """ Is moving the player from src to dest a valid move on the provided level?
         The player should be able to make 2 cardinal moves onto traversable tiles.
         """
@@ -11,7 +17,7 @@ class Rulechecker:
         
         return x_dist + y_dist < 3 and dest_open
 
-    def is_valid_adversary_move(self, src, dest, current_level):
+    def is_valid_adversary_move(self, adversary, dest, current_level):
         """ Is moving the adversary from src to dest a valid move on the provided level?
         """
         x_dist = abs(src.x - dest.x)
@@ -41,7 +47,7 @@ class Rulechecker:
         """Checks that this tile is a type that can be moved to. In the future, this may need
         to take the type of the moving entity in order to check validity.
         """
-        has_player = any([isinstance(occ, Player) for occ in tile.occupants])
+        has_player = any([isinstance(occ, Character) for occ in tile.occupants])
         # Adversaries are allowed to move onto player-occupied spaces.
         if entity_type == Adversary:
             has_player = False

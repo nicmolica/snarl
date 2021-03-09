@@ -1,6 +1,8 @@
+from functools import total_ordering
 from tile import Tile
-from occupants import Door, Adversary, Player, HorizontalWall, VerticalWall, Block
+from occupants import Door, Adversary, Character, HorizontalWall, VerticalWall, Block
 
+@total_ordering
 class Room:
     """Represents a Room. Rooms are enclosed rectangles with a position in the
     grid, positive width and height, at least one room door on the room's boundary,
@@ -39,6 +41,16 @@ class Room:
         """ Overwriting hash for Rooms because we overwrote ==.
         """
         return hash((self.position, self.width, self.height, self.room_doors))
+
+    def __lt__(self, other):
+        """ Rich comparison method, useful for determining room locations relative
+        to each other.
+        """
+        self_manhattan = self.position.x + self.position.y
+        other_manhattan = other.position.x + other.position.y
+        if self_manhattan == other_manhattan:
+            return self.position.y < other.position.y
+        return self_manhattan < other_manhattan
 
     def is_valid(self):
         """Determine if the given parameters constitute a valid room.
