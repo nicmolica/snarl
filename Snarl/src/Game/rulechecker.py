@@ -31,10 +31,10 @@ class Rulechecker:
         return x_dist + y_dist < 2 and dest_open
 
     def is_level_over(self, level):
-        """ Has the given level been completed?
+        """ Has the given level been completed? Does not tell you if the level
+        was won or lost.
         """
-        # TODO: This can be implemented in a later milestone.
-        return True
+        return len(level.characters) == 0
 
     def is_game_over(self, gamestate):
         """ Has the game been completed?

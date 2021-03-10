@@ -121,5 +121,25 @@ class TestRulechecker(unittest.TestCase):
         players_won = rulechecker.did_players_win(state)
         self.assertFalse(players_won)
 
+    def test_is_level_over_when_level_not_over(self):
+        rulechecker = Rulechecker()
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
+        level = Level([room1, room2], [hallway1])
+        character = Character("John Wick")
+        level.add_character(character, Tile(3, 4))
+        level_over = rulechecker.is_level_over(level)
+        self.assertFalse(level_over)
+
+    def test_is_level_over_when_level_not_over(self):
+        rulechecker = Rulechecker()
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
+        level = Level([room1, room2], [hallway1])
+        level_over = rulechecker.is_level_over(level)
+        self.assertTrue(level_over)
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,2 +1,2 @@
-python -B -m unittest discover Tests
+coverage run -m unittest discover Tests
 
