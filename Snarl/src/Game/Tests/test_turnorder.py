@@ -1,13 +1,86 @@
 import sys
 sys.path.append('../')
 import unittest
-import random
-from tile import Tile
-from hallway import Hallway
+from turnorder import Turnorder
 
 class TestTurnorder(unittest.TestCase):
     # TODO: Write unit tests for all turnorder methods
-    pass
+    def test_turnorder_inits_to_first_item(self):
+        t = Turnorder([1, 2, 3, 4])
+        self.assertEqual(t.next(), 1)
+    
+    def test_turnorder_preserves_order(self):
+        t = Turnorder([1, 2, 3, 4])
+        self.assertEqual(t.next(), 1)
+        self.assertEqual(t.next(), 2)
+        self.assertEqual(t.next(), 3)
+        self.assertEqual(t.next(), 4)
+    
+    def test_turnorder_is_cyclic(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        for it in l:
+            t.next()
+        self.assertEqual(t.next(), 1)
+
+    def test_add_without_pos_adds_at_end(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.add(5)
+        self.assertEqual(t.order[-1], 5)
+
+    def test_add_with_pos_adds_at_pos(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.add(5, 0)
+        self.assertEqual(t.order[0], 5)
+
+    def test_add_with_pos_raises_error_on_invalid_pos(self):
+        with self.assertRaises(ValueError):
+            l = [1, 2, 3, 4]
+            t = Turnorder(l)
+            t.add(5, -190)
+
+    def test_add_at_next_changes_next(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.add(5, 0)
+        self.assertEqual(t.next(), 5)
+
+    def test_add_not_at_next_does_not_change_next(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.add(5, 1)
+        self.assertEqual(t.next(), 1)
+
+    def test_eject_at_next_changes_next(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.eject(1)
+        self.assertEqual(t.next(), 2)
+
+    def test_eject_not_at_next_does_not_change_next(self):
+        l = [1, 2, 3, 4]
+        t = Turnorder(l)
+        t.eject(2)
+        self.assertEqual(t.next(), 1)
+
+    def test_eject_with_nonexistent_item_raises_error(self):
+        with self.assertRaises(ValueError):
+            l = [1, 2, 3, 4]
+            t = Turnorder(l)
+            t.eject(20000)
+
+    def test_next_raises_error_when_order_empty(self):
+        with self.assertRaises(ValueError):
+            t = Turnorder([])
+            t.next()
+
+    def test_decrement_fails_when_order_empty(self):
+        with self.assertRaises(ValueError):
+            t = Turnorder([])
+            t.decrement()
+
 
 if __name__ == '__main__':
     unittest.main()

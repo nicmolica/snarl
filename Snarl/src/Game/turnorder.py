@@ -5,7 +5,9 @@ class Turnorder:
         """
         self.init_order = init_order
         self.order = init_order.copy()
-        self.current = 0
+        # The first call to next should return the 0th element of init_order, and next
+        # increments current, so this should be set to -1 at first.
+        self.current = -1
 
     def eject(self, entity):
         """ Eject the entity from the turn order and modify the order to match.
