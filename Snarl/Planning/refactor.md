@@ -8,3 +8,6 @@ Determine which methods from testLevel.py would be helpful to have in Level and 
 
 ### fix all exceptions to be more appropriate
 Right now we pretty much just throw ValueErrors and TypeErrors, so we should define our own exceptions or at the very least raise more appropriate ones.
+
+### Add other predicates for tile occupants to Tile class
+Things like `has_character` or `has_adversary` could be pretty useful. 

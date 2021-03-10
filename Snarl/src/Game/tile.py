@@ -60,7 +60,7 @@ class Tile:
         else:
             raise TypeError("Cannot add a non-Occupant to a tile.")
 
-    def get_player(self):
+    def get_character(self):
         """ Return the player on this Tile, if there is one. Assume there will never be
         more than one.
         """

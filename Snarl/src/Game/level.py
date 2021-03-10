@@ -17,7 +17,8 @@ class Level:
         self.rooms = rooms
         self.hallways = hallways
         self.is_completed = False
-        self.players = {}
+        self.characters = {}
+        self.completed_characters = []
         self.adversaries = {}
         self.level_exit_unlocked = False
 
@@ -231,7 +232,7 @@ class Level:
         if isinstance(occupant, Adversary):
             return self.adversaries[occupant]
         elif isinstance(occupant, Character):
-            return self.players[occupant]
+            return self.characters[occupant]
         else:
             return None
 
@@ -243,9 +244,9 @@ class Level:
             self.get_tile(dest).occupants.append(occupant)
             self.adversaries[occupant] = self.get_tile(dest)
         elif isinstance(occupant, Character):
-            self.get_tile(self.players[occupant]).occupants = []
+            self.get_tile(self.characters[occupant]).occupants = []
             self.get_tile(dest).occupants.append(occupant)
-            self.players[occupant] = self.get_tile(dest)
+            self.characters[occupant] = self.get_tile(dest)
         else:
             raise TypeError("You can't move something that isn't a Character or an Adversary!")
         self.interact(self.get_tile(dest))
@@ -269,14 +270,18 @@ class Level:
         has_key = LevelKey in types
         has_exit = LevelExit in types
 
-        if has_player and has_key:
-            self.unlock_level_exit()
         if has_player and has_adv:
-            players = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
-            for player in players:
-                self.players.pop(player)
-        if has_player and has_exit and self.level_exit_unlocked:
-            self.is_completed = True
+            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
+            for character in characters:
+                self.characters.pop(character)
+        elif has_player and has_key:
+            self.unlock_level_exit()
+        elif has_player and has_exit and self.level_exit_unlocked:
+            # Happens twice because a character could have been killed before this happens
+            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
+            for character in characters:
+                self.completed_characters.append(character)
+                self.characters.pop(character)
         
     def unlock_level_exit(self):
         """Unlocks the level exit tile.
@@ -287,9 +292,9 @@ class Level:
         """ Add a player to this level at the specified location. Enforce
         uniqueness of player names.
         """
-        if player in set(self.players.keys()):
-            raise ValueError("Cannot have duplicate players!")
-        self.players[player] = self.get_tile(location)
+        if player in set(self.characters.keys()):
+            raise ValueError("Cannot have duplicate characters!")
+        self.characters[player] = self.get_tile(location)
         self.get_tile(location).add_occupant(player)
 
     def add_adversary(self, adversary, location):

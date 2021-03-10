@@ -6,7 +6,7 @@ from turnorder import Turnorder
 # from observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
-    def __init__(self, max_players = 4, view_distance = 2, num_of_levels = 1):
+    def __init__(self, max_players = 4, view_distance = 2, num_of_levels = 1,):
         if view_distance >= 1:
             self.view_distance = view_distance
         else:
@@ -23,14 +23,15 @@ class Gamemanager:
             raise ValueError("Invalid number of players: " + str(max_players))
 
         self.rule_checker = Rulechecker()
-        self.game_state = None # TODO fix this so there's an actual gamestate
+        # This is populated when the game is started.
+        self.game_state = None
         self.turn_order = Turnorder([])
         self.current_turn = None
         self.player_list = []
         self.adversary_list = []
         self.observers = []
 
-    def start_game(self):
+    def start_game(self, level):
         """ Begin the game by placing all the players in the top left room of the first level.
         """
         top_left_room = self.game_state.get_top_left_room()
@@ -45,7 +46,9 @@ class Gamemanager:
             character_location = open_tiles.pop()
             self.game_state.add_character(player, character_location)
 
-        # TODO make a gamestate and set self.game_state to it
+        # Initialize game state and begin
+        # TODO: the '0' will be changed to # of adversaries when we add adversaries.
+        self.game_state = Gamestate(level, len(self.player_list), 0)
         self.run()
 
     def get_move(self):
@@ -62,12 +65,17 @@ class Gamemanager:
         """ Receive the next move from a player either from STDIN or from some other entry
         method/client.
         """
-        pass
+        try:
+            current_player = next(player for player in self.player_list if player.character == self.current_turn)
+            return current_player.move()
+        except:
+            raise ValueError("Attempted to get player move from a player who does not exist!")
 
     def get_adversary_move(self):
         """ Receive the next move from an adversary either from STDIN or from some other entry
         method/client.
         """
+        # TODO: No adversaries yet; can be implemented in a later milestone.
         pass
 
     def update_players(self):
@@ -75,7 +83,9 @@ class Gamemanager:
         happens every time any player moves or there is an interaction that could change
         the way the level looks.
         """
-        pass
+        for player in self.player_list:
+            grid = self.game_state.get_character_surroundings(player.character, self.view_distance)
+            player.update_surroundings(grid)
 
     def render(self):
         """ Return an ASCII representation of the current game state.
@@ -86,11 +96,13 @@ class Gamemanager:
         """ Begin the next Level of the dungeon by moving all the players to the next
         Level. If the game should end, then quit the game via self.quit_game().
         """
+        # TODO: Implement later; per milestone spec this can be a stub for now.
         pass
 
     def quit_game(self):
         """ Quit the game.
         """
+        # TODO: Implement later; per milestone spec this can be a stub for now.
         pass
 
     def add_character(self, player):
@@ -138,7 +150,6 @@ class Gamemanager:
     def run(self):
         """ Main game loop.
         """
-        # TODO finish writing this loop
         while not self.rule_checker.is_game_over(self.game_state):
             move = self.get_move()
             try:
@@ -146,5 +157,5 @@ class Gamemanager:
             except Exception as e:
                 print("You can't do that! " + e)
             self.update_players() # might be deprecated and replaced with notify_observers
-            self.notify_observers()
+            # self.notify_observers()
             self.current_turn = self.turn_order.next()

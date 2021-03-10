@@ -7,11 +7,23 @@ class Occupant:
     def __init__(self):
         pass
 
+    def __eq__(self, other):
+        return False
+
+    def __hash__(self):
+        return 1
+
 class Entity(Occupant):
     """ Represents either a Character or an Adversary.
     """
     def __init__(self):
         pass
+
+    def __eq__(self, other):
+        return False
+
+    def __hash__(self):
+        return 3
 
 class Character(Entity):
     """Represents a character controlled by a player.

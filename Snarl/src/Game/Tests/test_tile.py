@@ -53,7 +53,7 @@ class TestPosn(unittest.TestCase):
         tile = Tile(1, 1)
         player = Character("Nic")
         tile.add_occupant(player)
-        self.assertEqual(tile.get_player(), player)
+        self.assertEqual(tile.get_character(), player)
     
     def test_get_player(self):
         tile = Tile(1, 1)
@@ -61,7 +61,7 @@ class TestPosn(unittest.TestCase):
         adversary = Adversary()
         tile.add_occupant(player)
         tile.add_occupant(adversary)
-        self.assertEqual(tile.get_player(), player)
+        self.assertEqual(tile.get_character(), player)
 
     def test_get_adversary(self):
         tile = Tile(1, 1)

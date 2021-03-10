@@ -4,13 +4,16 @@ class Rulechecker:
     def is_valid_move(self, entity, dest, current_level):
         """ Is moving the entity from src to dest a valid move on the provided level?
         """
-        # TODO write this (should simply do type checking and call appropriate method)
-        pass
+        if hasattr(entity, "character"):
+            return self.is_valid_player_move(entity, dest, current_level)
+        elif isinstance(entity, Adversary):
+            return self.is_valid_adversary_move(entity, dest, current_level)
 
     def is_valid_player_move(self, player, dest, current_level):
         """ Is moving the player from src to dest a valid move on the provided level?
         The player should be able to make 2 cardinal moves onto traversable tiles.
         """
+        src = current_level.locate_occupant(player)
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.get_tile(dest))
@@ -20,6 +23,7 @@ class Rulechecker:
     def is_valid_adversary_move(self, adversary, dest, current_level):
         """ Is moving the adversary from src to dest a valid move on the provided level?
         """
+        src = current_level.locate_occupant(adversary)
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.get_tile(dest), Adversary)
@@ -41,7 +45,7 @@ class Rulechecker:
     def did_players_win(self, gamestate):
         """ Are there any players left alive? This method assumes the game is over.
         """
-        return gamestate.current_level.players != []
+        return gamestate.current_level.characters != []
 
     def is_open_tile(self, tile, entity_type=None):
         """Checks that this tile is a type that can be moved to. In the future, this may need

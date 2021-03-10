@@ -27,7 +27,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(2, 6), Tile(1, 7), level)
+        character = Character("char")
+        level.add_character(character, Tile(2, 6))
+        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
         self.assertTrue(is_valid)
     
     def test_valid_player_move_2_steps_same_dir(self):
@@ -36,7 +38,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(1, 9), Tile(1, 7), level)
+        character = Character("char")
+        level.add_character(character, Tile(1, 9))
+        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
         self.assertTrue(is_valid)
 
     def test_invalid_player_move_too_far(self):
@@ -45,7 +49,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(1, 13), Tile(1, 7), level)
+        character = Character("char")
+        level.add_character(character, Tile(1, 13))
+        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
         self.assertFalse(is_valid)
 
     def test_invalid_player_move_blocked_dest(self):
@@ -54,7 +60,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(0, 0), Tile(0, 2), level)
+        character = Character('name')
+        level.add_character(character, Tile(0, 0))
+        is_valid = rulechecker.is_valid_player_move(character, Tile(0, 2), level)
         self.assertFalse(is_valid)
 
     def test_valid_adversary_move(self):
@@ -63,7 +71,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(1, 8), Tile(1, 7), level)
+        adv = Adversary()
+        level.add_adversary(adv, Tile(1, 8))
+        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 7), level)
         self.assertTrue(is_valid)
     
     def test_invalid_adversary_move_too_far(self):
@@ -72,7 +82,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(1, 11), Tile(1, 7), level)
+        adv = Adversary()
+        level.add_adversary(adv, Tile(1, 11))
+        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 7), level)
         self.assertFalse(is_valid)
 
     def test_invalid_adversary_move_blocked_dest(self):
@@ -81,7 +93,9 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        is_valid = rulechecker.is_valid_player_move(Tile(0, 0), Tile(1, 0), level)
+        adv = Adversary()
+        level.add_adversary(adv, Tile(0, 0))
+        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 0), level)
         self.assertFalse(is_valid)
         
     def test_players_won_when_players_won(self):
@@ -103,7 +117,7 @@ class TestRulechecker(unittest.TestCase):
         state = Gamestate(level, 1, 0)
         # Manually remove all players from current level; this will happen elsewhere when players
         # defeated.
-        state.current_level.players = []
+        state.current_level.characters = []
         players_won = rulechecker.did_players_win(state)
         self.assertFalse(players_won)
 

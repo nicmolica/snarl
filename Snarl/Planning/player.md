@@ -30,6 +30,3 @@ Notify the `Character` that they've been expelled from the `Level` by updating t
 
 ### `move() -> Tile`
 Takes input from the human player and passes it back to the `Gamemanager` in the form of a `Tile` that the `Character` wants to move to.
-
-### `interact() -> bool`
-Asks the human player if they would like to interact and returns their decision to the `Gamemanager`. This method may end up being deprecated depending on the finalized rules of the game.
