@@ -64,7 +64,7 @@ class Zombie(Adversary):
         return isinstance(other, Zombie)
 
     def __hash__(self):
-        return hash("zombie", self.name)
+        return hash(("zombie", self.name))
 
     def render(self):
         return 'Z'
@@ -80,7 +80,7 @@ class Ghost(Adversary):
         return isinstance(other, Ghost)
 
     def __hash__(self):
-        return hash("ghost", self.name)
+        return hash(("ghost", self.name))
 
     def render(self):
         return 'G'
@@ -121,7 +121,20 @@ class Door(Occupant):
     def render(self):
         return 'D'
 
-class Wall(Occupant):
+
+class Block(Occupant):
+    """Represents the exit for a level.
+    """
+    def __eq__(self, other):
+        pass
+
+    def __hash__(self):
+        pass
+
+    def render(self):
+        return 'X'
+
+class Wall(Block):
     """Represents the exit for a level.
     """
     def __eq__(self, other):
@@ -140,15 +153,3 @@ class VerticalWall(Wall):
 class HorizontalWall(Wall):
     def render(self):
         return '-'
-
-class Block(Occupant):
-    """Represents the exit for a level.
-    """
-    def __eq__(self, other):
-        pass
-
-    def __hash__(self):
-        pass
-
-    def render(self):
-        return 'X'

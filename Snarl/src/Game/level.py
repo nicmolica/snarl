@@ -266,7 +266,7 @@ class Level:
         """
         types = [type(occupant) for occupant in self.get_tile(dest).occupants]
         has_player = Character in types
-        has_adv = Adversary in types
+        has_adv = any([isinstance(occupant, Adversary) for occupant in self.get_tile(dest).occupants])
         has_key = LevelKey in types
         has_exit = LevelExit in types
 

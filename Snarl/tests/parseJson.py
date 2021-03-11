@@ -103,7 +103,12 @@ def create_level_from_json(level_json):
         for i in range(len(rooms)):
             er = rooms[i]
             if er.contains(tile):
-                rooms[i] = Room(er.position, er.width, er.height, er.room_doors, [tile])
+                new_open = []
+                for ot in er.open_tiles:
+                    if ot.x != tile.x or ot.y != tile.y:
+                        new_open.append(ot)
+                new_open.append(tile)
+                rooms[i] = Room(er.position, er.width, er.height, er.room_doors, new_open)
     
     hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
     return Level(rooms, hallways)
@@ -142,7 +147,7 @@ def create_state_from_json(state_json):
     for player in players.items():
         state.add_character(player[1], player[0])
     for adversary in adversaries.items():
-        state.add_character(adversary[1], adversary[0])
+        state.add_adversary(adversary[1], adversary[0])
     
     return state
 
