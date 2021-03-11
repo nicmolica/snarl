@@ -25,7 +25,7 @@ Change the `vicinity`. This happens every time there's a change to the `vicinity
 ### `relocate(location: Tile) -> None`
 Change the `location`. This happens every time the `Character` moves.
 
-### `expell() -> None`
+### `expel() -> None`
 Notify the `Character` that they've been expelled from the `Level` by updating the `expelled` field to `True`.
 
 ### `move() -> Tile`

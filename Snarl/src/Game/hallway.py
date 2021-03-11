@@ -74,8 +74,7 @@ class Hallway:
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
-        if len(self.waypoints) < 2 and not \
-            (abs(self.door1.x - self.door2.x) <= 1 and abs(self.door1.y - self.door2.y) <= 1):
+        if len(self.waypoints) < 2 and not self.do_waypoints_share_axis(self.door1, self.door2):
             return False
         
         for i in range(0, len(self.waypoints) - 1):

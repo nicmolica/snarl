@@ -55,5 +55,33 @@ class TestHallway(unittest.TestCase):
         hall = Hallway([], Tile(5, 5), Tile(5, 6))
         self.assertEqual(len(hall.waypoints), 0)
 
+    def test_constructor_errors_when_waypoints_not_a_list(self):
+        with self.assertRaises(TypeError):
+            Hallway("small cats", Tile(3, 4), Tile(2, 34))
+
+    def test_constructor_errors_when_waypoints_not_a_list_of_tiles(self):
+        with self.assertRaises(TypeError):
+            Hallway(["list", "of", "strings"], Tile(3, 4), Tile(2, 34))
+
+    def test_constructor_errors_when_doors_not_tiles(self):
+        with self.assertRaises(TypeError):
+            Hallway([], Tile(1, 2), "Glaurung the Golden")
+
+    def test_constructor_errors_when_waypoints_in_zero_length_hallway(self):
+        with self.assertRaises(ValueError):
+            Hallway([Tile(0, 1)], Tile(0, 0), Tile(0, 1))
+
+    def test_constructor_errors_when_adjacent_doors_do_not_form_segment(self):
+        with self.assertRaises(ValueError):
+            Hallway([], Tile(0, 0), Tile(1, 1))
+
+    def test_contains_contains_tiles_it_contains(self):
+        h = Hallway([], Tile(0, 0), Tile(10, 0))
+        self.assertTrue(h.contains(Tile(5, 0)))
+
+    def test_contains_does_not_contain_tiles_outside_hallway(self):
+        h = Hallway([], Tile(0, 0), Tile(10, 0))
+        self.assertFalse(h.contains(Tile(0, 123)))
+
 if __name__ == '__main__':
     unittest.main()
