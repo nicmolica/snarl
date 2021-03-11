@@ -288,6 +288,14 @@ class Level:
         """
         self.level_exit_unlocked = True
 
+    def set_level_exit_status(self, status):
+        """Locks the level exit tile.
+        """
+        if isinstance(status, bool):
+            self.level_exit_unlocked = status
+        else:
+            raise TypeError("You can't set level exit status to something other than True or False")
+
     def add_character(self, player, location):
         """ Add a player to this level at the specified location. Enforce
         uniqueness of player names.
