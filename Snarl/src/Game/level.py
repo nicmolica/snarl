@@ -269,7 +269,7 @@ class Level:
         has_adv = any([isinstance(occupant, Adversary) for occupant in self.get_tile(dest).occupants])
         has_key = LevelKey in types
         has_exit = LevelExit in types
-
+        
         if has_player and has_adv:
             characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
@@ -289,7 +289,7 @@ class Level:
         self.level_exit_unlocked = True
 
     def set_level_exit_status(self, status):
-        """Locks the level exit tile.
+        """Sets whether or not the level exit is unlocked.
         """
         if isinstance(status, bool):
             self.level_exit_unlocked = status
