@@ -44,13 +44,46 @@ class Adversary(Entity):
     """Represents an enemy.
     """
     def __eq__(self, other):
-        return True
+        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
+        return isinstance(other, Adversary)
 
     def __hash__(self):
         return 0
 
     def render(self):
         return 'A'
+
+class Zombie(Adversary):
+    """Represents an enemy.
+    """
+    def __init__(self, name = ""):
+        self.name = name
+
+    def __eq__(self, other):
+        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
+        return isinstance(other, Zombie)
+
+    def __hash__(self):
+        return hash("zombie", self.name)
+
+    def render(self):
+        return 'Z'
+
+class Ghost(Adversary):
+    """Represents an enemy.
+    """
+    def __init__(self, name = ""):
+        self.name = name
+    
+    def __eq__(self, other):
+        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
+        return isinstance(other, Ghost)
+
+    def __hash__(self):
+        return hash("ghost", self.name)
+
+    def render(self):
+        return 'G'
 
 class LevelKey(Occupant):
     """Represents the key to unlock a level exit.

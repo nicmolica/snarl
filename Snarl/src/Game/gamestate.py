@@ -1,5 +1,6 @@
 from rulechecker import Rulechecker
 from level import Level
+from tile import Tile
 
 class Gamestate:
     def __init__(self, level, num_of_players, num_of_adversaries):
@@ -51,7 +52,7 @@ class Gamestate:
         loc = self.current_level.locate_occupant(character)
         level_width, level_height = self.current_level.calculate_level_dimensions()
         minx = max(0, loc.x - radius)
-        maxx = min(level_height, loc.x + radius)
+        maxx = min(level_width, loc.x + radius)
         miny = max(0, loc.y - radius)
         maxy = min(level_height, loc.y + radius)
         return self.get_tiles_range(Tile(minx, miny), Tile(maxx, maxy))
@@ -61,7 +62,17 @@ class Gamestate:
         """
         self.current_level.add_character(character, location)
 
+    def add_adversary(self, adversary, location):
+        """ Add a character to the current Level.
+        """
+        self.current_level.add_adversary(adversary, location)
+
     def get_top_left_room(self):
         """ Get the top left room of the current Level.
         """
         return self.current_level.get_top_left_room()
+
+    def render(self):
+        """ Renders the current level.
+        """
+        return self.current_level.render()
