@@ -1,2 +1,2 @@
-coverage run -m unittest discover Tests
+coverage run -m --omit="*/Lib/*,*/Tests/*" unittest discover Tests
 
