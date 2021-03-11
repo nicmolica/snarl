@@ -16,7 +16,7 @@ class Turnorder:
             raise ValueError("Cannot eject nonexistent entity from the turn order.")
         entity_index = self.order.index(entity)
         self.order.remove(entity)
-        if entity_index < self.current:
+        if entity_index <= self.current:
             self.decrement()
 
     def add(self, entity, position = -1):
@@ -43,7 +43,7 @@ class Turnorder:
         self.current = (self.current + 1) % (len(self.order))
 
     def decrement(self):
-        """ Move to the next entity's turn.
+        """ Move to the previous entity's turn.
         """
         if len(self.order) == 0:
             raise ValueError("You can't move to the previous turn when there are no turns yet.")
