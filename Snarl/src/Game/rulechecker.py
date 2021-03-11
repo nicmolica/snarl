@@ -5,7 +5,7 @@ class Rulechecker:
         """ Is moving the entity from src to dest a valid move on the provided level?
         """
         if hasattr(entity, "character"):
-            return self.is_valid_player_move(entity, dest, current_level)
+            return self.is_valid_player_move(entity.character, dest, current_level)
         elif isinstance(entity, Adversary):
             return self.is_valid_adversary_move(entity, dest, current_level)
 
