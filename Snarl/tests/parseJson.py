@@ -119,6 +119,7 @@ def create_state_from_json(state_json):
     }
     """
     level = create_level_from_json(state_json["level"])
+    level.set_level_exit_status(state_json["exit-locked"])
 
     players = {}
     for player in state_json["players"]:
