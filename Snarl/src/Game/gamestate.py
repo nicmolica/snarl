@@ -24,7 +24,7 @@ class Gamestate:
     def move(self, entity, dest):
         """ Move the player/adversary to the new location.
         """
-        self.current_level.move_occupant(entity, dest)    
+        self.current_level.move_occupant(entity, dest)
 
     def complete_level(self, are_we_done):
         """ After a level has been completed, mark it as completed, generate
