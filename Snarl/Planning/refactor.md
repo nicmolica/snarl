@@ -26,7 +26,9 @@ Right now, neither our source files nor our test files are packaged. This has be
 
 ## Changes
 
-Summarize the work you have performed during this week.
+### Created Python packages for `Snarl` directories
+
+Created a top-level package inside the `Snarl` folder, and subpackages for subfolders that need imports from other places, such as the `Snarl/tests` scripts. All files have been changed to use imports given this new package structure.
 
 ## Future Work
 
