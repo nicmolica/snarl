@@ -1,4 +1,13 @@
-# Refactoring Wish List
+# Milestone 6 - Refactoring Report
+
+**Team members:**
+Nicholas Molica, Ty nichols
+
+**Github team/repo:**
+[Nimrasea](https://github.ccs.neu.edu/CS4500-S21/Nimrasea)
+
+
+## Plan
 
 ### `open_tiles` on Room
 This field may be unnecessary (or at least very cumbersome) because we have to update it all the time. Perhaps it would be better to bring back Posns so that we have a datatype that we can use simply for identifying locations. This will eliminate the confusion of remembering which Tiles need to be updated and make it clear which fields exist to be read-only and which fields represent the actual Gamestate.
@@ -14,3 +23,17 @@ Things like `has_character` or `has_adversary` could be pretty useful.
 
 ### Proper packaging of files
 Right now, neither our source files nor our test files are packaged. This has been causing issues with running tests, as well as making it more difficult to import things from a parent directory in any of our files. We should create packages `Snarl.src` and `Snarl.test` in order to make this easier. We should also figure out how sub-packaging works. 
+
+## Changes
+
+Summarize the work you have performed during this week.
+
+## Future Work
+
+Summarize work you'd still like to do if there's time. This can include features 
+you'd like to implement if given time.
+
+
+## Conclusion
+
+Any concluding remarks.
