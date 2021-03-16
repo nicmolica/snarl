@@ -22,15 +22,15 @@ class Level:
         self.adversaries = {}
         self.level_exit_unlocked = False
 
-        if self.any_overlaps():
+        if self._any_overlaps():
             raise ValueError("There are overlapping rooms or hallways in this level.")
         if not self.are_hallways_connected_to_doors():
             raise ValueError("There are disconnected hallways on this level.")
 
         # This is done after we know that the room is valid.
-        self.update_tiles()
+        self._update_tiles()
 
-    def any_overlaps(self):
+    def _any_overlaps(self):
         """Do any two rooms/hallways overlap with each other? Uses 4 checks to verify this:
            - For all pairs of 2 rooms, do the rooms intersect? If yes for any, return true.
            - For all waypoints, is the waypoint inside of a room? If yes for any, return true.
@@ -40,18 +40,18 @@ class Level:
              a room? If yes for any, return true.
         """
         # 1st check:
-        any_room_intersections = self.do_any_rooms_intersect()
+        any_room_intersections = self._do_any_rooms_intersect()
         # 2nd check:
-        any_hallways_inside_rooms = self.do_any_hallways_intersect_rooms()
+        any_hallways_inside_rooms = self._do_any_hallways_intersect_rooms()
         # 3rd check:
-        any_hallways_intersect_hallways = self.do_any_hallways_intersect_hallways()
+        any_hallways_intersect_hallways = self._do_any_hallways_intersect_hallways()
         # 4th check:
-        does_hallway_straddle_room = self.does_any_hallway_straddle_room()
+        does_hallway_straddle_room = self._does_any_hallway_straddle_room()
 
         return any_room_intersections or any_hallways_inside_rooms or \
             any_hallways_intersect_hallways or does_hallway_straddle_room
     
-    def do_any_rooms_intersect(self):
+    def _do_any_rooms_intersect(self):
         """Are there any two rooms in this level that share coordinates?
         """
         room_combos = itertools.combinations(self.rooms, 2)
@@ -60,7 +60,7 @@ class Level:
                 return True
         return False
     
-    def do_any_hallways_intersect_rooms(self):
+    def _do_any_hallways_intersect_rooms(self):
         """Do any hallways have coordinates that are inside any room?
         For this, it suffices to check the hallway's waypoints.
         """
@@ -74,7 +74,7 @@ class Level:
         return False
         # TODO deal with hallway segments that straddle rooms
 
-    def do_any_hallways_intersect_hallways(self):
+    def _do_any_hallways_intersect_hallways(self):
         """Will any hallways intersect each other?
         """
         hall_combos = itertools.combinations(self.hallways, 2)
@@ -83,7 +83,7 @@ class Level:
                 return True
         return False
 
-    def does_any_hallway_straddle_room(self):
+    def _does_any_hallway_straddle_room(self):
         """ Does any pair of waypoints in the set of hallways straddle
         any one of the rooms?
         """
@@ -108,29 +108,29 @@ class Level:
         
         room_doors = []
         for room in self.rooms:
-            for door in room.room_doors:
+            for door in room.get_room_doors():
                 room_doors.append(door)
 
         return set(hall_ends).issubset(set(room_doors))
 
-    def update_tiles(self):
+    def _update_tiles(self):
         """Updates the self.tiles field with the current tile information.
         """
         width, height = self.calculate_level_dimensions()
         self.tiles = [[Tile(x, y, Block()) for x in range(width)] for y in range(height)]
-        self.update_rooms_tiles()
-        self.update_hallways_tiles()
+        self._update_rooms_tiles()
+        self._update_hallways_tiles()
 
-    def update_hallways_tiles(self):
+    def _update_hallways_tiles(self):
         """Alters self.tiles to contain the correct Tile information for all hallways in the level.
         """
         for hall in self.hallways:
             for i in range(0, len(hall.waypoints) - 1):
                 this_w = hall.waypoints[i]
                 next_w = hall.waypoints[i + 1]
-                self.update_hallway_segment(this_w, next_w)
+                self._update_hallway_segment(this_w, next_w)
 
-    def update_hallway_segment(self, start, end):
+    def _update_hallway_segment(self, start, end):
         """Renders a single segment of the hallway, given the start and end coordinates.
         Does not require that start coordinates are less than end coordinates. Stores
         its result in self.rendered_tiles.
@@ -149,7 +149,7 @@ class Level:
             for x in range(x_min, x_max + 1):
                 self.tiles[y][x] = Tile(x, y)
 
-    def update_rooms_tiles(self):
+    def _update_rooms_tiles(self):
         """Alters self.rendered_tiles to have room walls, objects, and doors in the coordinates
         specified by self.rooms.
         """
@@ -176,17 +176,6 @@ class Level:
                 rendered_tiles[y][x] = self.tiles[y][x].render()
 
         return rendered_tiles
-
-    def render_vicinity(self):
-        """Renders an ASCII representation of part of this level. Each coordinate in the level
-        corresponds to a single ASCII character. Stores this grid of characters in self.rendered_tiles.
-
-        Returns:
-            rendered_tiles (list[list[character]]): A 2D list storing each character representing the level.
-                Each element of the outer list contains a single row.
-        """
-        pass
-        # TODO write this method
 
     def get_tiles(self):
         """ Return the array of tiles.

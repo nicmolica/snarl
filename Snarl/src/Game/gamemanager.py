@@ -38,7 +38,7 @@ class Gamemanager:
         # TODO: the '0' will be changed to # of adversaries when we add adversaries.
         self.game_state = Gamestate(level, len(self.player_list), 0)
         top_left_room = self.game_state.get_top_left_room()
-        open_tiles = top_left_room.open_tiles.copy()
+        open_tiles = top_left_room.get_open_tiles()
 
         if len(self.player_list) > len(open_tiles):
             raise ValueError("There are not enough tiles in the first room for each player to have a spot.")

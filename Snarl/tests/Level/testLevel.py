@@ -89,7 +89,7 @@ def get_rooms_from_tile_in_room(level, tile):
     
     origin_room_coords = [origin_room.position.y, origin_room.position.x]
 
-    doors = origin_room.room_doors
+    doors = origin_room.get_room_doors()
     room_own_neighbor = False
     adjacent_halls = []
     for hall in level.hallways:

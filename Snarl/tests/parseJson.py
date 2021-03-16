@@ -103,11 +103,11 @@ def create_level_from_json(level_json):
             er = rooms[i]
             if er.contains(tile):
                 new_open = []
-                for ot in er.open_tiles:
+                for ot in er.get_open_tiles():
                     if ot.x != tile.x or ot.y != tile.y:
                         new_open.append(ot)
                 new_open.append(tile)
-                rooms[i] = Room(er.position, er.width, er.height, er.room_doors, new_open)
+                rooms[i] = Room(er.position, er.width, er.height, er.get_room_doors(), new_open)
     
     hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
     return Level(rooms, hallways)
