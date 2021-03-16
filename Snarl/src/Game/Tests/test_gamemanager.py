@@ -1,14 +1,13 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from tile import Tile
-from room import Room
-from hallway import Hallway
-from level import Level
-from player import Player
-from occupants import Adversary
-from gamemanager import Gamemanager
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.player import Player
+from Snarl.src.Game.occupants import Adversary
+from Snarl.src.Game.gamemanager import Gamemanager
 
 class TestGamemanager(unittest.TestCase):
     def test_constructor_error_when_view_distance_nonpositive(self):

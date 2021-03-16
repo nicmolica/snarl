@@ -1,15 +1,14 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from tile import Tile
-from room import Room
-from hallway import Hallway
-from level import Level
-from player import Player
-from occupants import Character, Adversary
-from rulechecker import Rulechecker
-from gamestate import Gamestate
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.player import Player
+from Snarl.src.Game.occupants import Character, Adversary
+from Snarl.src.Game.rulechecker import Rulechecker
+from Snarl.src.Game.gamestate import Gamestate
 
 class TestRulechecker(unittest.TestCase):
     def test_valid_move_player(self):

@@ -1,10 +1,8 @@
 import sys
-sys.path.append('../')
 import unittest
-from turnorder import Turnorder
+from Snarl.src.Game.turnorder import Turnorder
 
 class TestTurnorder(unittest.TestCase):
-    # TODO: Write unit tests for all turnorder methods
     def test_turnorder_inits_to_first_item(self):
         t = Turnorder([1, 2, 3, 4])
         self.assertEqual(t.next(), 1)

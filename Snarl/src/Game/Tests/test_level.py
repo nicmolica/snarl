@@ -1,12 +1,11 @@
 import sys
-sys.path.append('../')
 import unittest
-from level import Level
-from room import Room
-from hallway import Hallway
-from tile import Tile
-from occupants import Character, Adversary, LevelKey, LevelExit
-from utils import grid_to_string
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit
+from Snarl.src.Game.utils import grid_to_string
 
 class TestLevel(unittest.TestCase):
     def test_rooms_field_rejects_nonrooms(self):

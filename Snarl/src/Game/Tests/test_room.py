@@ -1,11 +1,10 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from room import Room
-from tile import Tile
-from occupants import Occupant, Character, Adversary, LevelExit, LevelKey
-from utils import grid_to_string
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.occupants import Occupant, Character, Adversary, LevelExit, LevelKey
+from Snarl.src.Game.utils import grid_to_string
 
 class TestRoom(unittest.TestCase):
     def test_room_creates_with_all_arguments(self):
