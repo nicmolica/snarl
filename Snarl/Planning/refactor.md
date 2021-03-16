@@ -30,6 +30,8 @@ Right now, neither our source files nor our test files are packaged. This has be
 
 Created a top-level package inside the `Snarl` folder, and subpackages for subfolders that need imports from other places, such as the `Snarl/tests` scripts. All files have been changed to use imports given this new package structure.
 
+Changed methods that are only used internally to "protected" status in all classes. Did the same for fields, and added getters that copy them to ensure mutation safety.
+
 ## Future Work
 
 Summarize work you'd still like to do if there's time. This can include features 
