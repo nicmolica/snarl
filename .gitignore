@@ -6,3 +6,8 @@ pyvenv.cfg
 __pycache__
 .DS_Store
 .coverage
+env/
+build/
+dist/
+.spec
+*.spec
