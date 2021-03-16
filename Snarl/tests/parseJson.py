@@ -1,13 +1,12 @@
 import sys
-sys.path.append('../src/Game')
 import json
-from room import Room
-from tile import Tile
-from level import Level
-from hallway import Hallway
-from occupants import LevelExit, LevelKey, Ghost, Zombie, Character
-from gamestate import Gamestate
-import utils
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.occupants import LevelExit, LevelKey, Ghost, Zombie, Character
+from Snarl.src.Game.gamestate import Gamestate
+import Snarl.src.Game.utils
 
 def get_tiles_from_layout(position, layout, tile_type):
     """Returns a list of Tile objects with absolute coordinates corresponding to all

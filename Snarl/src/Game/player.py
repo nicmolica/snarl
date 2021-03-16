@@ -1,4 +1,4 @@
-from occupants import Character
+from .occupants import Character
 
 class Player:
     def __init__(self, player_name, character_name):

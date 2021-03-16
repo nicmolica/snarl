@@ -1,6 +1,6 @@
 from functools import total_ordering
-from tile import Tile
-from occupants import Door, Adversary, Character, HorizontalWall, VerticalWall, Block
+from .tile import Tile
+from .occupants import Door, Adversary, Character, HorizontalWall, VerticalWall, Block
 
 @total_ordering
 class Room:

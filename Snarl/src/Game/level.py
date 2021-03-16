@@ -1,8 +1,8 @@
 import itertools
-from room import Room
-from hallway import Hallway
-from occupants import Adversary, Character, Block, LevelKey, LevelExit
-from tile import Tile
+from .room import Room
+from .hallway import Hallway
+from .occupants import Adversary, Character, Block, LevelKey, LevelExit
+from .tile import Tile
 
 class Level:
     def __init__(self, rooms, hallways):

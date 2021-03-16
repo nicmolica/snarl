@@ -1,13 +1,11 @@
 import sys
-sys.path.append('../../src/Game')
-sys.path.append('../')
 import json
-from parseJson import create_level_from_json, create_point_from_json, create_state_from_json, create_entity_from_json
-from tile import Tile
-from level import Level
-from gamestate import Gamestate
-from occupants import LevelExit, LevelKey, Character
-import utils
+from Snarl.tests.parseJson import create_level_from_json, create_point_from_json, create_state_from_json, create_entity_from_json
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.gamestate import Gamestate
+from Snarl.src.Game.occupants import LevelExit, LevelKey, Character
+import Snarl.src.Game.utils
 
 test_input = ""
 for line in sys.stdin.readlines():

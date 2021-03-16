@@ -1,8 +1,8 @@
 import random
-from gamestate import Gamestate
-from rulechecker import Rulechecker
-from occupants import Entity, Character, Adversary
-from turnorder import Turnorder
+from .gamestate import Gamestate
+from .rulechecker import Rulechecker
+from .occupants import Entity, Character, Adversary
+from .turnorder import Turnorder
 # from observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:

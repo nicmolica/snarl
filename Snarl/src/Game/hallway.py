@@ -1,4 +1,4 @@
-from tile import Tile
+from .tile import Tile
 
 class Hallway:
     """Represents a hallway that connects two rooms. Hallways are composed of

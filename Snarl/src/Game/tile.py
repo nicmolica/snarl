@@ -1,4 +1,4 @@
-from occupants import Occupant, Character, Adversary, Block
+from .occupants import Occupant, Character, Adversary, Block
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
