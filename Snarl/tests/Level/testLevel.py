@@ -1,12 +1,10 @@
 import sys
-sys.path.append('../../src/Game')
-sys.path.append('../')
 import json
-from parseJson import create_level_from_json, create_point_from_json
-from tile import Tile
-from level import Level
-from occupants import LevelExit, LevelKey
-import utils
+from Snarl.tests.parseJson import create_level_from_json, create_point_from_json
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.occupants import LevelExit, LevelKey
+import Snarl.src.Game.utils
 
 test_input = ""
 for line in sys.stdin.readlines():
@@ -68,16 +66,6 @@ def get_rooms_from_tile_in_hallway(level, tile):
     # Get the room origins from the doors
     return get_rooms_from_hallway(hallway, level.rooms)
 
-def coordinates_equal(tile1, tile2):
-    """Returns True if the x-y coordinates are equal, false otherwise.
-    """
-    return tile1.x == tile2.x and tile1.y == tile2.y
-
-def remove_duplicates(list):
-    """Removes duplicates from this list.
-    """
-    []
-
 def get_rooms_from_tile_in_room(level, tile):
     """Gets the rooms that are connected by 1 hallway to the room containing the current tile.
     Assumes that the current tile is inside a room.
@@ -137,7 +125,7 @@ output = {
     "traversable": not tile_in_level.has_block(),
     "object": tile_has_level_key_or_exit(tile_in_level),
     "type": tile_in_room_or_hallway(level, tile_in_level),
-    "reachable": get_reachable_rooms(level, tile_in_level)
+    "reachable": level.get_reachable_rooms_from_tile(tile_in_level)
 }
 
 sys.stdout.write(json.dumps(output))
