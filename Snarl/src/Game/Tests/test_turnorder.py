@@ -1,10 +1,8 @@
 import sys
-sys.path.append('../')
 import unittest
-from turnorder import Turnorder
+from Snarl.src.Game.turnorder import Turnorder
 
 class TestTurnorder(unittest.TestCase):
-    # TODO: Write unit tests for all turnorder methods
     def test_turnorder_inits_to_first_item(self):
         t = Turnorder([1, 2, 3, 4])
         self.assertEqual(t.next(), 1)
@@ -74,7 +72,7 @@ class TestTurnorder(unittest.TestCase):
         self.assertEqual(t.next(), 1)
 
     def test_eject_with_nonexistent_item_raises_error(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             l = [1, 2, 3, 4]
             t = Turnorder(l)
             t.eject(20000)
@@ -88,20 +86,20 @@ class TestTurnorder(unittest.TestCase):
         self.assertEqual(t.next(), 3)
 
     def test_next_raises_error_when_order_empty(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             t = Turnorder([])
             t.next()
 
     def test_decrement_fails_when_order_empty(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             t = Turnorder([])
-            t.decrement()
+            t._decrement()
     
     def test_decrement_goes_to_previous_turn(self):
         l = [1, 2, 3]
         t = Turnorder(l)
         t.next()
-        t.decrement()
+        t._decrement()
         self.assertEqual(t.next(), 1)
 
 

@@ -1,9 +1,8 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from tile import Tile
-from occupants import Occupant, Character, Adversary, Block
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.occupants import Occupant, Character, Adversary, Block
 
 class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):

@@ -1,9 +1,8 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from tile import Tile
-from hallway import Hallway
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.hallway import Hallway
 
 class TestHallway(unittest.TestCase):
     def test_hallway_creates_with_empty_waypoints(self):

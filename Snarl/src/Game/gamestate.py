@@ -1,6 +1,6 @@
-from rulechecker import Rulechecker
-from level import Level
-from tile import Tile
+from .rulechecker import Rulechecker
+from .level import Level
+from .tile import Tile
 
 class Gamestate:
     def __init__(self, level, num_of_players, num_of_adversaries):

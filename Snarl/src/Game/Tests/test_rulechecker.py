@@ -1,15 +1,14 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from tile import Tile
-from room import Room
-from hallway import Hallway
-from level import Level
-from player import Player
-from occupants import Character, Adversary
-from rulechecker import Rulechecker
-from gamestate import Gamestate
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.player import Player
+from Snarl.src.Game.occupants import Character, Adversary
+from Snarl.src.Game.rulechecker import Rulechecker
+from Snarl.src.Game.gamestate import Gamestate
 
 class TestRulechecker(unittest.TestCase):
     def test_valid_move_player(self):
@@ -51,7 +50,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character("char")
         level.add_character(character, Tile(2, 6))
-        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
+        is_valid = rulechecker._is_valid_player_move(character, Tile(1, 7), level)
         self.assertTrue(is_valid)
     
     def test_valid_player_move_2_steps_same_dir(self):
@@ -62,7 +61,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character("char")
         level.add_character(character, Tile(1, 9))
-        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
+        is_valid = rulechecker._is_valid_player_move(character, Tile(1, 7), level)
         self.assertTrue(is_valid)
 
     def test_invalid_player_move_too_far(self):
@@ -73,7 +72,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character("char")
         level.add_character(character, Tile(1, 13))
-        is_valid = rulechecker.is_valid_player_move(character, Tile(1, 7), level)
+        is_valid = rulechecker._is_valid_player_move(character, Tile(1, 7), level)
         self.assertFalse(is_valid)
 
     def test_invalid_player_move_blocked_dest(self):
@@ -84,7 +83,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character('name')
         level.add_character(character, Tile(0, 0))
-        is_valid = rulechecker.is_valid_player_move(character, Tile(0, 2), level)
+        is_valid = rulechecker._is_valid_player_move(character, Tile(0, 2), level)
         self.assertFalse(is_valid)
 
     def test_valid_adversary_move(self):
@@ -95,7 +94,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         adv = Adversary()
         level.add_adversary(adv, Tile(1, 8))
-        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 7), level)
+        is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 7), level)
         self.assertTrue(is_valid)
     
     def test_invalid_adversary_move_too_far(self):
@@ -106,7 +105,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         adv = Adversary()
         level.add_adversary(adv, Tile(1, 11))
-        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 7), level)
+        is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 7), level)
         self.assertFalse(is_valid)
 
     def test_invalid_adversary_move_blocked_dest(self):
@@ -117,7 +116,7 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         adv = Adversary()
         level.add_adversary(adv, Tile(0, 0))
-        is_valid = rulechecker.is_valid_adversary_move(adv, Tile(1, 0), level)
+        is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 0), level)
         self.assertFalse(is_valid)
         
     def test_players_won_when_players_won(self):

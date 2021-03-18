@@ -1,12 +1,11 @@
 import sys
-sys.path.append('../')
 import unittest
-from gamestate import Gamestate
-from level import Level
-from hallway import Hallway
-from room import Room
-from tile import Tile
-from occupants import Character, Adversary
+from Snarl.src.Game.gamestate import Gamestate
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.occupants import Character, Adversary
 
 class TestGamestate(unittest.TestCase):
     def test_gamestate_rejects_too_many_players(self):

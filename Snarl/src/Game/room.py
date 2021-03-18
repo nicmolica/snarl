@@ -1,6 +1,6 @@
 from functools import total_ordering
-from tile import Tile
-from occupants import Door, Adversary, Character, HorizontalWall, VerticalWall, Block
+from .tile import Tile
+from .occupants import Door, Adversary, Character, HorizontalWall, VerticalWall, Block
 
 @total_ordering
 class Room:
@@ -25,8 +25,8 @@ class Room:
         self.position = position
         self.width = width
         self.height = height
-        self.room_doors = room_doors
-        self.open_tiles = open_tiles
+        self._room_doors = room_doors
+        self._open_tiles = open_tiles
         if not self.is_valid():
             raise ValueError("Invalid room parameters")
 
@@ -35,12 +35,12 @@ class Room:
         """
         return isinstance(other, Room) and self.position == other.position and \
             self.width == other.width and \
-                self.room_doors == other.room_doors
+                self._room_doors == other._room_doors
 
     def __hash__(self):
         """ Overwriting hash for Rooms because we overwrote ==.
         """
-        return hash((self.position, self.width, self.height, self.room_doors))
+        return hash((self.position, self.width, self.height, self._room_doors))
 
     def __lt__(self, other):
         """ Rich comparison method, useful for determining room locations relative
@@ -59,8 +59,8 @@ class Room:
         boundary dimensions of the room, if the room domensions are not positive,
         if there is no room door, or if the given room door is not a Tile.
         """
-        room_has_door = self.room_doors != []
-        room_doors_are_tiles = all([isinstance(d, Tile) for d in self.room_doors])
+        room_has_door = self._room_doors != []
+        room_doors_are_tiles = all([isinstance(d, Tile) for d in self._room_doors])
         return isinstance(self.position, Tile) and room_has_door and self.are_dimensions_positive() \
                 and self.are_doors_on_walls() and room_doors_are_tiles and self.tiles_are_valid()
 
@@ -78,7 +78,7 @@ class Room:
         y_min = self.position.y + 1
         y_max = self.position.y + self.height - 1
 
-        for tile in self.open_tiles:
+        for tile in self._open_tiles:
             if not isinstance(tile, Tile):
                 return False
             if tile.x not in range(x_min, x_max):
@@ -96,7 +96,7 @@ class Room:
         y_min = self.position.y
         y_max = self.position.y + self.height - 1
 
-        for door in self.room_doors:
+        for door in self._room_doors:
             if door.x == x_min or door.x == x_max:
                 return door.y in range(y_min, y_max)
             elif door.y == y_min or door.y == y_max:
@@ -133,33 +133,33 @@ class Room:
         """
         # Make sure the tiles array is the proper size; inits to empty strings
         self.tiles = [[Tile(x, y) for x in range(self.width)] for y in range(self.height)]
-        self.update_walls()
-        self.update_doors()
-        self.update_open_tiles()
+        self._update_walls()
+        self._update_doors()
+        self._update_open_tiles()
 
         return self.tiles
 
-    def update_doors(self):
+    def _update_doors(self):
         """Alters self.tiles to contain appropriate characters for the doors.
         """
 
-        for door in self.room_doors:
+        for door in self._room_doors:
             relative_x = door.x - self.position.x
             relative_y = door.y - self.position.y
             if Door not in [type(occ) for occ in door.occupants]:
                 door.occupants.append(Door())
             self.tiles[relative_y][relative_x] = door
 
-    def update_open_tiles(self):
+    def _update_open_tiles(self):
         """Alters self.tiles to contain appropriate characters for open tiles,
         including any of their occupants.
         """
-        for tile in self.open_tiles:
+        for tile in self._open_tiles:
             relative_x = tile.x - self.position.x 
             relative_y = tile.y - self.position.y
             self.tiles[relative_y][relative_x] = tile
 
-    def update_walls(self):
+    def _update_walls(self):
         """Alters self.tiles to contain appropriate characters for this room's walls.
         """
         for x in range(self.width):
@@ -187,7 +187,7 @@ class Room:
         """Returns all open tiles in this room around the src Tile in a cardinal radius.
         """
         if not self.contains(src):
-            raise ValueError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
+            raise RuntimeError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
         if radius < 1:
             raise ValueError(f"Radius must be positive, received {radius}")
         
@@ -197,8 +197,8 @@ class Room:
         def nearby(src, tile):
             return cardinal_diff(src, tile) <= radius and cardinal_diff(src, tile) > 0
 
-        open_tile_nearby = [tile for tile in self.open_tiles if nearby(src, tile)]
-        door_nearby = [tile for tile in self.room_doors if nearby(src, tile)]
+        open_tile_nearby = [tile for tile in self._open_tiles if nearby(src, tile)]
+        door_nearby = [tile for tile in self._room_doors if nearby(src, tile)]
         
         return open_tile_nearby + door_nearby
 
@@ -218,3 +218,13 @@ class Room:
         horizontal_straddle = way1.y == way2.y and way1.y in range(min_y, max_y) and x_straddle
 
         return vertical_straddle or horizontal_straddle
+
+    def get_open_tiles(self):
+        """ Return a copy of the open tiles list.
+        """
+        return self._open_tiles.copy()
+    
+    def get_room_doors(self):
+        """ Return a copy of the room doors list.
+        """
+        return self._room_doors.copy()

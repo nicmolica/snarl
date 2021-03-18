@@ -1,13 +1,12 @@
 import sys
-sys.path.append('../src/Game')
 import json
-from room import Room
-from tile import Tile
-from level import Level
-from hallway import Hallway
-from occupants import LevelExit, LevelKey, Ghost, Zombie, Character
-from gamestate import Gamestate
-import utils
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.occupants import LevelExit, LevelKey, Ghost, Zombie, Character
+from Snarl.src.Game.gamestate import Gamestate
+import Snarl.src.Game.utils
 
 def get_tiles_from_layout(position, layout, tile_type):
     """Returns a list of Tile objects with absolute coordinates corresponding to all
@@ -104,11 +103,11 @@ def create_level_from_json(level_json):
             er = rooms[i]
             if er.contains(tile):
                 new_open = []
-                for ot in er.open_tiles:
+                for ot in er.get_open_tiles():
                     if ot.x != tile.x or ot.y != tile.y:
                         new_open.append(ot)
                 new_open.append(tile)
-                rooms[i] = Room(er.position, er.width, er.height, er.room_doors, new_open)
+                rooms[i] = Room(er.position, er.width, er.height, er.get_room_doors(), new_open)
     
     hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
     return Level(rooms, hallways)

@@ -13,11 +13,11 @@ class Turnorder:
         """ Eject the entity from the turn order and modify the order to match.
         """
         if not entity in self.order:
-            raise ValueError("Cannot eject nonexistent entity from the turn order.")
+            raise RuntimeError("Cannot eject nonexistent entity from the turn order.")
         entity_index = self.order.index(entity)
         self.order.remove(entity)
         if entity_index <= self.current:
-            self.decrement()
+            self._decrement()
 
     def add(self, entity, position = -1):
         """ Add the entity to the turn order at the given position and motify the order to match.
@@ -33,24 +33,24 @@ class Turnorder:
             self.order.insert(position, entity)
             self.init_order.insert(position, entity)
             if position < self.current:
-                self.increment()
+                self._increment()
 
-    def increment(self):
+    def _increment(self):
         """ Move to the next entity's turn.
         """
         if len(self.order) == 0:
-            raise ValueError("You can't move to the next turn when there are no turns yet.")
+            raise RuntimeError("You can't move to the next turn when there are no turns yet.")
         self.current = (self.current + 1) % (len(self.order))
 
-    def decrement(self):
+    def _decrement(self):
         """ Move to the previous entity's turn.
         """
         if len(self.order) == 0:
-            raise ValueError("You can't move to the previous turn when there are no turns yet.")
+            raise RuntimeError("You can't move to the previous turn when there are no turns yet.")
         self.current = (self.current - 1) % (len(self.order))
 
     def next(self):
         """ Jump to the next turn and return the entity whose turn it now is.
         """
-        self.increment()
+        self._increment()
         return self.order[self.current]

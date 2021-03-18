@@ -1,4 +1,4 @@
-from tile import Tile
+from .tile import Tile
 
 class Hallway:
     """Represents a hallway that connects two rooms. Hallways are composed of
@@ -23,9 +23,9 @@ class Hallway:
         self.door1 = door1
         self.door2 = door2
         self.waypoints = waypoints
-        self.assign_start_end_waypoints(door1, door2)
+        self._assign_start_end_waypoints(door1, door2)
 
-        if not self.are_waypoints_valid():
+        if not self._are_waypoints_valid():
             raise ValueError("Waypoints must form a sequence of horizontal and vertical segments connecting two rooms!")
 
     def __eq__(self, other):
@@ -39,7 +39,7 @@ class Hallway:
         """
         return hash((str(self.waypoints), self.door1, self.door2))
 
-    def assign_start_end_waypoints(self, door1, door2):
+    def _assign_start_end_waypoints(self, door1, door2):
         """ Place start and end waypoints inside the hallway and adjacent to the
         entrance doors, allowing duplicate waypoints to exist. If doors are
         adjacent, ensure list of waypoints is empty.
@@ -70,21 +70,21 @@ class Hallway:
             self.waypoints.insert(0, start)
             self.waypoints.append(end)
 
-    def are_waypoints_valid(self):
+    def _are_waypoints_valid(self):
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
-        if len(self.waypoints) < 2 and not self.do_waypoints_share_axis(self.door1, self.door2):
+        if len(self.waypoints) < 2 and not self._do_waypoints_share_axis(self.door1, self.door2):
             return False
         
         for i in range(0, len(self.waypoints) - 1):
             this_waypoint = self.waypoints[i]
             next_waypoint = self.waypoints[i + 1]
-            if not self.do_waypoints_share_axis(this_waypoint, next_waypoint):
+            if not self._do_waypoints_share_axis(this_waypoint, next_waypoint):
                 return False
         return True
 
-    def do_waypoints_share_axis(self, waypoint1, waypoint2):
+    def _do_waypoints_share_axis(self, waypoint1, waypoint2):
         """Do the given waypoints have at least one axis that is equal?
         """
         return waypoint1.x == waypoint2.x or waypoint1.y == waypoint2.y
@@ -98,11 +98,11 @@ class Hallway:
             for j in range(0, len(other.waypoints) - 1):
                 this_p = other.waypoints[j]
                 next_p = other.waypoints[j + 1]
-                if self.does_segment_intersect(this_w, next_w, this_p, next_p):
+                if self._does_segment_intersect(this_w, next_w, this_p, next_p):
                     return True
         return False
     
-    def does_segment_intersect(self, w1, w2, p1, p2):
+    def _does_segment_intersect(self, w1, w2, p1, p2):
         """ Does the row of tiles between w1 and w2 intersect with the row of tiles
         between p1 and p2?
         """
@@ -120,7 +120,7 @@ class Hallway:
         for i in range(0, len(self.waypoints) - 1):
             this_w = self.waypoints[i]
             next_w = self.waypoints[i + 1]
-            if self.does_segment_intersect(this_w, next_w, tile, tile):
+            if self._does_segment_intersect(this_w, next_w, tile, tile):
                 return True
                 
         return False

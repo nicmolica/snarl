@@ -1,8 +1,8 @@
 import random
-from gamestate import Gamestate
-from rulechecker import Rulechecker
-from occupants import Entity, Character, Adversary
-from turnorder import Turnorder
+from .gamestate import Gamestate
+from .rulechecker import Rulechecker
+from .occupants import Entity, Character, Adversary
+from .turnorder import Turnorder
 # from observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
@@ -38,10 +38,10 @@ class Gamemanager:
         # TODO: the '0' will be changed to # of adversaries when we add adversaries.
         self.game_state = Gamestate(level, len(self.player_list), 0)
         top_left_room = self.game_state.get_top_left_room()
-        open_tiles = top_left_room.open_tiles.copy()
+        open_tiles = top_left_room.get_open_tiles()
 
         if len(self.player_list) > len(open_tiles):
-            raise ValueError("There are not enough tiles in the first room for each player to have a spot.")
+            raise RuntimeError("There are not enough tiles in the first room for each player to have a spot.")
 
         random.shuffle(open_tiles)
 
@@ -55,7 +55,7 @@ class Gamemanager:
         """ Determine the type of the entity currently moving and get the move they want to make.
         """
         if not self.game_state:
-            raise ValueError("Cannot call get_move when the game has not started!")
+            raise RuntimeError("Cannot call get_move when the game has not started!")
         if isinstance(self.current_turn, Character):
             return self.get_player_move()
         elif isinstance(self.current_turn, Adversary):
@@ -68,12 +68,12 @@ class Gamemanager:
         method/client.
         """
         if not self.game_state:
-            raise ValueError("Cannot call get_player_move when the game has not started!")
+            raise RuntimeError("Cannot call get_player_move when the game has not started!")
         try:
             current_player = next(player for player in self.player_list if player.character == self.current_turn)
             return current_player.move()
         except:
-            raise ValueError("Attempted to get player move from a player who does not exist!")
+            raise RuntimeError("Attempted to get player move from a player who does not exist!")
 
     def get_adversary_move(self):
         """ Receive the next move from an adversary either from STDIN or from some other entry
@@ -81,7 +81,7 @@ class Gamemanager:
         """
         # TODO: No adversaries yet; can be implemented in a later milestone.
         if not self.game_state:
-            raise ValueError("Cannot call get_adversary_move when the game has not started!")
+            raise RuntimeError("Cannot call get_adversary_move when the game has not started!")
 
     def update_players(self):
         """ Update all the players about changes to the Gamestate surrounding them. This
@@ -89,7 +89,7 @@ class Gamemanager:
         the way the level looks.
         """
         if not self.game_state:
-            raise ValueError("Cannot call update_players when the game has not started!")
+            raise RuntimeError("Cannot call update_players when the game has not started!")
 
         for player in self.player_list:
             grid = self.game_state.get_character_surroundings(player.character, self.view_distance)
@@ -99,7 +99,7 @@ class Gamemanager:
         """ Return an ASCII representation of the current game state.
         """
         if not self.game_state:
-            raise ValueError("Cannot call render when the game has not started!")
+            raise RuntimeError("Cannot call render when the game has not started!")
 
         return self.game_state.render()
 
@@ -109,14 +109,14 @@ class Gamemanager:
         """
         # TODO: Implement later; per milestone spec this can be a stub for now.
         if not self.game_state:
-            raise ValueError("Cannot call begin_next_level when the game has not started!")
+            raise RuntimeError("Cannot call begin_next_level when the game has not started!")
 
     def quit_game(self):
         """ Quit the game.
         """
         # TODO: Implement later; per milestone spec this can be a stub for now.
         if not self.game_state:
-            raise ValueError("Cannot call quit_game when the game has not started!")
+            raise RuntimeError("Cannot call quit_game when the game has not started!")
 
     def add_player(self, player):
         """ Register a new player to the game and add it to the correct spot in the turn order.
@@ -124,7 +124,7 @@ class Gamemanager:
         if player in set(self.player_list.copy()):
             raise ValueError("Cannot have duplicate players in a game!")
         elif len(self.player_list) == self.max_players:
-            raise ValueError("Cannot add more than " + str(self.max_players) + " players to a game!")
+            raise RuntimeError("Cannot add more than " + str(self.max_players) + " players to a game!")
         
         self.player_list.append(player)
         self.turn_order.add(player)
@@ -159,7 +159,7 @@ class Gamemanager:
         """ Determine if the provided move is valid. If so, perform it.
         """
         if not self.game_state:
-            raise ValueError("Cannot call move when the game has not started!")
+            raise RuntimeError("Cannot call move when the game has not started!")
         # throws exception with helpful message if move is invalid
         self.rule_checker.is_valid_move(self.current_turn, move, self.game_state.current_level)
         self.game_state.move(self.current_turn, move)
@@ -168,7 +168,7 @@ class Gamemanager:
         """ Main game loop.
         """
         if not self.game_state:
-            raise ValueError("Cannot call run when the game has not started!")
+            raise RuntimeError("Cannot call run when the game has not started!")
 
         while not self.rule_checker.is_game_over(self.game_state):
             move = self.get_move()

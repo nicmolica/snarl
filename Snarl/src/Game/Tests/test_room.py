@@ -1,11 +1,10 @@
 import sys
-sys.path.append('../')
 import unittest
 import random
-from room import Room
-from tile import Tile
-from occupants import Occupant, Character, Adversary, LevelExit, LevelKey
-from utils import grid_to_string
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.occupants import Occupant, Character, Adversary, LevelExit, LevelKey
+from Snarl.src.Game.utils import grid_to_string
 
 class TestRoom(unittest.TestCase):
     def test_room_creates_with_all_arguments(self):
@@ -38,7 +37,7 @@ class TestRoom(unittest.TestCase):
 
     def test_room_open_tiles_around_outside_room_fails(self):
         room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             room1.open_tiles_around(Tile(100, 100), 2)
     
     def test_room_open_tiles_around_1_radius_does_not_return_self(self):
