@@ -37,7 +37,7 @@ class TestRoom(unittest.TestCase):
 
     def test_room_open_tiles_around_outside_room_fails(self):
         room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             room1.open_tiles_around(Tile(100, 100), 2)
     
     def test_room_open_tiles_around_1_radius_does_not_return_self(self):

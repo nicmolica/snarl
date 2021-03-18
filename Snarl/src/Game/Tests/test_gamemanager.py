@@ -41,7 +41,7 @@ class TestGamemanager(unittest.TestCase):
         player = Player("Ty", "Tulkas Astaldo")
         player2 = Player("Nic", "Morgoth Bauglir")
         manager.add_player(player)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.add_player(player2)
 
     def test_add_player_registers_observer(self):
@@ -103,47 +103,47 @@ class TestGamemanager(unittest.TestCase):
         manager.add_player(player)
         manager.add_player(player2)
         manager.add_player(player3)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.start_game(level)
 
     def test_run_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.run()
 
     def test_get_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.move(Tile(3, 4))
 
     def test_quit_game_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.quit_game()
         
     def test_begin_next_level_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.begin_next_level()
     
     def test_render_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.render()
     
     def test_update_players_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.update_players()
 
     def test_get_adversary_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.get_adversary_move()
 
     def test_get_player_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             manager.get_player_move()
 
 

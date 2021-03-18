@@ -72,7 +72,7 @@ class TestTurnorder(unittest.TestCase):
         self.assertEqual(t.next(), 1)
 
     def test_eject_with_nonexistent_item_raises_error(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             l = [1, 2, 3, 4]
             t = Turnorder(l)
             t.eject(20000)
@@ -86,12 +86,12 @@ class TestTurnorder(unittest.TestCase):
         self.assertEqual(t.next(), 3)
 
     def test_next_raises_error_when_order_empty(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             t = Turnorder([])
             t.next()
 
     def test_decrement_fails_when_order_empty(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(RuntimeError):
             t = Turnorder([])
             t._decrement()
     
