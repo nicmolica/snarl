@@ -28,19 +28,17 @@ Things like `has_character` or `has_adversary` could be pretty useful.
 Right now, neither our source files nor our test files are packaged. This has been causing issues with running tests, as well as making it more difficult to import things from a parent directory in any of our files. We should create packages `Snarl.src` and `Snarl.test` in order to make this easier. We should also figure out how sub-packaging works. 
 
 ## Changes
-
-### Created Python packages for `Snarl` directories
-
-Created a top-level package inside the `Snarl` folder, and subpackages for subfolders that need imports from other places, such as the `Snarl/tests` scripts. All files have been changed to use imports given this new package structure.
-
-Changed methods that are only used internally to "protected" status in all classes. Did the same for fields, and added getters that copy them to ensure mutation safety.
+- Created a top-level package inside the `Snarl` folder, and subpackages for subfolders that need imports from other places, such as the `Snarl/tests` scripts. All files have been changed to use imports given this new package structure.
+- Changed methods that are only used internally to be marked as "protected" status in all classes via prefixing them with `_`. Did the same for fields, and added getters that copy them to ensure mutation safety.
+    - This includes the `open_tiles` field of room, which resolves that issue.
+- Added some utility methods (`has_character/has_adversary`) to the Tile class.
+- Changed many exceptions to be `RuntimeError`s rather than `ValueErrors`. 
+- Moved the `get_adjacent_rooms` method from `testLevel` into `Level`. Also copied over all necessary helpers as "protected" `_` methods.
 
 ## Future Work
 
-Summarize work you'd still like to do if there's time. This can include features 
-you'd like to implement if given time.
-
+At this time, we do not have any outstanding refactoring work planned.
 
 ## Conclusion
 
-Any concluding remarks.
+Thanks for the refactoring week!
