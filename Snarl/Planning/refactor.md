@@ -22,7 +22,7 @@ Determine which methods from testLevel.py would be helpful to have in Level and 
 Right now we pretty much just throw ValueErrors and TypeErrors, so we should define our own exceptions or at the very least raise more appropriate ones.
 
 ### Add other predicates for tile occupants to Tile class
-Things like `has_character` or `has_adversary` could be pretty useful. 
+Things like `has_character` or `has_adversary` could be pretty useful.
 
 ### Proper packaging of files
 Right now, neither our source files nor our test files are packaged. This has been causing issues with running tests, as well as making it more difficult to import things from a parent directory in any of our files. We should create packages `Snarl.src` and `Snarl.test` in order to make this easier. We should also figure out how sub-packaging works. 

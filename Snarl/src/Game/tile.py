@@ -88,3 +88,26 @@ class Tile:
                 return True
 
         return False
+
+    def has_character(self):
+        """ Does this tile have a character on it?
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, Character):
+                return True
+
+        return False
+
+    def has_adversary(self):
+        """ Does this tile have an adversary on it?
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, Adversary):
+                return True
+
+        return False
+
+    def coordinates_equal(self, other):
+        """ Do the coordinates of this tile match the coordinates of the other tile?
+        """
+        return self.x == other.x and self.y == other.y

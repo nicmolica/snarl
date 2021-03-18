@@ -187,7 +187,7 @@ class Room:
         """Returns all open tiles in this room around the src Tile in a cardinal radius.
         """
         if not self.contains(src):
-            raise ValueError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
+            raise RuntimeError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
         if radius < 1:
             raise ValueError(f"Radius must be positive, received {radius}")
         
