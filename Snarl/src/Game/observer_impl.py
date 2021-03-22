@@ -1,5 +1,6 @@
 from .observer import Observer
 from .utils import grid_to_string
+from .gamestate import Gamestate
 import sys
 
 class ObserverImpl(Observer):
