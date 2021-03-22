@@ -1,2 +1,2 @@
 export PYTHONPATH=$(cd ../../../ && pwd)$PYTHONPATH
-coverage run -m --omit="*/Lib/*,*/Tests/*" unittest discover Tests
+coverage run -m --omit="*/Lib/*,*/Tests/*,*/__init__.py" unittest discover Tests

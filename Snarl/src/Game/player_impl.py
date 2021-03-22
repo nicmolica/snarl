@@ -2,7 +2,7 @@ from .occupants import Character
 from .player import Player
 from .tile import Tile
 import sys
-import JSON
+import json
 
 class PlayerImpl(Player):
     def __init__(self, player_name, character_name):
@@ -33,7 +33,7 @@ class PlayerImpl(Player):
         """
         sys.stdout.write("Please provide a move in the form [x, y]:\n")
         requested_move = input()
-        x, y = JSON.parse(requested_move)
+        x, y = json.parse(requested_move)
         return Tile(x, y)      
 
     def update_surroundings(self, grid):
