@@ -8,7 +8,7 @@ class Room:
     grid, positive width and height, at least one room door on the room's boundary,
     and a list of non-wall tiles inside the room.
     """
-    def __init__(self, position, width, height, room_doors, open_tiles = []):
+    def __init__(self, position: Tile, width: int, height: int, room_doors: list, open_tiles: list = []):
         """Constructs a new room.
 
         Arguments:
@@ -52,7 +52,7 @@ class Room:
             return self.position.y < other.position.y
         return self_manhattan < other_manhattan
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """Determine if the given parameters constitute a valid room.
 
         A room is invalid if the given exit_door location is not at the
@@ -64,12 +64,12 @@ class Room:
         return isinstance(self.position, Tile) and room_has_door and self.are_dimensions_positive() \
                 and self.are_doors_on_walls() and room_doors_are_tiles and self.tiles_are_valid()
 
-    def are_dimensions_positive(self):
+    def are_dimensions_positive(self) -> bool:
         """Are the width and height positive?
         """
         return self.width > 0 and self.height > 0
 
-    def tiles_are_valid(self):
+    def tiles_are_valid(self) -> bool:
         """Makes sure that all of the open tiles given in the open tile layout are actually valid.
         """
         # Should not allow open tiles on the boundary.
@@ -88,7 +88,7 @@ class Room:
 
         return True
 
-    def are_doors_on_walls(self):
+    def are_doors_on_walls(self) -> bool:
         """Are the doors of this room on the room's walls?
         """
         x_min = self.position.x
@@ -104,7 +104,7 @@ class Room:
             else:
                 return False
 
-    def does_it_intersect(self, other):
+    def does_it_intersect(self, other) -> bool:
         """ Does this room intersect with the other room?
         """
         x1_min, x1_max = self.position.x, self.position.x + self.width
@@ -116,7 +116,7 @@ class Room:
         yflag = set(range(y1_min, y1_max)).intersection(set(range(y2_min, y2_max))) != set()
         return xflag and yflag
     
-    def contains(self, tile):
+    def contains(self, tile: Tile) -> bool:
         """ Is the given Tile inside of this room?
         """
         return tile.x in range(self.position.x, self.position.x + self.width) and \
@@ -174,7 +174,7 @@ class Room:
                 else:
                     self.tiles[y][x] = Tile(abs_x, abs_y, [Block()])
 
-    def render(self):
+    def render(self) -> str:
         self.update_tiles()
         render_grid = [['X' for x in range(self.width)] for y in range(self.height)]
         for y in range(self.height):
@@ -183,7 +183,7 @@ class Room:
         
         return render_grid
 
-    def open_tiles_around(self, src, radius):
+    def open_tiles_around(self, src: Tile, radius: int) -> list:
         """Returns all open tiles in this room around the src Tile in a cardinal radius.
         """
         if not self.contains(src):
@@ -202,7 +202,7 @@ class Room:
         
         return open_tile_nearby + door_nearby
 
-    def is_straddled_by(self, way1, way2):
+    def is_straddled_by(self, way1: Tile, way2: Tile) -> bool:
         """ Is this room straddled by the two waypoints?
         """
         min_x = self.position.x
@@ -219,12 +219,12 @@ class Room:
 
         return vertical_straddle or horizontal_straddle
 
-    def get_open_tiles(self):
+    def get_open_tiles(self) -> list:
         """ Return a copy of the open tiles list.
         """
         return self._open_tiles.copy()
     
-    def get_room_doors(self):
+    def get_room_doors(self) -> list:
         """ Return a copy of the room doors list.
         """
         return self._room_doors.copy()

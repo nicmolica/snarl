@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from .tile import Tile
 
 class Player(ABC):
     @abstractmethod
@@ -14,14 +15,14 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def move(self):
+    def move(self) -> Tile:
         """Given the current state of their surroundings, get a move from this
         player and return the coordinates of the desired move.
         """
         pass
 
     @abstractmethod
-    def update_surroundings(self, grid):
+    def update_surroundings(self, grid: list):
         """Send a new grid of surrounding tiles to this player.
         """
         pass

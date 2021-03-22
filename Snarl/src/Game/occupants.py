@@ -37,7 +37,7 @@ class Character(Entity):
     def __hash__(self):
         return hash((self.name))
     
-    def render(self):
+    def render(self) -> str:
         return 'P'
 
 class Adversary(Entity):

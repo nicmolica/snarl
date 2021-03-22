@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from .gamestate import Gamestate
 
 class Observer(ABC):
     @abstractmethod
-    def notify(self, gamestate):
+    def notify(self, gamestate: Gamestate):
         """This is essentially a setter. It sets the `gamestate` field of this `Observer` object
         to the current `Gamestate` of the `Gamemanager` that is being observed. This will be called
         every time there is a change to the `Gamestate` so that the `Observer` will always have
@@ -19,7 +20,7 @@ class Observer(ABC):
         pass
 
     @abstractmethod
-    def transmit_view(self, ip):
+    def transmit_view(self, ip: str):
         """Given an IP address, creates a socket that transmits the current view of the `Gamestate`
         to a server. It obtains the current view by calling the `render()` method. This view may be
         either total or partial, depending on what the `Observer` ends up being used for.

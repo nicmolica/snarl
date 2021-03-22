@@ -1,5 +1,7 @@
+from .occupants import Entity
+
 class Turnorder:
-    def __init__(self, init_order):
+    def __init__(self, init_order: list):
         """ Creates a Turnorder object, which is used by the Gamemanager to handle
         the logic behind ensuring turn orders are correct.
         """
@@ -9,7 +11,7 @@ class Turnorder:
         # increments current, so this should be set to -1 at first.
         self.current = -1
 
-    def eject(self, entity):
+    def eject(self, entity: Entity):
         """ Eject the entity from the turn order and modify the order to match.
         """
         if not entity in self.order:
@@ -19,7 +21,7 @@ class Turnorder:
         if entity_index <= self.current:
             self._decrement()
 
-    def add(self, entity, position = -1):
+    def add(self, entity: Entity, position: int = -1):
         """ Add the entity to the turn order at the given position and motify the order to match.
         """
         if position < -1:
@@ -49,7 +51,7 @@ class Turnorder:
             raise RuntimeError("You can't move to the previous turn when there are no turns yet.")
         self.current = (self.current - 1) % (len(self.order))
 
-    def next(self):
+    def next(self) -> Entity:
         """ Jump to the next turn and return the entity whose turn it now is.
         """
         self._increment()

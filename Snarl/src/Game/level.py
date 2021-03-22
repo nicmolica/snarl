@@ -1,11 +1,11 @@
 import itertools
 from .room import Room
 from .hallway import Hallway
-from .occupants import Adversary, Character, Block, LevelKey, LevelExit
+from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant
 from .tile import Tile
 
 class Level:
-    def __init__(self, rooms, hallways):
+    def __init__(self, rooms: list, hallways: list):
         """Creates the given level layout. Requires that no two rooms
         or hallways overlap and that all hallways connect two room doors.
         """
@@ -30,7 +30,7 @@ class Level:
         # This is done after we know that the room is valid.
         self._update_tiles()
 
-    def render(self):
+    def render(self) -> str:
         """Renders an ASCII representation of this level. Each coordinate in the level
         corresponds to a single ASCII character. Stores this grid of characters in self.rendered_tiles.
 
@@ -47,12 +47,12 @@ class Level:
 
         return rendered_tiles
 
-    def get_tiles(self):
+    def get_tiles(self) -> list:
         """ Return the array of tiles.
         """
         return self.tiles.copy()
 
-    def get_tiles_range(self, tile1, tile2):
+    def get_tiles_range(self, tile1: Tile, tile2: Tile) -> list:
         """ Return the rectangle of tiles between the specified tiles.
         """
         min_x = min(tile1.x, tile2.x)
@@ -85,7 +85,7 @@ class Level:
         
         return max_width, max_height
     
-    def locate_occupant(self, occupant):
+    def locate_occupant(self, occupant: Occupant) -> Tile:
         """ Locate the given occupant on the current level if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
@@ -95,7 +95,7 @@ class Level:
         else:
             return None
 
-    def move_occupant(self, occupant, dest):
+    def move_occupant(self, occupant: Occupant, dest: Tile):
         """ Move the given occupant to the given destination if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
@@ -110,13 +110,13 @@ class Level:
             raise RuntimeError("You can't move something that isn't a Character or an Adversary!")
         self.interact(self.get_tile(dest))
 
-    def get_tile(self, tile):
+    def get_tile(self, tile: Tile) -> Tile:
         """ Given a tile, returns the actual Tile object in the grid associated with the same
         indices as the passed tile.
         """
         return self.tiles[tile.y][tile.x]
 
-    def interact(self, dest):
+    def interact(self, dest: Tile):
         """Triggers any necessary interactions between the occupants of this tile. The interactions
         are as follows:
         1. Character + Key = unlock the level exit
@@ -147,7 +147,7 @@ class Level:
         """
         self.level_exit_unlocked = True
 
-    def set_level_exit_status(self, status):
+    def set_level_exit_status(self, status: bool):
         """Sets whether or not the level exit is unlocked.
         """
         if isinstance(status, bool):
@@ -155,28 +155,28 @@ class Level:
         else:
             raise TypeError("You can't set level exit status to something other than True or False")
 
-    def add_character(self, player, location):
+    def add_character(self, character: Character, location: Tile):
         """ Add a player to this level at the specified location. Enforce
         uniqueness of player names.
         """
-        if player in set(self.characters.keys()):
+        if character in set(self.characters.keys()):
             raise ValueError("Cannot have duplicate characters!")
-        self.characters[player] = self.get_tile(location)
-        self.get_tile(location).add_occupant(player)
+        self.characters[character] = self.get_tile(location)
+        self.get_tile(location).add_occupant(character)
 
-    def add_adversary(self, adversary, location):
+    def add_adversary(self, adversary: Adversary, location: Tile):
         """ Adds an adversary to this level at the specified location.
         """
         self.adversaries[adversary] = self.get_tile(location)
         self.get_tile(location).add_occupant(adversary)
 
-    def get_top_left_room(self):
+    def get_top_left_room(self) -> Room:
         """ Get the top left room of this Level. Note that this function takes
         advantage of rich comparison provided by __lt__ on the Room class.
         """
         return sorted(self.rooms.copy())[0]
 
-    def _any_overlaps(self):
+    def _any_overlaps(self) -> bool:
         """Do any two rooms/hallways overlap with each other? Uses 4 checks to verify this:
            - For all pairs of 2 rooms, do the rooms intersect? If yes for any, return true.
            - For all waypoints, is the waypoint inside of a room? If yes for any, return true.
@@ -197,7 +197,7 @@ class Level:
         return any_room_intersections or any_hallways_inside_rooms or \
             any_hallways_intersect_hallways or does_hallway_straddle_room
     
-    def _do_any_rooms_intersect(self):
+    def _do_any_rooms_intersect(self) -> bool:
         """Are there any two rooms in this level that share coordinates?
         """
         room_combos = itertools.combinations(self.rooms, 2)
@@ -206,7 +206,7 @@ class Level:
                 return True
         return False
     
-    def _do_any_hallways_intersect_rooms(self):
+    def _do_any_hallways_intersect_rooms(self) -> bool:
         """Do any hallways have coordinates that are inside any room?
         For this, it suffices to check the hallway's waypoints.
         """
@@ -220,7 +220,7 @@ class Level:
         return False
         # TODO deal with hallway segments that straddle rooms
 
-    def _do_any_hallways_intersect_hallways(self):
+    def _do_any_hallways_intersect_hallways(self) -> bool:
         """Will any hallways intersect each other?
         """
         hall_combos = itertools.combinations(self.hallways, 2)
@@ -229,7 +229,7 @@ class Level:
                 return True
         return False
 
-    def _does_any_hallway_straddle_room(self):
+    def _does_any_hallway_straddle_room(self) -> bool:
         """ Does any pair of waypoints in the set of hallways straddle
         any one of the rooms?
         """
@@ -244,7 +244,7 @@ class Level:
                     return True
         return False
 
-    def _are_hallways_connected_to_doors(self):
+    def _are_hallways_connected_to_doors(self) -> bool:
         """Do all hallways have their endpoints at room doors?
         """
         hall_ends = []
@@ -306,7 +306,7 @@ class Level:
                 for y in range(room.position.y, room.position.y + room.height):
                     self.tiles[y][x] = room_tiles[y - room.position.y][x - room.position.x]
 
-    def _get_rooms_from_hallway(hallway):
+    def _get_rooms_from_hallway(self, hallway):
         """Given a hallway, determine which rooms form the endpoint of the hallway.
         Returns the room origins as a 2-element list of 2-element lists representign coordinates.
         """

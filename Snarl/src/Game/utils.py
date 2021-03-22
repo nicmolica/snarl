@@ -2,7 +2,7 @@
 with the docstrings.
 """
 
-def grid_to_string(grid):
+def grid_to_string(grid: list) -> str:
     """Given a 2D list of characters, return a string of the characters in grid form.
     Taken from
     

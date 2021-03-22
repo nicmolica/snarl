@@ -3,10 +3,13 @@ from .gamestate import Gamestate
 from .rulechecker import Rulechecker
 from .occupants import Entity, Character, Adversary
 from .turnorder import Turnorder
-# from observer import Observer # TODO uncomment this once it exists
+from .level import Level
+from .tile import Tile
+from .player import Player
+from .observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
-    def __init__(self, max_players = 4, view_distance = 2, num_of_levels = 1,):
+    def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1):
         if view_distance >= 1:
             self.view_distance = view_distance
         else:
@@ -31,7 +34,7 @@ class Gamemanager:
         self.adversary_list = []
         self.observers = []
 
-    def start_game(self, level):
+    def start_game(self, level: Level):
         """ Begin the game by placing all the players in the top left room of the first level.
         """
         # Initialize game state and begin
@@ -51,7 +54,7 @@ class Gamemanager:
 
         self.run()
 
-    def get_move(self):
+    def get_move(self) -> Tile:
         """ Determine the type of the entity currently moving and get the move they want to make.
         """
         if not self.game_state:
@@ -63,7 +66,7 @@ class Gamemanager:
         else:
             raise TypeError("You're trying to move something that isn't a character or an adversary.")
 
-    def get_player_move(self):
+    def get_player_move(self) -> Tile:
         """ Receive the next move from a player either from STDIN or from some other entry
         method/client.
         """
@@ -75,7 +78,7 @@ class Gamemanager:
         except:
             raise RuntimeError("Attempted to get player move from a player who does not exist!")
 
-    def get_adversary_move(self):
+    def get_adversary_move(self) -> Tile:
         """ Receive the next move from an adversary either from STDIN or from some other entry
         method/client.
         """
@@ -95,7 +98,7 @@ class Gamemanager:
             grid = self.game_state.get_character_surroundings(player.character, self.view_distance)
             player.update_surroundings(grid)
 
-    def render(self):
+    def render(self) -> str:
         """ Return an ASCII representation of the current game state.
         """
         if not self.game_state:
@@ -118,7 +121,7 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call quit_game when the game has not started!")
 
-    def add_player(self, player):
+    def add_player(self, player: Player):
         """ Register a new player to the game and add it to the correct spot in the turn order.
         """
         if player in set(self.player_list.copy()):
@@ -130,7 +133,7 @@ class Gamemanager:
         self.turn_order.add(player)
         self.observers.append(player)
 
-    def add_adveraries(self, adversaries = []):
+    def add_adveraries(self, adversaries):
         """ Add all the provided adversaries to the adversary_list field and put them in the correct
         place in the turn order list.
         """
@@ -143,7 +146,7 @@ class Gamemanager:
         else:
             raise TypeError("All adversaries must be of the type \"Adversary.\"")
 
-    def register_observer(self, observer):
+    def register_observer(self, observer: Observer):
         """ Register a new Observer by adding it to the list of observers.
         """
         self.observers.append(observer)
@@ -155,7 +158,7 @@ class Gamemanager:
         for observer in self.observers:
             observer.notify(self.game_state)
 
-    def move(self, move):
+    def move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
         """
         if not self.game_state:

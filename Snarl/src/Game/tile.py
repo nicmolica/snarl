@@ -4,7 +4,7 @@ class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
     May be occupied by an Occupant.
     """
-    def __init__(self, x, y, occupants=[]):
+    def __init__(self, x: int, y: int, occupants: list = []):
         """Constructs a new tile, possibly with an occupant.
 
         Arguments:
@@ -43,7 +43,7 @@ class Tile:
         """
         return hash((self.x, self.y, str(self.occupants)))
 
-    def render(self):
+    def render(self) -> str:
         """Renders the given tile, including the first occupant.
         """
         if self.occupants != []:
@@ -51,7 +51,7 @@ class Tile:
         else:
             return ' '
 
-    def add_occupant(self, occupant):
+    def add_occupant(self, occupant: Occupant):
         """ Blindly add the passed Occupant to this Tile, without verifying if there are
         other Occupants already there.
         """
@@ -60,7 +60,7 @@ class Tile:
         else:
             raise TypeError("Cannot add a non-Occupant to a tile.")
 
-    def get_character(self):
+    def get_character(self) -> Character:
         """ Return the player on this Tile, if there is one. Assume there will never be
         more than one.
         """
@@ -70,7 +70,7 @@ class Tile:
 
         return None
 
-    def get_adversary(self):
+    def get_adversary(self) -> Adversary:
         """ Return the adversary on this Tile, if there is one. Assume there will never be
         more than one.
         """
@@ -80,7 +80,7 @@ class Tile:
 
         return None
 
-    def has_block(self):
+    def has_block(self) -> bool:
         """ Does this tile have a block on it?
         """
         for occupant in self.occupants:
@@ -89,7 +89,7 @@ class Tile:
 
         return False
 
-    def has_character(self):
+    def has_character(self) -> bool:
         """ Does this tile have a character on it?
         """
         for occupant in self.occupants:
@@ -98,7 +98,7 @@ class Tile:
 
         return False
 
-    def has_adversary(self):
+    def has_adversary(self) -> bool:
         """ Does this tile have an adversary on it?
         """
         for occupant in self.occupants:
@@ -107,7 +107,7 @@ class Tile:
 
         return False
 
-    def coordinates_equal(self, other):
+    def coordinates_equal(self, other) -> bool:
         """ Do the coordinates of this tile match the coordinates of the other tile?
         """
         return self.x == other.x and self.y == other.y

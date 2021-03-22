@@ -4,7 +4,7 @@ class Hallway:
     """Represents a hallway that connects two rooms. Hallways are composed of
     vertical and horizontal segments.
     """
-    def __init__(self, waypoints, door1, door2):
+    def __init__(self, waypoints: list, door1: Tile, door2: Tile):
         """Create a new hallway that follows the given waypoints to connect door1 to door2.
 
         Arguments:
@@ -39,7 +39,7 @@ class Hallway:
         """
         return hash((str(self.waypoints), self.door1, self.door2))
 
-    def _assign_start_end_waypoints(self, door1, door2):
+    def _assign_start_end_waypoints(self, door1: Tile, door2: Tile):
         """ Place start and end waypoints inside the hallway and adjacent to the
         entrance doors, allowing duplicate waypoints to exist. If doors are
         adjacent, ensure list of waypoints is empty.
@@ -70,7 +70,7 @@ class Hallway:
             self.waypoints.insert(0, start)
             self.waypoints.append(end)
 
-    def _are_waypoints_valid(self):
+    def _are_waypoints_valid(self) -> bool:
         """Determines if the waypoints will form a series of horizontal and vertical
         segments. If not, returns False.
         """
@@ -84,12 +84,12 @@ class Hallway:
                 return False
         return True
 
-    def _do_waypoints_share_axis(self, waypoint1, waypoint2):
+    def _do_waypoints_share_axis(self, waypoint1: Tile, waypoint2: Tile) -> bool:
         """Do the given waypoints have at least one axis that is equal?
         """
         return waypoint1.x == waypoint2.x or waypoint1.y == waypoint2.y
     
-    def does_it_intersect(self, other):
+    def does_it_intersect(self, other) -> bool:
         """ Does this hallway intersect with the other provided hallway?
         """
         for i in range(0, len(self.waypoints) - 1):
@@ -102,7 +102,7 @@ class Hallway:
                     return True
         return False
     
-    def _does_segment_intersect(self, w1, w2, p1, p2):
+    def _does_segment_intersect(self, w1: Tile, w2: Tile, p1: Tile, p2: Tile) -> bool:
         """ Does the row of tiles between w1 and w2 intersect with the row of tiles
         between p1 and p2?
         """
@@ -114,7 +114,7 @@ class Hallway:
         yflag = set(w_y).intersection(set(p_y)) != set()
         return xflag and yflag
 
-    def contains(self, tile):
+    def contains(self, tile: Tile) -> bool:
         """Does this hallway contain the given tile?
         """
         for i in range(0, len(self.waypoints) - 1):
@@ -124,4 +124,3 @@ class Hallway:
                 return True
                 
         return False
-            

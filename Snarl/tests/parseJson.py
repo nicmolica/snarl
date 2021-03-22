@@ -8,7 +8,7 @@ from Snarl.src.Game.occupants import LevelExit, LevelKey, Ghost, Zombie, Charact
 from Snarl.src.Game.gamestate import Gamestate
 import Snarl.src.Game.utils
 
-def get_tiles_from_layout(position, layout, tile_type):
+def get_tiles_from_layout(position: Tile, layout: list, tile_type: int):
     """Returns a list of Tile objects with absolute coordinates corresponding to all
     tiles in layout with the matching tile_type.
     """
@@ -19,18 +19,18 @@ def get_tiles_from_layout(position, layout, tile_type):
                 tiles.append(Tile(position.x + col, position.y + row))
     return tiles
 
-def get_room_doors_from_layout(position, layout):
+def get_room_doors_from_layout(position: Tile, layout: list):
     """Given a 2D layout array of a room, return the indices for the room doors.
     """
     return get_tiles_from_layout(position, layout, 2)
 
-def get_open_tiles_from_layout(position, layout):
+def get_open_tiles_from_layout(position: Tile, layout: list):
     """Given a 2D layout array of a room, return the indices for the open tiles.
     """
     return get_tiles_from_layout(position, layout, 1)
 
 
-def create_room_from_json(room_json):
+def create_room_from_json(room_json: dict):
     """Parses room_json into one of our room objects. Assume that the room_json is of the form
     {
         "type": "room",
@@ -52,7 +52,7 @@ def create_room_from_json(room_json):
     room = Room(position, width, height, room_doors, open_tiles)
     return room
 
-def create_object_from_json(obj_json):
+def create_object_from_json(obj_json: dict):
     """Parses obj_json into a level key or level exit.
     """
     objType = obj_json["type"]
@@ -64,7 +64,7 @@ def create_object_from_json(obj_json):
         occupant = LevelKey()
     return Tile(position.x, position.y, occupant)
 
-def create_hallway_from_json(hall_json):
+def create_hallway_from_json(hall_json: dict):
     """Create a Hallway object from the hall_json object. Hallway JSON is of the form
         { 
             "type": "hallway",
@@ -78,7 +78,7 @@ def create_hallway_from_json(hall_json):
     waypoints = [create_point_from_json(wp) for wp in hall_json["waypoints"]]
     return Hallway(waypoints, doorFrom, doorTo)
 
-def create_level_from_json(level_json):
+def create_level_from_json(level_json: dict):
     """Parses room_json into one of our room objects. Assume that the room_json is of the form
         {
             "type": "level",
@@ -112,7 +112,7 @@ def create_level_from_json(level_json):
     hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
     return Level(rooms, hallways)
 
-def create_state_from_json(state_json):
+def create_state_from_json(state_json: dict):
     """ Parses state_json into a Gamestate object. Assume that state_json is of the form:
     {
         "type": "state",
@@ -150,7 +150,7 @@ def create_state_from_json(state_json):
     
     return state
 
-def create_entity_from_json(player_json):
+def create_entity_from_json(player_json: dict):
     """ Parses player_json into an Entity object. Assume that player_json is of the form:
     {
         "type": (actor-type),
@@ -165,7 +165,7 @@ def create_entity_from_json(player_json):
     elif player_json["type"] == "ghost":
         return Ghost(player_json["name"])
 
-def create_point_from_json(point_json):
+def create_point_from_json(point_json: dict):
     """Given a JSON array with two elements [row, column], output a Tile object with
     those coordinates.
     """
