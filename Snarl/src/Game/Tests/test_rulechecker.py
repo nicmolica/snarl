@@ -5,14 +5,14 @@ from Snarl.src.Game.tile import Tile
 from Snarl.src.Game.room import Room
 from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.level import Level
-from Snarl.src.Game.player import Player
+from Snarl.src.Game.player_impl import PlayerImpl
 from Snarl.src.Game.occupants import Character, Adversary
 from Snarl.src.Game.rulechecker import Rulechecker
 from Snarl.src.Game.gamestate import Gamestate
 
 class TestRulechecker(unittest.TestCase):
     def test_valid_move_player(self):
-        p = Player("player name", "character name")
+        p = PlayerImpl("player name", "character name")
         rulechecker = Rulechecker()
         room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))

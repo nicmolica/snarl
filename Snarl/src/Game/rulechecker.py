@@ -1,4 +1,5 @@
 from .occupants import Character, Wall, Block, Adversary
+from .player import Player
 
 class Rulechecker:
     def is_valid_move(self, entity, dest, current_level):
