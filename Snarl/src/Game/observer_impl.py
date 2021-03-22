@@ -15,7 +15,12 @@ class ObserverImpl(Observer):
         displaying the game to stakeholders. It also means that the game visualization can
         be easily sent to an external server, if so desired.
         """
-        sys.stdout.write(grid_to_string(self.gamestate.render()))
+        return self._render_to_stream(sys.stdout)
+
+    def _render_to_stream(self, stream):
+        """Renders to the particular output stream.
+        """
+        stream.write(grid_to_string(self.gamestate.render()))
 
     def transmit_view(self, ip):
         """Given an IP address, creates a socket that transmits the current view of the `Gamestate`
