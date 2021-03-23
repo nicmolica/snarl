@@ -6,6 +6,7 @@ from .turnorder import Turnorder
 from .level import Level
 from .tile import Tile
 from .player import Player
+from .player_impl import PlayerImpl
 from .observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
@@ -52,14 +53,13 @@ class Gamemanager:
             character_location = open_tiles.pop()
             self.game_state.add_character(player.character, character_location)
 
-        self.run()
-
     def get_move(self) -> Tile:
         """ Determine the type of the entity currently moving and get the move they want to make.
         """
+        print(self.current_turn.character.name)
         if not self.game_state:
             raise RuntimeError("Cannot call get_move when the game has not started!")
-        if isinstance(self.current_turn, Character):
+        if isinstance(self.current_turn, PlayerImpl):
             return self.get_player_move()
         elif isinstance(self.current_turn, Adversary):
             return self.get_adversary_move()
@@ -73,7 +73,7 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call get_player_move when the game has not started!")
         try:
-            current_player = next(player for player in self.player_list if player.character == self.current_turn)
+            current_player = next(player for player in self.player_list if player.player_name == self.current_turn.player_name)
             return current_player.move()
         except:
             raise RuntimeError("Attempted to get player move from a player who does not exist!")
@@ -151,7 +151,7 @@ class Gamemanager:
         """
         self.observers.append(observer)
 
-    # TODO: should we just put players in this list and notify them taht way? or do it separately?
+    # TODO: should we just put players in this list and notify them that way? or do it separately?
     def notify_observers(self):
         """ Notify all Observers of a change to the Gamestate.
         """
@@ -164,21 +164,29 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
         # throws exception with helpful message if move is invalid
-        self.rule_checker.is_valid_move(self.current_turn, move, self.game_state.current_level)
-        self.game_state.move(self.current_turn, move)
+        self.rule_checker.is_valid_move(self.current_turn.character, move, self.game_state.current_level)
+        self.game_state.move(self.current_turn.character, move)
 
     def run(self):
         """ Main game loop.
         """
         if not self.game_state:
             raise RuntimeError("Cannot call run when the game has not started!")
-
+        
         while not self.rule_checker.is_game_over(self.game_state):
-            move = self.get_move()
-            try:
-                self.move(move)
-            except Exception as e:
-                print("You can't do that! " + e)
             self.update_players() # might be deprecated and replaced with notify_observers
+            self.current_turn = self.turn_order.next()
+            valid_move = False
+            while not valid_move:
+                try:
+                    move = self.get_move()
+                    self.move(move)
+                    valid_move = True
+                except Exception as e:
+                    print("Error, invalid move: " + str(e))
+                    print("Please provide another move")
+                    self.current_turn.notify_error(e)
+
+
             # self.notify_observers()
             self.current_turn = self.turn_order.next()

@@ -32,3 +32,13 @@ class Player(ABC):
         """Tell this player that they were expelled from the level.
         """
         pass
+
+    @abstractmethod
+    def notify_error(self, error_message):
+        """Notify this player of an error.
+        """
+        pass
+
+    @abstractmethod
+    def get_character(self):
+        pass

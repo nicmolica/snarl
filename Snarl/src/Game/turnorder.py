@@ -19,7 +19,7 @@ class Turnorder:
         entity_index = self.order.index(entity)
         self.order.remove(entity)
         if entity_index <= self.current:
-            self._decrement()
+            self.decrement()
 
     def add(self, entity: Entity, position: int = -1):
         """ Add the entity to the turn order at the given position and motify the order to match.
@@ -44,7 +44,7 @@ class Turnorder:
             raise RuntimeError("You can't move to the next turn when there are no turns yet.")
         self.current = (self.current + 1) % (len(self.order))
 
-    def _decrement(self):
+    def decrement(self):
         """ Move to the previous entity's turn.
         """
         if len(self.order) == 0:

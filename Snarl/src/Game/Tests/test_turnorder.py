@@ -93,13 +93,13 @@ class TestTurnorder(unittest.TestCase):
     def test_decrement_fails_when_order_empty(self):
         with self.assertRaises(RuntimeError):
             t = Turnorder([])
-            t._decrement()
+            t.decrement()
     
     def test_decrement_goes_to_previous_turn(self):
         l = [1, 2, 3]
         t = Turnorder(l)
         t.next()
-        t._decrement()
+        t.decrement()
         self.assertEqual(t.next(), 1)
 
 

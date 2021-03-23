@@ -58,3 +58,11 @@ class PlayerImpl(Player):
         """Tell this player that they were expelled from the level.
         """
         self.expelled = True
+
+    def notify_error(self, error_message):
+        """Notify this player of an error.
+        """
+        self.last_error = error_message
+
+    def get_character(self):
+        return self.character
