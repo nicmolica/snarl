@@ -169,4 +169,4 @@ def create_point_from_json(point_json: dict):
     """Given a JSON array with two elements [row, column], output a Tile object with
     those coordinates.
     """
-    return Tile(point_json[1], point_json[0])
+    return None if json.dumps(point_json) == "null" else Tile(point_json[1], point_json[0])
