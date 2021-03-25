@@ -163,9 +163,11 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
-        # throws exception with helpful message if move is invalid
-        self.rule_checker.is_valid_move(self.current_turn.character, move, self.game_state.current_level)
-        self.game_state.move(self.current_turn.character, move)
+        
+        if move != None:
+            self.rule_checker.is_valid_move(self.current_turn.character, move, self.game_state.current_level)
+            self.game_state.move(self.current_turn.character, move)
+        self.current_turn = self.turn_order.next()
 
     def run(self):
         """ Main game loop.
@@ -173,9 +175,9 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call run when the game has not started!")
         
+        self.current_turn = self.turn_order.next() # set initial current turn
         while not self.rule_checker.is_game_over(self.game_state):
             self.update_players() # might be deprecated and replaced with notify_observers
-            self.current_turn = self.turn_order.next()
             valid_move = False
             while not valid_move:
                 try:
@@ -186,7 +188,6 @@ class Gamemanager:
                     print("Error, invalid move: " + str(e))
                     print("Please provide another move")
                     self.current_turn.notify_error(e)
-
 
             # self.notify_observers()
             self.current_turn = self.turn_order.next()
