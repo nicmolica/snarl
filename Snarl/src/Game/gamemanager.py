@@ -6,6 +6,7 @@ from .turnorder import Turnorder
 from .level import Level
 from .tile import Tile
 from .player import Player
+from .utils import grid_to_string
 from .player_impl import PlayerImpl
 from .observer import Observer # TODO uncomment this once it exists
 
@@ -185,9 +186,6 @@ class Gamemanager:
                     self.move(move)
                     valid_move = True
                 except Exception as e:
-                    print("Error, invalid move: " + str(e))
-                    print("Please provide another move")
-                    self.current_turn.notify_error(e)
+                    self.current_turn.notify_error(str(e))
 
             # self.notify_observers()
-            self.current_turn = self.turn_order.next()

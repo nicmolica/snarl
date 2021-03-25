@@ -44,9 +44,18 @@ class Tile:
         return hash((self.x, self.y, str(self.occupants)))
 
     def render(self) -> str:
-        """Renders the given tile, including the first occupant.
+        """Renders the given tile, showing a player or adversary if any exist on this tile.
         """
         if self.occupants != []:
+            # We always want to show a character avatar if there is one. Otehrwise we could end up
+            # with invisible characters.
+            character = next(iter([occ for occ in self.occupants if isinstance(occ, Character)]), None)
+            if character:
+                return character.render()
+            # Similarly with adversaries.
+            adv = next(iter([occ for occ in self.occupants if isinstance(occ, Adversary)]), None)
+            if adv:
+                return adv.render()
             return self.occupants[0].render()
         else:
             return ' '

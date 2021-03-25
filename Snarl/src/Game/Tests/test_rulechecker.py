@@ -72,9 +72,9 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character("char")
         level.add_character(character, Tile(1, 13))
-        is_valid = rulechecker._is_valid_player_move(character, Tile(1, 7), level)
-        self.assertFalse(is_valid)
-
+        with self.assertRaises(RuntimeError):
+            rulechecker._is_valid_player_move(character, Tile(1, 7), level)
+        
     def test_invalid_player_move_blocked_dest(self):
         rulechecker = Rulechecker()
         room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
@@ -83,8 +83,8 @@ class TestRulechecker(unittest.TestCase):
         level = Level([room1, room2], [hallway1])
         character = Character('name')
         level.add_character(character, Tile(0, 0))
-        is_valid = rulechecker._is_valid_player_move(character, Tile(0, 2), level)
-        self.assertFalse(is_valid)
+        with self.assertRaises(RuntimeError):
+            rulechecker._is_valid_player_move(character, Tile(0, 2), level)
 
     def test_valid_adversary_move(self):
         rulechecker = Rulechecker()

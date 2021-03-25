@@ -1,5 +1,4 @@
 from .occupants import Character, Wall, Block, Adversary, Entity
-from .player import Player
 from .tile import Tile
 from .level import Level
 
@@ -7,8 +6,8 @@ class Rulechecker:
     def is_valid_move(self, entity: Entity, dest: Tile, current_level: Level) -> bool:
         """ Is moving the entity from src to dest a valid move on the provided level?
         """
-        if hasattr(entity, "character"):
-            return self._is_valid_player_move(entity.character, dest, current_level)
+        if isinstance(entity, Character):
+            return self._is_valid_player_move(entity, dest, current_level)
         elif isinstance(entity, Adversary):
             return self._is_valid_adversary_move(entity, dest, current_level)
 
@@ -20,8 +19,16 @@ class Rulechecker:
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.get_tile(dest))
+        too_far = x_dist + y_dist > 2 
+        if too_far or not dest_open:
+            s= "Invalid move: "
+            if too_far:
+                s += "Destination too far, "
+            if not dest_open:
+                s += "Destination blocked"
+            raise RuntimeError(s)
         
-        return x_dist + y_dist < 3 and dest_open
+        return True
 
     def _is_valid_adversary_move(self, adversary: Adversary, dest: Tile, current_level: Level) -> bool:
         """ Is moving the adversary from src to dest a valid move on the provided level?
@@ -54,11 +61,10 @@ class Rulechecker:
         """Checks that this tile is a type that can be moved to. In the future, this may need
         to take the type of the moving entity in order to check validity.
         """
-        has_player = any([isinstance(occ, Character) for occ in tile.occupants])
+        has_player = tile.has_character()
         # Adversaries are allowed to move onto player-occupied spaces.
         if entity_type == Adversary:
             has_player = False
-        has_wall = any([isinstance(occ, Wall) for occ in tile.occupants])
-        has_block = any([isinstance(occ, Block) for occ in tile.occupants])
+        has_block = tile.has_block()
         
-        return not has_player and not has_block and not has_wall
+        return not has_player and not has_block

@@ -2,6 +2,7 @@ from .occupants import Character
 from .player import Player
 from .tile import Tile
 import sys
+from .utils import grid_to_string
 import json
 
 class PlayerImpl(Player):
@@ -18,6 +19,8 @@ class PlayerImpl(Player):
         self.character = Character(character_name)
         self.expelled = False
         self.surroundings = None
+        # TODO: This should be a constructor arg; we aren't writing it for now because testing
+        # self.out = sys.stdout
 
     def __eq__(self, other):
         """ Is this Player equal to another Player?
@@ -53,7 +56,15 @@ class PlayerImpl(Player):
         """Send a new grid of surrounding tiles to this player.
         """
         self.surroundings = grid
+        self.render()
 
+    def render(self):
+        """Renderst the current surroundigns and other info to the output stream.
+        """
+        char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.surroundings)
+        if self.out:
+            self.out.write(grid_to_string(char_grid))
+        
     def expel(self):
         """Tell this player that they were expelled from the level.
         """
@@ -62,7 +73,8 @@ class PlayerImpl(Player):
     def notify_error(self, error_message):
         """Notify this player of an error.
         """
-        self.last_error = error_message
+        self.last_error = error_message 
+        self.out.write(self.last_error)
 
     def get_character(self):
         return self.character
