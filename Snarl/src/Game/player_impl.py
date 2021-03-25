@@ -38,7 +38,8 @@ class PlayerImpl(Player):
         """Given the current state of their surroundings, get a move from this
         player and return the coordinates of the desired move.
         """
-        sys.stdout.write("Please provide a move in the form [x, y]:\n")
+        if self.out:
+            self.out.write("Please provide a move in the form [x, y]:\n")
         return self._move_with_input(input)
 
     def _move_with_input(self, input_func):
