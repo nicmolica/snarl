@@ -93,24 +93,14 @@ def create_level_from_json(level_json: dict):
     # Create partial rooms. These do not have objects, but we can use them to check if the object
     # coordinates are inside the rooms.
     rooms = [create_room_from_json(room_json) for room_json in level_json["rooms"]]
+    hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
     # Need to place objects in the rooms. For each object, place it in the room that contains it.
     # But this means we need to re-create the room.
     # For now, these are only two objects but they could be more general in the future.
     object_tiles = [create_object_from_json(obj) for obj in level_json["objects"]]
     # Put the level key and exit in the rooms
-    for tile in object_tiles:
-        for i in range(len(rooms)):
-            er = rooms[i]
-            if er.contains(tile):
-                new_open = []
-                for ot in er.get_open_tiles():
-                    if ot.x != tile.x or ot.y != tile.y:
-                        new_open.append(ot)
-                new_open.append(tile)
-                rooms[i] = Room(er.position, er.width, er.height, er.get_room_doors(), new_open)
-    
-    hallways = [create_hallway_from_json(hallway) for hallway in level_json["hallways"]]
-    return Level(rooms, hallways)
+            
+    return Level(rooms, hallways, object_tiles[0], object_tiles[1])
 
 def create_state_from_json(state_json: dict):
     """ Parses state_json into a Gamestate object. Assume that state_json is of the form:

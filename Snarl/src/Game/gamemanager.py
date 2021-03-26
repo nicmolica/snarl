@@ -185,6 +185,8 @@ class Gamemanager:
             except Exception as e:
                 result = self._get_move_result(unlocked_before_move, e)
                 self.current_turn.notify(self._format_move_result_notification(move, result))
+        else:
+            self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
         self.update_players()
         self.current_turn = self.turn_order.next()
     

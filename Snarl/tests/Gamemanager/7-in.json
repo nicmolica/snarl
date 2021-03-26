@@ -40,8 +40,8 @@
         }
         ],
         "objects": [
-        { "type": "key", "position": [ 6, 2 ] },
-        { "type": "exit", "position": [ 7, 2 ] }
+        { "type": "key", "position": [ 7, 2 ] },
+        { "type": "exit", "position": [ 8, 2 ] }
         ],
         "hallways": [
         {
@@ -59,7 +59,7 @@
         ]
     },
     10,
-    [ [4, 2], [4, 3], [5, 2], [5, 3], [3, 3] ],
+    [ [4, 2], [4, 3], [5, 2], [6, 2], [3, 3] ],
     [
         [{"type": "move", "to": [3, 3]},
         {"type": "move", "to": null},
@@ -69,7 +69,7 @@
         {"type": "move", "to": [5, 2]}],
         [{"type": "move", "to": null},
         {"type": "move", "to": null}],
-        [{"type": "move", "to": [6, 2]},
-        {"type": "move", "to": [7, 2]}]
+        [{"type": "move", "to": [7, 2]},
+        {"type": "move", "to": [8, 2]}]
     ]
 ]

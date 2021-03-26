@@ -62,8 +62,8 @@ class TraceOutput:
         actors = self._actors_from_layout(update["layout"])
         objects = self._objects_from_layout(update["layout"])
 
-        return { "type": "player-update", "layout": layout, "position": create_dict_from_point(position), \
-            "objects":objects, "actors": actors }
+        return [name, { "type": "player-update", "layout": layout, "position": create_dict_from_point(position), \
+            "objects":objects, "actors": actors }]
 
     def _actors_from_layout(self, layout):
         """Gets all the actors in this layout.
@@ -145,8 +145,8 @@ for i in range(num_of_turns):
         manager.move(None)
     turns[turn_list_i].pop(0)
     manager.move(to)
-    print(grid_to_string(manager.render()))
-    print("\n")
+    # print(grid_to_string(manager.render()))
+    # print("\n")
 
 state = create_dict_from_state(manager.game_state)
 test_result = [state, trace.to_json()]

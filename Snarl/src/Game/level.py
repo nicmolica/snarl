@@ -5,7 +5,7 @@ from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupan
 from .tile import Tile
 
 class Level:
-    def __init__(self, rooms: list, hallways: list):
+    def __init__(self, rooms: list, hallways: list, key_loc = None, exit_loc = None):
         """Creates the given level layout. Requires that no two rooms
         or hallways overlap and that all hallways connect two room doors.
         """
@@ -27,6 +27,8 @@ class Level:
         if not self._are_hallways_connected_to_doors():
             raise ValueError("There are disconnected hallways on this level.")
 
+        self.key_location = key_loc
+        self.exit_location = exit_loc
         # This is done after we know that the room is valid.
         self._update_tiles()
 
@@ -271,6 +273,8 @@ class Level:
         self.tiles = [[Tile(x, y, Block()) for x in range(width)] for y in range(height)]
         self._update_rooms_tiles()
         self._update_hallways_tiles()
+        self.tiles[self.key_location.y][self.key_location.x].add_occupant(LevelKey())
+        self.tiles[self.exit_location.y][self.exit_location.x].add_occupant(LevelExit())
 
     def _update_hallways_tiles(self):
         """Alters self.tiles to contain the correct Tile information for all hallways in the level.
