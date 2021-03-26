@@ -99,11 +99,11 @@ class Level:
         """ Move the given occupant to the given destination if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
-            self.get_tile(self.adversaries[occupant]).occupants = []
+            self.get_tile(self.adversaries[occupant]).remove_occupant(occupant)
             self.get_tile(dest).occupants.append(occupant)
             self.adversaries[occupant] = self.get_tile(dest)
         elif isinstance(occupant, Character):
-            self.get_tile(self.characters[occupant]).occupants = []
+            self.get_tile(self.characters[occupant]).remove_occupant(occupant)
             self.get_tile(dest).occupants.append(occupant)
             self.characters[occupant] = self.get_tile(dest)
         else:
@@ -129,9 +129,12 @@ class Level:
         has_key = LevelKey in types
         has_exit = LevelExit in types
         
+        if (dest.x == 3 and dest.y == 4):
+            print(self.get_tile(dest).occupants)
         if has_player and has_adv:
             characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
+                self._remove_from_tile(character)
                 self.characters.pop(character)
         elif has_player and has_key:
             self.unlock_level_exit()
@@ -139,9 +142,15 @@ class Level:
             # Happens twice because a character could have been killed before this happens
             characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
+                self._remove_from_tile(character)
                 self.completed_characters.append(character)
                 self.characters.pop(character)
-        
+
+    def _remove_from_tile(self, occ):
+        """Find the occupant and remove them from the tile grid.
+        """
+        self.get_tile(self.locate_occupant(occ)).remove_occupant(occ)
+
     def unlock_level_exit(self):
         """Unlocks the level exit tile.
         """

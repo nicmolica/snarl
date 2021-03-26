@@ -51,7 +51,6 @@ class Gamemanager:
             raise RuntimeError("There are not enough tiles in the first room for each player to have a spot.")
 
         random.shuffle(open_tiles)
-
         for player in self.player_list:
             character_location = open_tiles.pop()
             self.game_state.add_character(player.entity, character_location)
@@ -167,7 +166,7 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
-        
+
         if move != None:
             unlocked_before_move = self.game_state.is_current_level_unlocked()
             try:
@@ -182,14 +181,17 @@ class Gamemanager:
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
         """
+        # TODO: Characters not showing as completed
         if self.current_turn in self.game_state.get_completed_characters():
             return Moveresult.EXIT
-        elif self.game_state.is_character_expelled(self.current_turn):
+        elif self.game_state.is_character_expelled(self.current_turn.entity):
             return Moveresult.EJECT
         elif self.game_state.is_current_level_unlocked() and not unlocked_before_move:
             return Moveresult.KEY
         elif err:
             return Moveresult.INVALID
+        else:
+            return Moveresult.OK
         
 
     def run(self):

@@ -86,6 +86,8 @@ class Gamestate:
     def is_character_expelled(self, character : Character) -> bool:
         """Has the given character been expelled from the level?
         """
+        if not isinstance(character, Character):
+            return False
         current_players = list(self.current_level.characters)
         completed_characters = self.current_level.completed_characters
         if character not in current_players and character not in completed_characters:

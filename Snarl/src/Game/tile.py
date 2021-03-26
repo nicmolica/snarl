@@ -132,3 +132,6 @@ class Tile:
         """ Do the coordinates of this tile match the coordinates of the other tile?
         """
         return self.x == other.x and self.y == other.y
+
+    def remove_occupant(self, occupant) -> None:
+        self.occupants.pop(self.occupants.index(occupant))

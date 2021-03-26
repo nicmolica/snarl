@@ -297,4 +297,6 @@ def create_dict_from_object(occ: Tile) -> dict:
         "position": (point)
     }
     """
+    if occ == None:
+        return {"type": "key", "position": None}
     return {"type": "key" if occ.has_occupant(LevelKey) else "exit", "position": create_dict_from_point(occ)}
