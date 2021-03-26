@@ -181,8 +181,7 @@ class Gamemanager:
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
         """
-        # TODO: Characters not showing as completed
-        if self.current_turn in self.game_state.get_completed_characters():
+        if self.current_turn.entity in self.game_state.get_completed_characters():
             return Moveresult.EXIT
         elif self.game_state.is_character_expelled(self.current_turn.entity):
             return Moveresult.EJECT
