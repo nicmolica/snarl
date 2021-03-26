@@ -50,10 +50,12 @@ class Gamemanager:
         if len(self.player_list) > len(open_tiles):
             raise RuntimeError("There are not enough tiles in the first room for each player to have a spot.")
 
-        random.shuffle(open_tiles)
-        for player in self.player_list:
-            character_location = open_tiles.pop()
-            self.game_state.add_character(player.entity, character_location)
+        # This functionality was explicitly requested in Milestone 5 but is not quite compatible
+        # with the Milestone 7 testing harness. Therefore we are removing it for now.
+        # random.shuffle(open_tiles)
+        # for player in self.player_list:
+        #     character_location = open_tiles.pop()
+        #     self.game_state.add_character(player.entity, character_location)
         
         self.current_turn = self.turn_order.next()
 
@@ -183,7 +185,6 @@ class Gamemanager:
             except Exception as e:
                 result = self._get_move_result(unlocked_before_move, e)
                 self.current_turn.notify(self._format_move_result_notification(move, result))
-                raise e
         self.update_players()
         self.current_turn = self.turn_order.next()
     

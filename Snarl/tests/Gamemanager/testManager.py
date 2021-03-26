@@ -68,6 +68,7 @@ class TraceOutput:
     def _actors_from_layout(self, layout):
         """Gets all the actors in this layout.
         """
+        # TODO: remove the actor that the update was sent to from this list
         actors = []
         for row in layout:
             for tile in row:
@@ -114,7 +115,7 @@ manager.start_game(level)
 
 # move the players to their correct initial locations
 for i in range(len(players)):
-    level.move_occupant(characters[i], create_point_from_json(locations[i]))
+    manager.game_state.add_character(characters[i], create_point_from_json(locations[i]))
 
 # make the adversaries and add them to the game (they're all zombies right now but this doesn't need to be the case)
 adversaries = []
