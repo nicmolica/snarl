@@ -2,7 +2,7 @@ from .rulechecker import Rulechecker
 from .level import Level
 from .tile import Tile
 from .room import Room
-from .occupants import Entity, Character, Adversary
+from .occupants import Entity, Character, Adversary, Block
 
 class Gamestate:
     def __init__(self, level: Level, num_of_players: int, num_of_adversaries: int):
@@ -57,7 +57,20 @@ class Gamestate:
         maxx = min(level_width, loc.x + radius)
         miny = max(0, loc.y - radius)
         maxy = min(level_height, loc.y + radius)
-        return self.get_tiles_range(Tile(minx, miny), Tile(maxx, maxy))
+        real_tiles = self.get_tiles_range(Tile(minx, miny), Tile(maxx, maxy))
+        # Requires left padding
+        if loc.x - radius < 0:
+            for row in real_tiles:
+                row.insert(0, Tile(0, 0, [Block]))
+        if level_width - (loc.x + radius + 1) < 0:
+            for row in real_tiles:
+                row.append(Tile(0, 0, [Block]))
+        if loc.y - radius < 0:
+            real_tiles.insert(0, [Tile(0, 0, [Block]) for tile in range(2*radius + 1)])
+        if level_height - (loc.y + radius +  1) < 0:
+            real_tiles.append([Tile(0, 0, [Block]) for tile in range(2*radius + 1)])
+        
+        return real_tiles
 
     def add_character(self, character: Character, location: Tile):
         """ Add a character to the current Level.
@@ -108,6 +121,11 @@ class Gamestate:
         """Returns a list of the characters taht have completed the current level.
         """
         return self.current_level.completed_characters
+    
+    def get_entity_location(self, occupant):
+        """Return the coordinates of the current occupant.
+        """
+        return self.current_level.locate_occupant(occupant)
 
     def render(self) -> str:
         """ Renders the current level.

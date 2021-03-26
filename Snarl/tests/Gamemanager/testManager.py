@@ -8,6 +8,7 @@ from Snarl.src.Game.gamestate import Gamestate
 from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.src.Game.player_impl import PlayerImpl
 from Snarl.src.Game.utils import grid_to_string
+from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit
 
 test_input = ""
 for line in sys.stdin.readlines():
@@ -37,6 +38,69 @@ class TraceOutput:
     trace = []
     def write(self, s):
         self.trace.append(s)
+
+    def to_json(self):
+        """Convert this trace to a JSON representation as given in the
+        Milestone 7 spec.
+        """
+        reformatted_arr = []
+
+        for entry in self.trace:
+            if entry["type"] == "update":
+                reformatted_arr.append(self._format_update(entry))
+            elif entry["type"] == "move-result":
+                reformatted_arr.append(self._format_result(entry))
+        
+        return reformatted_arr
+    
+    def _format_update(self, update):
+        """Formats a notification of new surroundings to JSON.
+        """
+        name = update["name"]
+        layout = create_array_from_layout(update["layout"])
+        position = update["position"]
+        actors = self._actors_from_layout(update["layout"])
+        objects = self._objects_from_layout(update["layout"])
+
+        return { "type": "player-update", "layout": layout, "position": create_dict_from_point(position), \
+            "objects":objects, "actors": actors }
+
+    def _actors_from_layout(self, layout):
+        """Gets all the actors in this layout.
+        """
+        actors = []
+        for row in layout:
+            for tile in row:
+                on_tile = list(filter(lambda o : isinstance(o, Character) or isinstance(o, Adversary), tile.occupants))
+                for actor in on_tile:
+                    actors.append((tile, actor))
+        
+        actor_dicts = []
+        for pair in actors:
+            tile = pair[0]
+            actor = pair[1]
+            actor_dicts.append(create_dict_from_entity(actor, tile))
+        
+        return actor_dicts
+
+
+    def _objects_from_layout(self, layout):
+        """Gets all the actors in this layout.
+        """
+        objects = []
+        for row in layout:
+            for tile in row:
+                if tile.has_occupant(LevelExit) or tile.has_occupant(LevelKey):
+                    objects.append(create_dict_from_object(tile))
+        return objects
+    
+    def _format_result(self, result):
+        """Formats a notification of a move result to JSON.
+        """
+        name = result["name"]
+        move = result["move"]
+        res = result["result"].value
+        return [name, move, res]
 
 trace = TraceOutput()
 # register the players
@@ -84,5 +148,5 @@ for i in range(num_of_turns):
     print("\n")
 
 state = create_dict_from_state(manager.game_state)
-print(json.dumps(state))
-print(trace.trace)
+test_result = [state, trace.to_json()]
+print(json.dumps(test_result))

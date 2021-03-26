@@ -54,15 +54,11 @@ class PlayerImpl(Player):
         x, y = input_json
         return Tile(x, y)
 
-    def notify(self, grid):
+    def notify(self, arg):
         """Send a new grid of surrounding tiles to this player.
         """
-        if type(grid) == list and type(grid[0]) is list:
-            self.surroundings = grid
-            self.render()
-        elif type(grid) == Moveresult:
-            if self.out:
-                self.out.write(str(grid))
+        if self.out:
+            self.out.write(arg)
 
     def render(self):
         """Renderst the current surroundigns and other info to the output stream.

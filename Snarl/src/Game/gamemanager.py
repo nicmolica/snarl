@@ -98,8 +98,14 @@ class Gamemanager:
             raise RuntimeError("Cannot call update_players when the game has not started!")
 
         for player in self.player_list:
-            grid = self.game_state.get_character_surroundings(player.entity, self.view_distance)
-            player.notify(grid)
+            # Do not update a player that has exited or been expelled from the level
+            if not self.game_state.is_character_expelled(player.entity) and not \
+                player.entity in self.game_state.get_completed_characters():
+
+                grid = self.game_state.get_character_surroundings(player.entity, self.view_distance)
+                
+                player.notify({"type":"update", "layout": grid, \
+                    "position": self.game_state.get_entity_location(player.entity), "name": player.player_name })
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.
@@ -172,11 +178,22 @@ class Gamemanager:
             try:
                 self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
                 self.game_state.move(self.current_turn.entity, move)
-                self.current_turn.notify(self._get_move_result(unlocked_before_move))
+                result = self._get_move_result(unlocked_before_move)
+                self.current_turn.notify(self._format_move_result_notification(move, result))
             except Exception as e:
-                self.current_turn.notify(self._get_move_result(unlocked_before_move, e))
+                result = self._get_move_result(unlocked_before_move, e)
+                self.current_turn.notify(self._format_move_result_notification(move, result))
                 raise e
+        self.update_players()
         self.current_turn = self.turn_order.next()
+    
+    def _format_move_result_notification(self, move, result):
+        """Given a move result for hte current player, format a notification to send to
+        that player' Actor.
+        """
+        return {"type": "move-result", "result": result, \
+            "move" : {"type": "move", "to": None if move == None else [move.y, move.x]}, \
+                "name": self.current_turn.entity.name }
 
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
@@ -192,7 +209,6 @@ class Gamemanager:
         else:
             return Moveresult.OK
         
-
     def run(self):
         """ Main game loop.
         """

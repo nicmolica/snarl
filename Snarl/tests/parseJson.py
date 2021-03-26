@@ -232,6 +232,20 @@ def create_dict_from_level(level: Level) -> dict:
     json_level["objects"].append(create_dict_from_object(level.get_level_exit()))
     return json_level
 
+def create_array_from_layout(grid):
+    layout = []
+    for row in grid:
+        r = []
+        for tile in row:
+            if tile.has_occupant(Block):
+                r.append(0)
+            elif tile.has_occupant(Door):
+                r.append(2)
+            else:
+                r.append(1)
+        layout.append(r)
+    return layout
+
 def create_dict_from_room(room: Room) -> dict:
     """ Converts a Room into a JSON representation matching the following format:
     {
@@ -248,18 +262,7 @@ def create_dict_from_room(room: Room) -> dict:
     json_room["type"] = "room"
     json_room["origin"] = create_dict_from_point(room.position)
     json_room["bounds"] = {"rows": room.width, "columns": room.height}
-    layout = []
-    for row in room.tiles:
-        r = []
-        for tile in row:
-            if tile.has_occupant(Block):
-                r.append(0)
-            elif tile.has_occupant(Door):
-                r.append(2)
-            else:
-                r.append(1)
-        layout.append(r)
-    json_room["layout"] = layout
+    json_room["layout"] = create_array_from_layout(room.tiles)
     return json_room
 
 def create_dict_from_hallway(hall: Hallway) -> dict:
