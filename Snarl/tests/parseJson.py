@@ -4,7 +4,7 @@ from Snarl.src.Game.room import Room
 from Snarl.src.Game.tile import Tile
 from Snarl.src.Game.level import Level
 from Snarl.src.Game.hallway import Hallway
-from Snarl.src.Game.occupants import LevelExit, LevelKey, Ghost, Zombie, Character
+from Snarl.src.Game.occupants import LevelExit, LevelKey, Ghost, Zombie, Character, Entity, Occupant, Block, Door
 from Snarl.src.Game.gamestate import Gamestate
 import Snarl.src.Game.utils
 
@@ -85,7 +85,7 @@ def create_level_from_json(level_json: dict):
             "rooms": (room-list),
             "hallways": (hall-list),
             "objects": [ { "type": "key", "position": (point) }, 
-               { "type": "exit", "position": (point) } ]
+                        { "type": "exit", "position": (point) } ]
         }
 
     See the Milestone 4 spec for more details.
@@ -170,3 +170,131 @@ def create_point_from_json(point_json: dict):
     those coordinates.
     """
     return None if json.dumps(point_json) == "null" else Tile(point_json[1], point_json[0])
+
+def create_dict_from_state(state: Gamestate) -> dict:
+    """ Converts a Gamestate into a JSON representation matching the following format:
+    {
+        "type": "state",
+        "level": (level),
+        "players": (actor-position-list),
+        "adversaries": (actor-position-list),
+        "exit-locked": (boolean)
+    }
+    """
+    json_state = {}
+    json_state["type"] = "state"
+    json_state["level"] = create_dict_from_level(state.current_level)
+    json_state["players"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_occupant(x)), \
+        state.current_level.characters))
+    json_state["adversaries"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_occupant(x)), \
+        state.current_level.adversaries))
+    json_state["exit-locked"] = not state.current_level.level_exit_unlocked
+    return json_state
+
+def create_dict_from_entity(entity: Entity, position: Tile) -> dict:
+    """ Converts an Entity into a JSON representation matching the following format:
+    {
+        "type": (actor-type),
+        "name": (string),
+        "position": (point)
+    }
+    """
+    json_entity = {}
+    if isinstance(entity, Character):
+        json_entity["type"] = "player"
+    elif isinstance(entity, Zombie):
+        json_entity["type"] = "zombie"
+    elif isinstance(entity, Ghost):
+        json_entity["type"] = "ghost"
+    else:
+        raise TypeError("Cannot parse entity of unkown type to JSON representation.")
+    
+    json_entity["name"] = entity.name
+    json_entity["position"] = create_dict_from_point(position)
+    return json_entity
+
+def create_dict_from_level(level: Level) -> dict:
+    """ Converts a Level into a JSON representation matching the following format:
+    {
+        "type": "level",
+        "rooms": (room-list),
+        "hallways": (hall-list),
+        "objects": [ { "type": "key", "position": (point) }, 
+                    { "type": "exit", "position": (point) } ]
+    }
+    """
+    json_level = {}
+    json_level["type"] = "level"
+    json_level["rooms"] = list(map(lambda x: create_dict_from_room(x), level.rooms))
+    json_level["hallways"] = list(map(lambda x: create_dict_from_hallway(x), level.hallways))
+    json_level["objects"] = []
+    json_level["objects"].append(create_dict_from_object(level.get_level_key()))
+    json_level["objects"].append(create_dict_from_object(level.get_level_exit()))
+    return json_level
+
+def create_dict_from_room(room: Room) -> dict:
+    """ Converts a Room into a JSON representation matching the following format:
+    {
+        "type": "room",
+        "origin": [Integer, Integer],
+        "bounds": {
+            "rows": Integer,
+            "columns": Integer
+        },
+        "layout": [[0, 2, 1, 0]...]
+    }
+    """
+    json_room = {}
+    json_room["type"] = "room"
+    json_room["origin"] = create_dict_from_point(room.position)
+    json_room["bounds"] = {"rows": room.width, "columns": room.height}
+    layout = []
+    for row in room.tiles:
+        r = []
+        for tile in row:
+            if tile.has_occupant(Block):
+                r.append(0)
+            elif tile.has_occupant(Door):
+                r.append(2)
+            else:
+                r.append(1)
+        layout.append(r)
+    json_room["layout"] = layout
+    return json_room
+
+def create_dict_from_hallway(hall: Hallway) -> dict:
+    """ Converts a Hallway into a JSON representation matching the following format:
+    { 
+        "type": "hallway",
+        "from": (point),
+        "to": (point),
+        "waypoints": (point-list)
+    }
+    """
+    json_hall = {}
+    json_hall["type"] = "hallway"
+    json_hall["from"] = create_dict_from_point(hall.door1)
+    json_hall["to"] = create_dict_from_point(hall.door2)
+    waypoints = hall.waypoints.copy()
+    waypoints.pop(0)
+    waypoints.pop()
+    point_list = []
+    for point in waypoints:
+        point_list.append(create_dict_from_point(point))
+    json_hall["waypoints"] = point_list
+    return json_hall
+
+def create_dict_from_point(tile: Tile) -> dict:
+    """ Converts a Tile into a JSON representation matching the following format:
+    [row, column]
+    """
+    return [tile.y, tile.x]
+
+def create_dict_from_object(occ: Tile) -> dict:
+    """ Converts a Tile with a LevelKey or LevelExit on it into a JSON representation of the following format:
+    {
+        "type": ("key" or "exit"),
+        "position": (point)
+    }
+    """
+    return {"type": "key" if occ.has_occupant(LevelKey) else "exit", "position": create_dict_from_point(occ)}

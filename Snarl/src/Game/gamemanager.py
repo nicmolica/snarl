@@ -134,7 +134,7 @@ class Gamemanager:
         self.turn_order.add(player)
         self.observers.append(player)
 
-    def add_adveraries(self, adversaries):
+    def add_adversaries(self, adversaries):
         """ Add all the provided adversaries to the adversary_list field and put them in the correct
         place in the turn order list.
         """

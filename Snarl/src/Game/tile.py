@@ -90,6 +90,7 @@ class Tile:
         return None
 
     def has_block(self) -> bool:
+        # TODO: deprecate this
         """ Does this tile have a block on it?
         """
         for occupant in self.occupants:
@@ -99,6 +100,7 @@ class Tile:
         return False
 
     def has_character(self) -> bool:
+        # TODO: deprecate this
         """ Does this tile have a character on it?
         """
         for occupant in self.occupants:
@@ -108,10 +110,20 @@ class Tile:
         return False
 
     def has_adversary(self) -> bool:
+        # TODO: deprecate this
         """ Does this tile have an adversary on it?
         """
         for occupant in self.occupants:
             if isinstance(occupant, Adversary):
+                return True
+
+        return False
+
+    def has_occupant(self, occupant_type) -> bool:
+        """ Does the tile have an occupant of the given type on it?
+        """
+        for occupant in self.occupants:
+            if isinstance(occupant, occupant_type):
                 return True
 
         return False

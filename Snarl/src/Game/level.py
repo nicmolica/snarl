@@ -385,16 +385,36 @@ class Level:
         return self._get_rooms_from_hallway(hallway)
 
     def get_reachable_rooms_from_tile(self, tile):
-            """Get the origins of the rooms that are "immediately reachable" from the given tile.
-            If the tile is in a room, it returns the origins of any rooms connected by a single
-            hallway to the tile's room.
-            If the tile is in a hallway, it returns the rooms at either end of the hallway.
-            If the tile is not in a room and not in a hallway, return the empty array.
-            """
-            tile_type = self._tile_in_room_or_hallway(tile)
-            if tile_type == "void":
-                return []
-            elif tile_type == "hallway":
-                return self._get_rooms_from_tile_in_hallway(tile)
-            else: #type is "room"
-                return self._get_rooms_from_tile_in_room(tile)
+        """Get the origins of the rooms that are "immediately reachable" from the given tile.
+        If the tile is in a room, it returns the origins of any rooms connected by a single
+        hallway to the tile's room.
+        If the tile is in a hallway, it returns the rooms at either end of the hallway.
+        If the tile is not in a room and not in a hallway, return the empty array.
+        """
+        tile_type = self._tile_in_room_or_hallway(tile)
+        if tile_type == "void":
+            return []
+        elif tile_type == "hallway":
+            return self._get_rooms_from_tile_in_hallway(tile)
+        else: #type is "room"
+            return self._get_rooms_from_tile_in_room(tile)
+
+    def get_level_key(self):
+        """ Get the tile with the level key on it.
+        """
+        for row in self.tiles:
+            for tile in row:
+                if tile.has_occupant(LevelKey):
+                    return tile
+        
+        return None
+
+    def get_level_exit(self):
+        """ Get the tile with the level exit on it.
+        """
+        for row in self.tiles:
+            for tile in row:
+                if tile.has_occupant(LevelExit):
+                    return tile
+        
+        raise RuntimeError("No tile in this level has an exit on it.")
