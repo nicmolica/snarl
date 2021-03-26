@@ -129,8 +129,6 @@ class Level:
         has_key = LevelKey in types
         has_exit = LevelExit in types
         
-        if (dest.x == 3 and dest.y == 4):
-            print(self.get_tile(dest).occupants)
         if has_player and has_adv:
             characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
@@ -248,8 +246,6 @@ class Level:
         for i in range(0, len(waypoints) - 1):
             for room in self.rooms:
                 if room.is_straddled_by(waypoints[i], waypoints[i + 1]):
-                    print("waypoints: " + str(waypoints[i].x) + ", " + str(waypoints[i].y) + " to " + str(waypoints[i+1].x) + ", " + str(waypoints[i + 1].y))
-                    print("room posn: " + str(room.position.x) + ", " + str(room.position.y))
                     return True
         return False
 
