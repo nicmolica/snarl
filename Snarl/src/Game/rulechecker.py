@@ -25,7 +25,8 @@ class Rulechecker:
             if too_far:
                 s += "Destination too far, "
             if not dest_open:
-                s += "Destination blocked"
+                s += "Destination blocked, "
+            s += f"Source X: {src.x} Y: {src.y} Destination: X: {dest.x} Y: {dest.y}"
             raise RuntimeError(s)
         
         return True
@@ -49,8 +50,10 @@ class Rulechecker:
     def is_game_over(self, gamestate) -> bool:
         """ Has the game been completed?
         """
-        # TODO: This can be implemented in a later milestone.
-        return True
+        all_players_dead = gamestate.all_players_expelled()
+        state_complete = gamestate.game_complete()
+        return state_complete or all_players_dead
+        
 
     def did_players_win(self, gamestate) -> bool:
         """ Are there any players left alive? This method assumes the game is over.

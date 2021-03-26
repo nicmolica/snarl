@@ -1,39 +1,37 @@
-from .occupants import Character
 from .player import Player
 from .tile import Tile
-from .moveresult import Moveresult
 import sys
+from .actor import Actor
 from .utils import grid_to_string
 import json
 
-class PlayerImpl(Player):
-    def __init__(self, player_name : str, character_name : str, out = None):
+class Enemy(Actor):
+    def __init__(self, enemy_name : str, entity_type, entity_name):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as
         the game progresses.
         """
-        if not type(player_name) == str:
-            raise TypeError("Player Name must be a string!")
-        if not type(character_name) == str:
-            raise TypeError("Character Name must be a string!")
-        self.player_name = player_name
-        self.entity = Character(character_name)
+        if not type(enemy_name) == str:
+            raise TypeError("Enemy Name must be a string!")
+        self.enemy_name = enemy_name
+        self.entity = entity_type(entity_name)
         self.expelled = False
         self.surroundings = None
         # TODO: This should be a constructor arg; we aren't writing it for now because testing
-        self.out = out
+        # self.out = sys.stdout
+        self.out = None
 
     def __eq__(self, other):
-        """ Is this Player equal to another Player?
+        """ Is this Enemy equal to another Enemy?
         """
-        if not isinstance(other, Player):
+        if not isinstance(other, Enemy):
             return False
-        return self.player_name == other.player_name and self.entity == other.entity
+        return self.enemy_name == other.enemy_name and self.entity == other.entity
 
     def __hash__(self):
         """ Return a hash of the two identifying characteristics of a Player.
         """
-        return hash((self.player_name, self.entity))
+        return hash((self.enemy_name, self.entity))
 
     def move(self):
         """Given the current state of their surroundings, get a move from this
@@ -57,15 +55,11 @@ class PlayerImpl(Player):
     def notify(self, grid):
         """Send a new grid of surrounding tiles to this player.
         """
-        if type(grid) == list and type(grid[0]) is list:
-            self.surroundings = grid
-            self.render()
-        elif type(grid) == Moveresult:
-            if self.out:
-                self.out.write(str(grid))
+        self.surroundings = grid
+        self.render()
 
     def render(self):
-        """Renderst the current surroundigns and other info to the output stream.
+        """Renders the current surroundigns and other info to the output stream.
         """
         char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.surroundings)
         if self.out:

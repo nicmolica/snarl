@@ -1,37 +1,36 @@
-from .actor import Actor
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from .tile import Tile
 
-class Player(Actor):
+class Actor(ABC):
     @abstractmethod
     def __eq__(self, other):
-        """ Is this Player equal to another Player?
+        """ Is this Actor equal to another Actor?
         """
         pass
 
     @abstractmethod
     def __hash__(self):
-        """ Return a hash of the two identifying characteristics of a Player.
+        """ Return a hash of the two identifying characteristics of an Actor.
         """
         pass
 
     @abstractmethod
     def move(self) -> Tile:
         """Given the current state of their surroundings, get a move from this
-        player and return the coordinates of the desired move.
+        actor and return the coordinates of the desired move.
         """
         pass
 
     @abstractmethod
     def notify(self, grid: list):
-        """Send a new grid of surrounding tiles to this player. This will not
-        be the full tile grid of the current level but rather a restricted view.
+        """Send the new state information to this actor. The actor may not receive the
+        full level information.
         """
         pass
 
     @abstractmethod
     def expel(self):
-        """Tell this player that they were expelled from the level.
+        """Tell this actor that they were expelled from the level.
         """
         pass
 
@@ -43,4 +42,6 @@ class Player(Actor):
 
     @abstractmethod
     def get_entity(self):
+        """Return the entity representing this Actor.
+        """
         pass

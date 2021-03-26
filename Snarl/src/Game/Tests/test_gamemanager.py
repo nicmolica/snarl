@@ -6,7 +6,8 @@ from Snarl.src.Game.room import Room
 from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.level import Level
 from Snarl.src.Game.player_impl import PlayerImpl
-from Snarl.src.Game.occupants import Adversary
+from Snarl.src.Game.occupants import Zombie
+from Snarl.src.Game.enemy import Enemy
 from Snarl.src.Game.gamemanager import Gamemanager
 
 class TestGamemanager(unittest.TestCase):
@@ -60,22 +61,19 @@ class TestGamemanager(unittest.TestCase):
 
     def test_add_adversary_adds_one_adversary(self):
         manager = Gamemanager(1)
-        adv = Adversary()
-        manager.add_adveraries(adv)
-        self.assertEqual(len(manager.adversary_list), 1)
+        manager.add_enemies(Enemy("enemy", Zombie))
+        self.assertEqual(len(manager.enemy_list), 1)
 
     def test_add_adversary_adds_list_of_adversaries(self):
         manager = Gamemanager(1)
-        adv = Adversary()
-        adv2 = Adversary()
-        l = [adv, adv2]
-        manager.add_adveraries(l)
-        self.assertEqual(len(manager.adversary_list), len(l))
+        l = [Enemy("enemy 1", Zombie), Enemy("enemy 2", Zombie)]
+        manager.add_enemies(l)
+        self.assertEqual(len(manager.enemy_list), len(l))
     
     def test_add_adversary_errors_when_not_adding_adversary(self):
         manager = Gamemanager(1)
         with self.assertRaises(TypeError):
-            manager.add_adveraries({"i'm": "not", "an": "adversary"})
+            manager.add_enemies({"i'm": "not", "an": "adversary"})
 
     def test_start_game_starts(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
@@ -139,7 +137,7 @@ class TestGamemanager(unittest.TestCase):
     def test_get_adversary_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.get_adversary_move()
+            manager.get_enemy_move()
 
     def test_get_player_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()

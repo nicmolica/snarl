@@ -18,7 +18,7 @@ class TestRulechecker(unittest.TestCase):
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1])
-        level.add_character(p.character, Tile(2, 6))
+        level.add_character(p.entity, Tile(2, 6))
         is_valid = rulechecker.is_valid_move(p, Tile(1, 7), level)
 
     def test_valid_move_adversary(self):

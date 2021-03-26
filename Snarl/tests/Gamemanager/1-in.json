@@ -63,7 +63,7 @@
     [
         [{"type": "move", "to": [6, 15]},
         {"type": "move", "to": [7, 15]}],
-        [[{"type": "move", "to": [6, 16]},
-        {"type": "move", "to": [7, 16]}]]
+        [{"type": "move", "to": [7, 16]},
+        {"type": "move", "to": [6, 16]}]
     ]
 ]

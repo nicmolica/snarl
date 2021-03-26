@@ -1,12 +1,14 @@
 import random
 from .gamestate import Gamestate
 from .rulechecker import Rulechecker
-from .occupants import Entity, Character, Adversary
+from .occupants import Entity, Character
 from .turnorder import Turnorder
 from .level import Level
+from .enemy import Enemy
 from .tile import Tile
 from .player import Player
 from .utils import grid_to_string
+from .moveresult import Moveresult
 from .player_impl import PlayerImpl
 from .observer import Observer # TODO uncomment this once it exists
 
@@ -33,7 +35,7 @@ class Gamemanager:
         self.turn_order = Turnorder([])
         self.current_turn = None
         self.player_list = []
-        self.adversary_list = []
+        self.enemy_list = []
         self.observers = []
 
     def start_game(self, level: Level):
@@ -52,18 +54,19 @@ class Gamemanager:
 
         for player in self.player_list:
             character_location = open_tiles.pop()
-            self.game_state.add_character(player.character, character_location)
+            self.game_state.add_character(player.entity, character_location)
+        
+        self.current_turn = self.turn_order.next()
 
     def get_move(self) -> Tile:
         """ Determine the type of the entity currently moving and get the move they want to make.
         """
-        print(self.current_turn.character.name)
         if not self.game_state:
             raise RuntimeError("Cannot call get_move when the game has not started!")
         if isinstance(self.current_turn, PlayerImpl):
             return self.get_player_move()
-        elif isinstance(self.current_turn, Adversary):
-            return self.get_adversary_move()
+        elif isinstance(self.current_turn, Enemy):
+            return self.get_enemy_move()
         else:
             raise TypeError("You're trying to move something that isn't a character or an adversary.")
 
@@ -79,13 +82,13 @@ class Gamemanager:
         except:
             raise RuntimeError("Attempted to get player move from a player who does not exist!")
 
-    def get_adversary_move(self) -> Tile:
+    def get_enemy_move(self) -> Tile:
         """ Receive the next move from an adversary either from STDIN or from some other entry
         method/client.
         """
         # TODO: No adversaries yet; can be implemented in a later milestone.
         if not self.game_state:
-            raise RuntimeError("Cannot call get_adversary_move when the game has not started!")
+            raise RuntimeError("Cannot call get_enemy_move when the game has not started!")
 
     def update_players(self):
         """ Update all the players about changes to the Gamestate surrounding them. This
@@ -96,8 +99,8 @@ class Gamemanager:
             raise RuntimeError("Cannot call update_players when the game has not started!")
 
         for player in self.player_list:
-            grid = self.game_state.get_character_surroundings(player.character, self.view_distance)
-            player.update_surroundings(grid)
+            grid = self.game_state.get_character_surroundings(player.entity, self.view_distance)
+            player.notify(grid)
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.
@@ -134,18 +137,18 @@ class Gamemanager:
         self.turn_order.add(player)
         self.observers.append(player)
 
-    def add_adversaries(self, adversaries):
-        """ Add all the provided adversaries to the adversary_list field and put them in the correct
+    def add_enemies(self, enemies):
+        """ Add all the provided adversaries to the enemy_list field and put them in the correct
         place in the turn order list.
         """
-        if isinstance(adversaries, Adversary):
-            self.adversary_list.append(adversaries)
-        elif all([isinstance(adversary, Adversary) for adversary in adversaries]):
-            for adversary in adversaries:
-                self.adversary_list.append(adversary)
-                self.turn_order.add(adversary)
+        if isinstance(enemies, Enemy):
+            self.enemy_list.append(enemies)
+        elif all([isinstance(enemy, Enemy) for enemy in enemies]):
+            for enemy in enemies:
+                self.enemy_list.append(enemy)
+                self.turn_order.add(enemy)
         else:
-            raise TypeError("All adversaries must be of the type \"Adversary.\"")
+            raise TypeError("All enemies must be of the type \"Enemy.\"")
 
     def register_observer(self, observer: Observer):
         """ Register a new Observer by adding it to the list of observers.
@@ -166,9 +169,28 @@ class Gamemanager:
             raise RuntimeError("Cannot call move when the game has not started!")
         
         if move != None:
-            self.rule_checker.is_valid_move(self.current_turn.character, move, self.game_state.current_level)
-            self.game_state.move(self.current_turn.character, move)
+            unlocked_before_move = self.game_state.is_current_level_unlocked()
+            try:
+                self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
+                self.game_state.move(self.current_turn.entity, move)
+                self.current_turn.notify(self._get_move_result(unlocked_before_move))
+            except Exception as e:
+                self.current_turn.notify(self._get_move_result(unlocked_before_move, e))
+                raise e
         self.current_turn = self.turn_order.next()
+
+    def _get_move_result(self, unlocked_before_move : bool, err = None):
+        """Gets the result of the current move
+        """
+        if self.current_turn in self.game_state.get_completed_characters():
+            return Moveresult.EXIT
+        elif self.game_state.is_character_expelled(self.current_turn):
+            return Moveresult.EJECT
+        elif self.game_state.is_current_level_unlocked() and not unlocked_before_move:
+            return Moveresult.KEY
+        elif err:
+            return Moveresult.INVALID
+        
 
     def run(self):
         """ Main game loop.

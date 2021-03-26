@@ -73,6 +73,39 @@ class Gamestate:
         """ Get the top left room of the current Level.
         """
         return self.current_level.get_top_left_room()
+    
+    def all_players_expelled(self) -> list:
+        """Gets the list of players that are currently playing. Will not include expelled players.
+        """
+        current_players = list(self.current_level.characters)
+        completed_players = self.current_level.completed_characters
+        if len(current_players) == 0 and len(completed_players) != self.num_of_players:
+            return True
+        return False
+
+    def is_character_expelled(self, character : Character) -> bool:
+        """Has the given character been expelled from the level?
+        """
+        current_players = list(self.current_level.characters)
+        completed_characters = self.current_level.completed_characters
+        if character not in current_players and character not in completed_characters:
+            return True
+        return False
+
+    def game_complete(self):
+        """Does this gamestate represent a completed game of Snarl?
+        """
+        return self.current_level.is_completed
+    
+    def is_current_level_unlocked(self):
+        """Has the current level's exit been unlocked?
+        """
+        return self.current_level.level_exit_unlocked
+        
+    def get_completed_characters(self):
+        """Returns a list of the characters taht have completed the current level.
+        """
+        return self.current_level.completed_characters
 
     def render(self) -> str:
         """ Renders the current level.

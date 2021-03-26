@@ -74,7 +74,7 @@
         {"type": "move", "to": [7, 2]},
         {"type": "move", "to": [5, 2]},
         {"type": "move", "to": [4, 3]}],
-        [[{"type": "move", "to": [6, 2]},
+        [{"type": "move", "to": [6, 2]},
         {"type": "move", "to": [8, 2]},
         {"type": "move", "to": [10, 2]},
         {"type": "move", "to": [12, 2]},
@@ -85,6 +85,6 @@
         {"type": "move", "to": [8, 2]},
         {"type": "move", "to": [6, 2]},
         {"type": "move", "to": [4, 2]},
-        {"type": "move", "to": [4, 3]}]]
+        {"type": "move", "to": [4, 3]}]
     ]
 ]
