@@ -142,7 +142,7 @@ for i in range(num_of_turns):
     to = create_point_from_json(player_move_dict["to"])
     # Skip Enemy moves for now
     while not isinstance(manager.current_turn, PlayerImpl):
-        manager.move(None)
+        manager.current_turn = manager.turn_order.next()
     turns[turn_list_i].pop(0)
     manager.move(to)
     # print(grid_to_string(manager.render()))

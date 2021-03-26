@@ -174,20 +174,21 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
-
-        if move != None:
-            unlocked_before_move = self.game_state.is_current_level_unlocked()
-            try:
-                self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
-                self.game_state.move(self.current_turn.entity, move)
-                result = self._get_move_result(unlocked_before_move)
-                self.current_turn.notify(self._format_move_result_notification(move, result))
-            except Exception as e:
-                result = self._get_move_result(unlocked_before_move, e)
-                self.current_turn.notify(self._format_move_result_notification(move, result))
-        else:
-            self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
-        self.update_players()
+        if not self.game_state.is_character_expelled(self.current_turn.entity) and \
+            not self.current_turn.entity in self.game_state.get_completed_characters(): 
+            if move != None:
+                unlocked_before_move = self.game_state.is_current_level_unlocked()
+                try:
+                    self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
+                    self.game_state.move(self.current_turn.entity, move)
+                    result = self._get_move_result(unlocked_before_move)
+                    self.current_turn.notify(self._format_move_result_notification(move, result))
+                except Exception as e:
+                    result = self._get_move_result(unlocked_before_move, e)
+                    self.current_turn.notify(self._format_move_result_notification(move, result))
+            else:
+                self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
+            self.update_players()
         self.current_turn = self.turn_order.next()
     
     def _format_move_result_notification(self, move, result):
