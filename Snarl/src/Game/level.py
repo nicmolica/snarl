@@ -273,8 +273,10 @@ class Level:
         self.tiles = [[Tile(x, y, Block()) for x in range(width)] for y in range(height)]
         self._update_rooms_tiles()
         self._update_hallways_tiles()
-        self.tiles[self.key_location.y][self.key_location.x].add_occupant(LevelKey())
-        self.tiles[self.exit_location.y][self.exit_location.x].add_occupant(LevelExit())
+        key = self.locate_occupant(LevelKey)
+        if not key and self.key_location:
+            self.tiles[self.key_location.y][self.key_location.x].add_occupant(LevelKey())
+            self.tiles[self.exit_location.y][self.exit_location.x].add_occupant(LevelExit())
 
     def _update_hallways_tiles(self):
         """Alters self.tiles to contain the correct Tile information for all hallways in the level.
