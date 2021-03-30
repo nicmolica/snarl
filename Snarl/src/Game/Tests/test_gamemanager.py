@@ -61,12 +61,12 @@ class TestGamemanager(unittest.TestCase):
 
     def test_add_adversary_adds_one_adversary(self):
         manager = Gamemanager(1)
-        manager.add_enemies(Enemy("enemy", Zombie))
+        manager.add_enemies(Enemy("enemy", Zombie, "zomb"))
         self.assertEqual(len(manager.enemy_list), 1)
 
     def test_add_adversary_adds_list_of_adversaries(self):
         manager = Gamemanager(1)
-        l = [Enemy("enemy 1", Zombie), Enemy("enemy 2", Zombie)]
+        l = [Enemy("enemy 1", Zombie, "zomb 1"), Enemy("enemy 2", Zombie, "zomb 3")]
         manager.add_enemies(l)
         self.assertEqual(len(manager.enemy_list), len(l))
     

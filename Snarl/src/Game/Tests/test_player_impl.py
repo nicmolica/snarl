@@ -2,6 +2,10 @@ from Snarl.src.Game.player_impl import PlayerImpl
 import unittest
 import json
 
+class OutTrace:
+    def write(self, output):
+        self.output = output
+
 class TestPlayerImpl(unittest.TestCase):
     def test_player_name_must_be_string(self):
         with self.assertRaises(TypeError):
@@ -35,9 +39,10 @@ class TestPlayerImpl(unittest.TestCase):
         self.assertNotEqual(p1, p2)
 
     def test_update_surroundings_alters_surroundings_field(self):
-        p = PlayerImpl("Player Name", "Character Name")
+        out = OutTrace()
+        p = PlayerImpl("Player Name", "Character Name", out)
         p.notify("dummy surroundings")
-        self.assertIsNotNone(p.surroundings)
+        self.assertIsNotNone(out.output)
     
     def test_expel_alters_expel_field(self):
         p = PlayerImpl("Player Name", "Character Name")
