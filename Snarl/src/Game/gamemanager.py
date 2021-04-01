@@ -229,6 +229,6 @@ class Gamemanager:
                     self.move(move)
                     valid_move = True
                 except Exception as e:
-                    self.current_turn.notify_error(str(e))
+                    self.current_turn.notify(str(e))
 
             # self.notify_observers()

@@ -35,12 +35,6 @@ class Actor(ABC):
         pass
 
     @abstractmethod
-    def notify_error(self, error_message):
-        """Notify this player of an error.
-        """
-        pass
-
-    @abstractmethod
     def get_entity(self):
         """Return the entity representing this Actor.
         """

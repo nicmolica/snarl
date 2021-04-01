@@ -41,7 +41,7 @@ class TestPlayerImpl(unittest.TestCase):
     def test_update_surroundings_alters_surroundings_field(self):
         out = OutTrace()
         p = PlayerImpl("Player Name", "Character Name", out)
-        p.notify("dummy surroundings")
+        p.notify({"dummy": "surroundings"})
         self.assertIsNotNone(out.output)
     
     def test_expel_alters_expel_field(self):

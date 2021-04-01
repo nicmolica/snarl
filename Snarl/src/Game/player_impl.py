@@ -7,7 +7,7 @@ from .utils import grid_to_string
 import json
 
 class PlayerImpl(Player):
-    def __init__(self, player_name : str, character_name : str, out = None):
+    def __init__(self, player_name : str, character_name : str, out = sys.stdout):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as
         the game progresses.
@@ -20,7 +20,6 @@ class PlayerImpl(Player):
         self.entity = Character(character_name)
         self.expelled = False
         self.surroundings = None
-        # TODO: This should be a constructor arg; we aren't writing it for now because testing
         self.out = out
 
     def __eq__(self, other):
@@ -39,8 +38,7 @@ class PlayerImpl(Player):
         """Given the current state of their surroundings, get a move from this
         player and return the coordinates of the desired move.
         """
-        if self.out:
-            self.out.write("Please provide a move in the form [x, y]:\n")
+        self.out.write("Please provide a move in the form [x, y]:\n")
         return self._move_with_input(input)
 
     def _move_with_input(self, input_func):
@@ -57,26 +55,22 @@ class PlayerImpl(Player):
     def notify(self, arg):
         """Send a new grid of surrounding tiles to this player.
         """
-        if self.out:
-            self.out.write(arg)
+        if type(arg) is not dict:
+            raise RuntimeError("Player notification must be dictionary!")
+        self.out.write(arg)
+        if "layout" in arg:
+            self.surroundings = arg["layout"]
 
     def render(self):
-        """Renderst the current surroundigns and other info to the output stream.
+        """Renders the current surroundings and other info to the output stream.
         """
         char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.surroundings)
-        if self.out:
-            self.out.write(grid_to_string(char_grid))
+        self.out.write(grid_to_string(char_grid))
         
     def expel(self):
         """Tell this player that they were expelled from the level.
         """
         self.expelled = True
-
-    def notify_error(self, error_message):
-        """Notify this player of an error.
-        """
-        self.last_error = error_message 
-        self.out.write(self.last_error)
 
     def get_entity(self):
         return self.entity

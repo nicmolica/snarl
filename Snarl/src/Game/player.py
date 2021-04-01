@@ -36,11 +36,5 @@ class Player(Actor):
         pass
 
     @abstractmethod
-    def notify_error(self, error_message):
-        """Notify this player of an error.
-        """
-        pass
-
-    @abstractmethod
     def get_entity(self):
         pass

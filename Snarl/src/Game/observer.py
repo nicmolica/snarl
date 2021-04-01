@@ -18,11 +18,3 @@ class Observer(ABC):
         be easily sent to an external server, if so desired.
         """
         pass
-
-    @abstractmethod
-    def transmit_view(self, ip: str):
-        """Given an IP address, creates a socket that transmits the current view of the `Gamestate`
-        to a server. It obtains the current view by calling the `render()` method. This view may be
-        either total or partial, depending on what the `Observer` ends up being used for.
-        """
-        pass

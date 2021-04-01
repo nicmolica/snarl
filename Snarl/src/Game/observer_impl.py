@@ -22,11 +22,3 @@ class ObserverImpl(Observer):
         """Renders to the particular output stream.
         """
         stream.write(grid_to_string(self.gamestate.render()))
-
-    def transmit_view(self, ip):
-        """Given an IP address, creates a socket that transmits the current view of the `Gamestate`
-        to a server. It obtains the current view by calling the `render()` method. This view may be
-        either total or partial, depending on what the `Observer` ends up being used for.
-        """
-        # TODO: This can be done later, when networking is a required feature.
-        pass
