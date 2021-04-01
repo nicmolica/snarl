@@ -1,7 +1,8 @@
 # Ghost Movement Strategies
 
 The ghost should always move towards the nearest player within 10 units. If no player is within 1/5 of the longest dimenions of the level,
- the ghost runs into a wall in order to be teleported to a random room.
+ the ghost runs into a wall in order to be teleported to a random room. The ghost cannot move on top of another Actor, the level key, 
+ or the level exit.
 
 ## Examples
 
@@ -61,7 +62,8 @@ This will then move the ghost into a random room:
 # Zombie Movement Strategies
 
 A zombie moves toward the nearest player inside its own room. If there is no player within its own room, it moves
-in a random valid cardinal direction.
+in a random valid cardinal direction. The zombie cannot move on top of another Actor, the level key, 
+ or the level exit.
 
 ## Examples
 

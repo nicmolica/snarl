@@ -7,7 +7,7 @@ from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.level import Level
 from Snarl.src.Game.player_impl import PlayerImpl
 from Snarl.src.Game.occupants import Zombie
-from Snarl.src.Game.enemy import Enemy
+from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.gamemanager import Gamemanager
 
 class TestGamemanager(unittest.TestCase):
@@ -61,12 +61,12 @@ class TestGamemanager(unittest.TestCase):
 
     def test_add_adversary_adds_one_adversary(self):
         manager = Gamemanager(1)
-        manager.add_enemies(Enemy("enemy", Zombie, "zomb"))
+        manager.add_enemies(EnemyZombie("enemy", "zomb"))
         self.assertEqual(len(manager.enemy_list), 1)
 
     def test_add_adversary_adds_list_of_adversaries(self):
         manager = Gamemanager(1)
-        l = [Enemy("enemy 1", Zombie, "zomb 1"), Enemy("enemy 2", Zombie, "zomb 3")]
+        l = [EnemyZombie("enemy 1", "zomb 1"), EnemyZombie("enemy 2", "zomb 3")]
         manager.add_enemies(l)
         self.assertEqual(len(manager.enemy_list), len(l))
     

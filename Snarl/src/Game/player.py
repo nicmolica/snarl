@@ -23,13 +23,6 @@ class Player(Actor):
         pass
 
     @abstractmethod
-    def notify(self, grid: list):
-        """Send a new grid of surrounding tiles to this player. This will not
-        be the full tile grid of the current level but rather a restricted view.
-        """
-        pass
-
-    @abstractmethod
     def expel(self):
         """Tell this player that they were expelled from the level.
         """

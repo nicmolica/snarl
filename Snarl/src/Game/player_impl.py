@@ -52,15 +52,6 @@ class PlayerImpl(Player):
         x, y = input_json
         return Tile(x, y)
 
-    def notify(self, arg):
-        """Send a new grid of surrounding tiles to this player.
-        """
-        if type(arg) is not dict:
-            raise RuntimeError("Player notification must be dictionary!")
-        self.out.write(arg)
-        if "layout" in arg:
-            self.surroundings = arg["layout"]
-
     def render(self):
         """Renders the current surroundings and other info to the output stream.
         """

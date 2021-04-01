@@ -116,7 +116,12 @@ class Gamestate:
         """Has the current level's exit been unlocked?
         """
         return self.current_level.level_exit_unlocked
-        
+
+    def get_current_characters(self):
+        """Gets the characters playing the current level.
+        """
+        return list(self.current_level.characters)
+
     def get_completed_characters(self):
         """Returns a list of the characters taht have completed the current level.
         """

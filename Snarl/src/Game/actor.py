@@ -14,19 +14,28 @@ class Actor(ABC):
         """
         pass
 
-    @abstractmethod
-    def move(self) -> Tile:
+    def move(self):
         """Given the current state of their surroundings, get a move from this
-        actor and return the coordinates of the desired move.
+        player and return the coordinates of the desired move.
         """
+        if self.out:
+            self.out.write("Please provide a move in the form [x, y]:\n")
+        return self._move_with_input(input)
+    
+    @abstractmethod
+    def _move_with_input(self, input_func):
         pass
 
-    @abstractmethod
-    def notify(self, grid: list):
-        """Send the new state information to this actor. The actor may not receive the
-        full level information.
+    def notify(self, arg):
+        """Send a new grid of surrounding tiles to this player.
         """
-        pass
+        if type(arg) is not dict:
+            raise RuntimeError("Player notification must be dictionary!")
+        if self.out:
+            self.out.write(arg)
+        if "layout" in arg:
+            self.surroundings = arg["layout"]
+
 
     @abstractmethod
     def expel(self):
