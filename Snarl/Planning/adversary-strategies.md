@@ -1,8 +1,8 @@
 # Ghost Movement Strategies
 
-The ghost should always move towards the nearest player within 10 units. If no player is within 1/5 of the longest dimenions of the level,
- the ghost runs into a wall in order to be teleported to a random room. The ghost cannot move on top of another Actor, the level key, 
- or the level exit.
+The ghost should move towards the nearest player within 10 units. The ghost will not attempt to move through walls in order
+to get closer to the player unless it has no move which can bring it closer to the player. If no player is within 10 tiles, the ghost runs
+into a wall in order to be teleported to a random room. The ghost cannot move on top of another Actor, the level key, or the level exit.
 
 ## Examples
 
@@ -56,6 +56,83 @@ This will then move the ghost into a random room:
 |         | X X X X X X X X X X X |               |
 |      P  D                       D               |
 |   G     | X X X X X X X X X X X |               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+
+### Example 3: Move Around Wall
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|         | G X X X X X X X X X X |               |
+|       P D                       D               |
+|         | X X X X X X X X X X X |               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+
+In the above example, the ghost has 2 moves that could take it closer to the player, but it does not
+want to run into the wall and potentially be teleported away. So it chooses the move that does not
+run into a wall: 
+
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|         | X X X X X X X X X X X |               |
+|      P  D G                     D               |
+|         | X X X X X X X X X X X G               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+
+### Example 4: Cannot Move Closer To Player
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|       P | G X X X X X X X X X X |               |
+|         D                       D               |
+|         | X X X X X X X X X X X |               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+
+In the above example, the ghost has 1 move that does not take it farther away from the player.
+However, this move will land the ghost onto a wall. Since it does not have any other moves that could
+take it closer, the ghost moves onto the wall and is teleported to a random room:
+
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|      P  | G X X X X X X X X X X |               |
+|         D                       D               |
+|         | X X X X X X X X X X X |               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|      P  | X X X X X X X X X X X |               |
+|         D                       D               |
+|         | X X X X X X X X X X X | G             |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+Notice that this may not the optimal strategy for the ghost; it could have chosen to move farther away,
+towards the room door. However, we feel that making adversaries slightly simpler and more greedy is acceptable.
+
+### Example 5: Move Onto Door
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|       P | X X X X X X X X X X X |               |
+|         D G                     D               |
+|         | X X X X X X X X X X X |               |
+- - - - - - X X X X X X X X X X X - - - - - - - - -
+```
+
+In the above example, the ghost can move onto the room door in order to get closer to the player:
+
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|      P  | X X X X X X X X X X X |               |
+|         G                       D               |
+|         | X X X X X X X X X X X |               |
 - - - - - - X X X X X X X X X X X - - - - - - - - -
 ```
 
