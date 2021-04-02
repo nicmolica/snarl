@@ -136,6 +136,48 @@ In the above example, the ghost can move onto the room door in order to get clos
 - - - - - - X X X X X X X X X X X - - - - - - - - -
 ```
 
+### Example 6: Move Onto BLock Aside Hallway
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|         | X X X X X X X X X X X |               |
+|         D                 X X x |               |
+|         | X X X X X X X   X X X |               |
+- - - - - - X X X X X X X G X X X |               |
+X X X X X X X X X X X X X   X X X |               |
+X X X X X X X X X X X X X         D               |
+X X X X X X X X X X X X X X X X X - - - - - - - - -
+```
+
+In the above example, the ghost will move towards the nearest wall; in this case, that tile will be the blocked
+tile on the edge of the hallway:
+
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+|         | X X X X X X X X X X X |               |
+|         D                 X X x |               |
+|         | X X X X X X X   X X X |               |
+- - - - - - X X X X X X X   G X X |               |
+X X X X X X X X X X X X X   X X X |               |
+X X X X X X X X X X X X X         D               |
+X X X X X X X X X X X X X X X X X - - - - - - - - -
+```
+
+The ghost will be teleported to a random room:
+
+```
+- - - - - - X X X X X X X X X X X - - - - - - - - - 
+|         | X X X X X X X X X X X |               |
+| G       | X X X X X X X X X X X |               |
+|         D                 X X x |               |
+|         | X X X X X X X   X X X |               |
+- - - - - - X X X X X X X   X X X |               |
+X X X X X X X X X X X X X   X X X |               |
+X X X X X X X X X X X X X         D               |
+X X X X X X X X X X X X X X X X X - - - - - - - - -
+```
+
 # Zombie Movement Strategies
 
 A zombie moves toward the nearest player inside its own room. If there is no player within its own room, it moves
