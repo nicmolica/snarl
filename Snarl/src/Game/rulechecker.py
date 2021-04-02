@@ -74,8 +74,7 @@ class Rulechecker:
             has_door = current_level.get_tile(tile).has_occupant(Door)
             if entity_type == Ghost:
                 # Ghosts can move through walls
-                tile.remove_occupant(Wall)
-                has_block = tile.has_block() or has_exit or has_key
+                has_block = has_exit or has_key
             if entity_type == Zombie:
                 # Zombies can't move onto doors
                 has_block = has_block or has_door or has_exit or has_key

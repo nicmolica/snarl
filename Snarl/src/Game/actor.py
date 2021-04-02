@@ -36,16 +36,11 @@ class Actor(ABC):
         """
         pass
 
+    @abstractmethod
     def notify(self, arg):
-        """Send a new grid of surrounding tiles to this player.
+        """Send a new grid of surrounding tiles to this actor.
         """
-        if type(arg) is not dict:
-            raise RuntimeError("Player notification must be dictionary!")
-        if self.out:
-            self.out.write(arg)
-        if "layout" in arg:
-            self.surroundings = arg["layout"]
-
+        pass
 
     @abstractmethod
     def expel(self):

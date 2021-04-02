@@ -24,3 +24,15 @@ class Player(Actor):
     @abstractmethod
     def get_entity(self):
         pass
+
+    def notify(self, arg):
+        """ Give this player information about their surroundings.
+        """
+        if type(arg) is not dict:
+            raise RuntimeError("Player notification must be dictionary!")
+        if self.out:
+            self.out.write(arg)
+        if "layout" in arg:
+            self.surroundings = arg["layout"]
+        if "loc" in arg:
+            self.location = arg["loc"]
