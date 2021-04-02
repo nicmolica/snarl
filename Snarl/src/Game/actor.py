@@ -7,7 +7,9 @@ class Actor(ABC):
         """ This doesn't do anything, it exists just for the purpose of telling the
         abstract class which fields exist on an Actor.
         """
+        self.name = name
         self.out = out
+        self.entity_name = entity_name
 
     @abstractmethod
     def __eq__(self, other):

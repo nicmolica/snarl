@@ -41,24 +41,6 @@ class EnemyZombie(Enemy):
             return None
         return random.choice(valid_moves)
 
-    def _get_valid_cardinal_moves(self):
-        """Return the possible cardinal moves for this zombie.
-        """
-        # If any coordinate is 0, can't move in that axis's negative direction.
-        up = Tile(self.location.x, self.location.y + 1)
-        right = Tile(self.location.x + 1, self.location.y)
-        cardinals = [up, right]
-        if (self.location.x > 0):
-            left = Tile(self.location.x - 1, self.location.y)
-            cardinals.append(left)
-        if (self.location.y > 0):
-            down = Tile(self.location.x, self.location.y - 1)
-            cardinals.append(down)
-        
-        valid = lambda t : Rulechecker().is_valid_move(self.entity, t, self.state.current_level)
-        valid_moves = list(filter(valid, cardinals))
-        return valid_moves
-
     def _get_players_in_room(self):
         """Returns a list of the characters that are in the same room as this zombie.
         Returns an empty list if there are no such characters.

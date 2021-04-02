@@ -135,3 +135,8 @@ class Tile:
 
     def remove_occupant(self, occupant) -> None:
         self.occupants.pop(self.occupants.index(occupant))
+
+    def distance(self, other) -> int:
+        """ Manhattan distance between this and another tile.
+        """
+        return abs(self.x - other.x) + abs(self.y - other.y)

@@ -1,7 +1,8 @@
 import json
 import random
+import sys
 from .enemy import Enemy
-from .occupants import Ghost, Wall, Block
+from .occupants import Ghost, Wall, Block, LevelKey, LevelExit
 from .tile import Tile
 from .rulechecker import Rulechecker
 
@@ -39,8 +40,7 @@ class EnemyGhost(Enemy):
 
         # 3. remove moves that go right into a wall or block (in case we're in a hallway or at the edge of a room)
         valid_moves_not_walls = list(filter(lambda t: \
-            not self.state.current_level.get_tile(t).contains_occupant(Wall) and \
-                not self.state.current_level.get_tile(t).contains_occupant(Block), \
+            not self.state.current_level.get_tile(t).contains_occupant(Block), \
                     valid_progressive_moves))
 
         # 4. if this leaves us with no moves, just move into the wall and hope for the best
@@ -53,26 +53,31 @@ class EnemyGhost(Enemy):
     def _get_move_to_wall(self):
         """ Figure out where the closest wall is and provide a move that bring us closer to it.
         """
-        # TODO implement later
-        pass
+        cardinals = self._get_valid_cardinal_moves()
+        if cardinals == None:
+            return None
+        else:
+            return sorted(cardinals, self._distance_to_closest_block)[0]
 
-    def _get_valid_cardinal_moves(self):
-        """Return the possible cardinal moves for this ghost.
+    def _distance_to_closest_block(self, tile):
+        """ Determine the distance between this tile and the closest block.
         """
-        # If any coordinate is 0, can't move in that axis's negative direction.
-        up = Tile(self.location.x, self.location.y + 1)
-        right = Tile(self.location.x + 1, self.location.y)
-        cardinals = [up, right]
-        if (self.location.x > 0):
-            left = Tile(self.location.x - 1, self.location.y)
-            cardinals.append(left)
-        if (self.location.y > 0):
-            down = Tile(self.location.x, self.location.y - 1)
-            cardinals.append(down)
-        
-        valid = lambda t : Rulechecker().is_valid_move(self.entity, t, self.state.current_level)
-        valid_moves = list(filter(valid, cardinals))
-        return valid_moves
+        left, right, up, down = float("inf")
+        width, height = self.state.current_level.calculate_level_dimensions()
+        for i in range(tile.x):
+            if self.state.get_tile(i, tile.y).contains_occupant(Block):
+                left = tile.x - i
+        for i in range(tile.y):
+            if self.state.get_tile(tile.x, i).contains_occupant(Block):
+                up = tile.y - i
+        for i in range(tile.x, width):
+            if self.state.get_tile(i, tile.y).contains_occupant(Block):
+                right = i - tile.x
+        for i in range(tile.y, height):
+            if self.state.get_tile(tile.x, i).contains_occupant(Block):
+                down = i - tile.y
+
+        return min(left, right, up, down)
 
     def _get_players_in_range(self):
         """Returns a list of the characters that are in the range (10 tiles) of this ghost.
