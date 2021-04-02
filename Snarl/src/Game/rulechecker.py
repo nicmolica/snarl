@@ -8,10 +8,8 @@ class Rulechecker:
         """
         if isinstance(entity, Character):
             return self._is_valid_player_move(entity, dest, current_level)
-        elif isinstance(entity, Zombie):
-            return self._is_valid_zombie_move(entity, dest, current_level)
-        elif isinstance(entity, Ghost):
-            return self._is_valid_ghost_move(entity, dest, current_level)
+        elif isinstance(entity, Adversary):
+            return self._is_valid_adversary_move(entity, dest, current_level)
 
     def _is_valid_player_move(self, character: Character, dest: Tile, current_level: Level) -> bool:
         """ Is moving the player from src to dest a valid move on the provided level?
@@ -33,23 +31,13 @@ class Rulechecker:
         
         return True
 
-    def _is_valid_zombie_move(self, zomb: Zombie, dest: Tile, current_level: Level) -> bool:
+    def _is_valid_adversary_move(self, adversary: Adversary, dest: Tile, current_level: Level) -> bool:
         """ Is moving the adversary from src to dest a valid move on the provided level?
         """
-        src = current_level.locate_occupant(zomb)
+        src = current_level.locate_occupant(adversary)
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
-        dest_open = self.is_open_tile(current_level.get_tile(dest), current_level, Zombie)
-        
-        return x_dist + y_dist < 2 and dest_open
-    
-    def _is_valid_ghost_move(self, ghost: Ghost, dest: Tile, current_level: Level) -> bool:
-        """ Is moving the adversary from src to dest a valid move on the provided level?
-        """
-        src = current_level.locate_occupant(ghost)
-        x_dist = abs(src.x - dest.x)
-        y_dist = abs(src.y - dest.y)
-        dest_open = self.is_open_tile(current_level.get_tile(dest), current_level, Ghost)
+        dest_open = self.is_open_tile(current_level.get_tile(dest), current_level, type(adversary))
         
         return x_dist + y_dist < 2 and dest_open
 

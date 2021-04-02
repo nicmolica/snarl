@@ -78,7 +78,7 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call get_player_move when the game has not started!")
         try:
-            current_player = next(player for player in self.player_list if player.player_name == self.current_turn.player_name)
+            current_player = next(player for player in self.player_list if player.name == self.current_turn.name)
             return current_player.move()
         except:
             raise RuntimeError("Attempted to get player move from a player who does not exist!")
@@ -107,7 +107,7 @@ class Gamemanager:
                 grid = self.game_state.get_character_surroundings(player.entity, self.view_distance)
                 
                 player.notify({"type":"update", "layout": grid, \
-                    "position": self.game_state.get_entity_location(player.entity), "name": player.player_name })
+                    "position": self.game_state.get_entity_location(player.entity), "name": player.name })
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.

@@ -50,20 +50,20 @@ class TestPlayerImpl(unittest.TestCase):
         self.assertTrue(p.expelled)
     
     def test_move_requires_array_input(self):
-        p = PlayerImpl("Player Name", "Character Name")
+        p = PlayerImpl("Player Name", "Character Name", input_func = lambda : "Not an array")
         with self.assertRaises(json.JSONDecodeError):
-            p._move_with_input(lambda : "Not an array")
+            p._determine_move()
     
     def test_move_correctly_parses_input_to_tile(self):
-        p = PlayerImpl("Player Name", "Character Name")
-        tile = p._move_with_input(lambda : "[2, 3]")
+        p = PlayerImpl("Player Name", "Character Name", input_func = lambda : "[2, 3]")
+        tile = p._determine_move()
         self.assertEqual(tile.x, 2)
         self.assertEqual(tile.y, 3)
     
     def test_move_raises_error_if_input_too_long(self):
-        p = PlayerImpl("Player Name", "Character Name")
+        p = PlayerImpl("Player Name", "Character Name", input_func = lambda : "[2, 3, 6]")
         with self.assertRaises(RuntimeError):
-            tile = p._move_with_input(lambda : "[2, 3, 6]")
+            tile = p._determine_move()
 
 if __name__ == '__main__':
     unittest.main()

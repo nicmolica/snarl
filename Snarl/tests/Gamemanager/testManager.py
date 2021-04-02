@@ -9,6 +9,7 @@ from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.src.Game.player_impl import PlayerImpl
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit
+from Snarl.src.Game.enemy_zombie import EnemyZombie
 
 test_input = ""
 for line in sys.stdin.readlines():
@@ -128,7 +129,7 @@ for i in range(len(name_list), len(locations)):
     adversaries.append(new_adversary)
     level.add_adversary(new_adversary, create_point_from_json(locations[i]))
 
-manager.add_enemies(list(map(lambda adv : Enemy(adv.name, type(adv), adv.name), adversaries)))
+manager.add_enemies(list(map(lambda adv : EnemyZombie(adv.name, adv.name), adversaries)))
 
 # make moves until we've reached the max number of turns
 for i in range(num_of_turns):

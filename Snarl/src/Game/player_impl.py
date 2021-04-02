@@ -7,45 +7,39 @@ from .utils import grid_to_string
 import json
 
 class PlayerImpl(Player):
-    def __init__(self, player_name : str, character_name : str, out = sys.stdout):
+    def __init__(self, name : str, entity_name : str, out = sys.stdout, input_func = input):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as
         the game progresses.
         """
-        if not type(player_name) == str:
+        if not type(name) == str:
             raise TypeError("Player Name must be a string!")
-        if not type(character_name) == str:
+        if not type(entity_name) == str:
             raise TypeError("Character Name must be a string!")
-        self.player_name = player_name
-        self.entity = Character(character_name)
+        self.name = name
+        self.entity = Character(entity_name)
         self.expelled = False
         self.surroundings = None
         self.out = out
+        self.input_func = input_func
 
     def __eq__(self, other):
         """ Is this Player equal to another Player?
         """
         if not isinstance(other, Player):
             return False
-        return self.player_name == other.player_name and self.entity == other.entity
+        return self.name == other.name and self.entity == other.entity
 
     def __hash__(self):
         """ Return a hash of the two identifying characteristics of a Player.
         """
-        return hash((self.player_name, self.entity))
+        return hash((self.name, self.entity))
 
-    def move(self):
-        """Given the current state of their surroundings, get a move from this
-        player and return the coordinates of the desired move.
-        """
-        self.out.write("Please provide a move in the form [x, y]:\n")
-        return self._move_with_input(input)
-
-    def _move_with_input(self, input_func):
+    def _determine_move(self):
         """Returns a player move given the input string representing the player
         input.
         """
-        requested_input = input_func()
+        requested_input = self.input_func()
         input_json = json.loads(requested_input)
         if not type(input_json) == list or len(input_json) != 2:
             raise RuntimeError("User move input not valid: " + requested_input)

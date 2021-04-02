@@ -3,6 +3,13 @@ from .tile import Tile
 
 class Actor(ABC):
     @abstractmethod
+    def __init__(self, name, entity_name, out = None):
+        """ This doesn't do anything, it exists just for the purpose of telling the
+        abstract class which fields exist on an Actor.
+        """
+        self.out = out
+
+    @abstractmethod
     def __eq__(self, other):
         """ Is this Actor equal to another Actor?
         """
@@ -20,10 +27,13 @@ class Actor(ABC):
         """
         if self.out:
             self.out.write("Please provide a move in the form [x, y]:\n")
-        return self._move_with_input(input)
-    
+        return self._determine_move()
+
     @abstractmethod
-    def _move_with_input(self, input_func):
+    def _determine_move(self):
+        """ Determine the next move for this actor, either by asking a human player
+        for input, or by algorithmically determining the next move for an adversary.
+        """
         pass
 
     def notify(self, arg):

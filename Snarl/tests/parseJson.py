@@ -99,7 +99,6 @@ def create_level_from_json(level_json: dict):
     # For now, these are only two objects but they could be more general in the future.
     object_tiles = [create_object_from_json(obj) for obj in level_json["objects"]]
     # Put the level key and exit in the rooms
-            
     return Level(rooms, hallways, object_tiles[0], object_tiles[1])
 
 def create_state_from_json(state_json: dict):

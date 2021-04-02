@@ -2,22 +2,17 @@ from .enemy import Enemy
 from .occupants import Zombie
 import random
 from .rulechecker import Rulechecker
+from .tile import Tile
 
 class EnemyZombie(Enemy):
-    def __init__(self, enemy_name : str, entity_name : str) -> None:
-        super().__init__(enemy_name, Zombie, entity_name)
-
-    def _move_with_input(self, input_func):
-        """Returns a player move given the input string representing the player
-        input.
-        """
-        return self._determine_move()
+    def __init__(self, name : str, entity_name : str) -> None:
+        super().__init__(name, Zombie, entity_name)
     
     def _determine_move(self):
         """Determines what move this zombie should make depending on whether or not
         the player is in the same room.
         """
-        if self.state is None or self.loc is None:
+        if self.state is None or self.location is None:
             raise RuntimeError("Cannot get Zombie move before Zombie has game info!")
         
         players_in_room = self._get_players_in_room()
@@ -77,13 +72,13 @@ class EnemyZombie(Enemy):
         rooms = self.state.current_level.rooms
         my_room = None
         for room in rooms:
-            if room.contains(self.loc):
+            if room.contains(self.location):
                 my_room = room
                 break
         
-        chars_in_room = filter(lambda c : room.contains(c), character_locs)
+        chars_in_room = list(filter(lambda c : my_room.contains(c), character_locs))
         # Get closest character in room
-        return sorted(iterable, lambda c : abs(c.x - self.loc.x) + abs(c.y - self.loc.y))
+        return sorted(chars_in_room, lambda c : abs(c.x - self.location.x) + abs(c.y - self.location.y))
 
         
         

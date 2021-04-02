@@ -10,102 +10,102 @@ from Snarl.src.Game.utils import grid_to_string
 class TestLevel(unittest.TestCase):
     def test_rooms_field_rejects_nonrooms(self):
         with self.assertRaises(TypeError):
-            Level(["I am not a room", "I am not a room either"], [Hallway([], Tile(1, 0), Tile(10, 0))])
+            Level(["I am not a room", "I am not a room either"], [Hallway([], Tile(1, 0), Tile(10, 0))], Tile(1, 1), Tile(2, 2))
     
     def test_hallways_field_rejects_nonhallways(self):
         with self.assertRaises(TypeError):
-            Level([], ["I am not a hallway", "I am not a hallway either"])
+            Level([], ["I am not a hallway", "I am not a hallway either"], Tile(1, 1), Tile(2, 2))
 
     def test_rejects_overlapping_rooms(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)])
         room2 = Room(Tile(9, 9), 10, 10, [Tile(9, 9), Tile(19, 19)])
         with self.assertRaises(ValueError):
-            Level([room1, room2], [])
+            Level([room1, room2], [], Tile(1, 1), Tile(2, 2))
 
     def test_rejects_overlapping_hallways(self):
         hallway1 = Hallway([], Tile(0, 5), Tile(10, 5))
         hallway2 = Hallway([], Tile(5, 10), Tile(5, 0))
         with self.assertRaises(ValueError):
-            Level([], [hallway1, hallway2])
+            Level([], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
     
     def test_rejects_overlapping_room_and_hallway(self):
-        room = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)])
+        room = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(1, 1), Tile(2, 2)])
         hallway = Hallway([], Tile(0, 5), Tile(10, 5))
         with self.assertRaises(ValueError):
-            Level([room], [hallway])
+            Level([room], [hallway], Tile(1, 1), Tile(2, 2))
 
     def test_rejects_disconnected_hallway(self):
         hallway = Hallway([], Tile(0, 5), Tile(10, 5))
         with self.assertRaises(ValueError):
-            Level([], [hallway])
+            Level([], [hallway], Tile(1, 1), Tile(2, 2))
 
     def test_any_overlaps_accepts_valid_level(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         try:
-            Level([room1, room2, room3], [hallway1, hallway2])
+            Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         except:
             self.fail("Level.any_overlaps improperly rejected valid level!")
 
     def test_zero_length_hallway(self):
         try:
-            room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+            room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(1, 1), Tile(2, 2)])
             hallway1 = Hallway([], Tile(3, 4), Tile(3, 5))
             room2 = Room(Tile(0, 5), 5, 5, [Tile(3, 5)])
-            level = Level([room1, room2], [hallway1])
+            level = Level([room1, room2], [hallway1], Tile(1, 1), Tile(2, 2))
         except:
             self.fail("Could not create level with zero-length hallway!")
 
     def test_add_player(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         self.assertEqual(level.get_tile(Tile(5, 5)).get_character(), Character("Nic"))
 
     def test_add_adversary(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_adversary(Adversary(), Tile(5, 5))
         self.assertEqual(level.get_tile(Tile(5, 5)).get_adversary(), Adversary())
 
     def test_locate_occupant_adversary(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_adversary(Adversary(), Tile(5, 5))
         self.assertEqual(level.locate_occupant(Adversary()), level.get_tile(Tile(5, 5)))
 
     def test_locate_occupant_player(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         self.assertEqual(level.locate_occupant(Character("Nic")), level.get_tile(Tile(5, 5)))
 
     def test_move_occupant_player(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         level.move_occupant(Character("Nic"), Tile(7, 5))
         # player is now in correct position
@@ -114,12 +114,12 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(level.get_tile(Tile(5, 5)).get_character(), None)
 
     def test_move_occupant_adversary(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_adversary(Adversary(), Tile(5, 5))
         level.move_occupant(Adversary(), Tile(7, 5))
         # player is now in correct position
@@ -128,12 +128,12 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(level.get_tile(Tile(5, 5)).get_adversary(), None)
 
     def test_interact_with_key(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
         # exit is locked prior to interaction
@@ -143,12 +143,12 @@ class TestLevel(unittest.TestCase):
         self.assertTrue(level.level_exit_unlocked)
 
     def test_interact_with_exit(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(8, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(8, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
         level.get_tile(Tile(8, 5)).add_occupant(LevelExit())
@@ -162,12 +162,12 @@ class TestLevel(unittest.TestCase):
         self.assertEqual(len(level.characters), 0)
 
     def test_interact_with_adversary(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(8, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(8, 5), Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
         level.add_adversary(Adversary(), Tile(7, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
@@ -175,22 +175,6 @@ class TestLevel(unittest.TestCase):
         level.move_occupant(Character("Nic"), Tile(7, 5))
         self.assertEqual(len(level.characters), 0)
         self.assertFalse(level.level_exit_unlocked)
-
-    def test_level_render(self):
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
-        hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1])
-        expected = "-   -   -   -   -\n|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
-            "-   -   -   D   -\nX   X   X       X\nX               X\nX       X   X   X\n" + \
-                "X       X   X   X\nX       X   X   X\nX       X   X   X\nX       X   X   X\n" + \
-                    "X       X   X   X\nX       X   X   X\nX       X   X   X\nX       X   X   X\n" + \
-                        "X       X   X   X\nX       X   X   X\nX               X\nX   X   X       X\n" + \
-                            "-   -   -   D   -\n|   X   X   X   |\n|   X   X   X   |\n" + \
-                                "|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
-                                    "|   X   X   X   |\n|   X   X   X   |\n|   X   X   X   |\n" + \
-                                        "-   -   -   -   -"
-        self.assertEqual(expected, grid_to_string(level.render()))
 
 if __name__ == '__main__':
     unittest.main()

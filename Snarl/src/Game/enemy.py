@@ -6,14 +6,14 @@ from .utils import grid_to_string
 import json
 
 class Enemy(Actor):
-    def __init__(self, enemy_name : str, entity_type, entity_name, out = None):
+    def __init__(self, name : str, entity_type, entity_name, out = None):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as
         the game progresses.
         """
-        if not type(enemy_name) == str:
+        if not type(name) == str:
             raise TypeError("Enemy Name must be a string!")
-        self.enemy_name = enemy_name
+        self.name = name
         self.entity = entity_type(entity_name)
         self.expelled = False
         self.surroundings = None
@@ -35,12 +35,12 @@ class Enemy(Actor):
         """
         if not isinstance(other, Enemy):
             return False
-        return self.enemy_name == other.enemy_name and self.entity == other.entity
+        return self.name == other.name and self.entity == other.entity
 
     def __hash__(self):
         """ Return a hash of the two identifying characteristics of a Player.
         """
-        return hash((self.enemy_name, self.entity))
+        return hash((self.name, self.entity))
 
     def render(self):
         """Renders the current surroundigns and other info to the output stream.

@@ -76,12 +76,12 @@ class TestGamemanager(unittest.TestCase):
             manager.add_enemies({"i'm": "not", "an": "adversary"})
 
     def test_start_game_starts(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(6, 6), Tile(7, 7)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(6, 6), Tile(7, 7))
         player = PlayerImpl("Ty", "Tulkas Astaldo")
         manager = Gamemanager()
         manager.add_player(player)
@@ -93,7 +93,7 @@ class TestGamemanager(unittest.TestCase):
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
-        level = Level([room1, room2, room3], [hallway1, hallway2])
+        level = Level([room1, room2, room3], [hallway1, hallway2], Tile(6, 6), Tile(7, 7))
         player = PlayerImpl("Ty", "Tulkas Astaldo")
         player2 = PlayerImpl("Nic", "Morgoth Bauglir")
         player3 = PlayerImpl("Ferd", "Túrin Turambar Neithan Gorthol Agarwaen Adanedhel Mormegil")
