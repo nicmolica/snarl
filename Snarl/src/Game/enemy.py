@@ -46,7 +46,7 @@ class Enemy(Actor):
     def render(self):
         """Renders the current surroundigns and other info to the output stream.
         """
-        char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.surroundings)
+        char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.state.get_tiles())
         if self.out:
             self.out.write(grid_to_string(char_grid))
         
