@@ -5,14 +5,14 @@ from .room import Room
 from .occupants import Entity, Character, Adversary, Block
 
 class Gamestate:
-    def __init__(self, level: Level, num_of_players: int, num_of_adversaries: int):
+    def __init__(self, start_level: Level, num_of_players: int, num_of_adversaries: int, levels = [], characters = []):
         """ Creates a Gamestate with the given initial level and number of
         players and adversaries to create the game with.
         """
-        self.levels = []
-        self.levels.append(level)
-        self.current_level = level
+        self.levels = levels
+        self.current_level = start_level
         self.rule_checker = Rulechecker()
+        self.characters = characters
         if num_of_players in range(1, 5):
             self.num_of_players = num_of_players
         else:
@@ -32,11 +32,11 @@ class Gamestate:
         """ After a level has been completed, mark it as completed, generate
         the next level, and move all the players up to the next level.
         """
-        # mark current level as complete
-        self.current_level.is_completed = True
-
-        # TODO generate next level (if not are_we_done)-this will happen when we have level gen
-        # TODO move all players to next level
+        self.current_level.is_completed = True # TODO re-evaluate whether we need level.is_completed
+        
+        self.current_level = self.levels.pop(0)
+        for c in self.characters:
+            self.current_level.add_character(c)
 
     def get_tiles(self) -> list:
         """ Return the full array of tiles in the current level.
@@ -75,6 +75,7 @@ class Gamestate:
     def add_character(self, character: Character, location: Tile):
         """ Add a character to the current Level.
         """
+        self.characters.append(character)
         self.current_level.add_character(character, location)
 
     def add_adversary(self, adversary: Adversary, location: Tile):

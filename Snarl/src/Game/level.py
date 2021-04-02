@@ -1,7 +1,8 @@
 import itertools
+import random
 from .room import Room
 from .hallway import Hallway
-from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant
+from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant, Ghost
 from .tile import Tile
 
 class Level:
@@ -126,11 +127,12 @@ class Level:
         2. Character + Adversary = kill the player
         3. Character + Exit and level unlocked = complete the level
         """
-        types = [type(occupant) for occupant in self.get_tile(dest).occupants]
-        has_player = Character in types
-        has_adv = any([isinstance(occupant, Adversary) for occupant in self.get_tile(dest).occupants])
-        has_key = LevelKey in types
-        has_exit = LevelExit in types
+        has_player = self.get_tile(dest).has_character()
+        has_adv = self.get_tile(dest).has_adversary()
+        has_ghost = self.get_tile(dest).has_occupant(Ghost)
+        has_key = self.get_tile(dest).has_occupant(LevelKey)
+        has_exit = self.get_tile(dest).has_occupant(LevelExit)
+        has_block = self.get_tile(dest).has_block()
         
         if has_player and has_adv:
             characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
@@ -146,6 +148,32 @@ class Level:
                 self._remove_from_tile(character)
                 self.completed_characters.append(character)
                 self.characters.pop(character)
+
+        if has_ghost and has_block:
+            self._teleport_ghost(self.get_tile(dest).get_adversary())
+
+    def _teleport_ghost(self, ghost):
+        """ Teleport the ghost on the provided tile to a random tile in a random room.
+        """
+        room_tiles = list(map(lambda r: self._ghost_friendly_tiles(r), self.rooms))
+        acceptable_rooms_tiles = list(filter(lambda r: r != [], room_tiles))
+        chosen_room = random.choice(acceptable_rooms_tiles)
+        chosen_tile = random.choice(chosen_room)
+        self.move_occupant(ghost, chosen_tile)
+
+    def _ghost_friendly_tiles(self, room):
+        """ Does the provided room have tiles that a ghost can land on?
+        Empty tiles or tiles without a LevelKey or LevelExit. It's ok if a ghost lands
+        on top of a character though.
+        """
+        friendly_tiles = []
+        for t in room.get_open_tiles():
+            tile = self.get_tile(t)
+            if not tile.has_occupant(Adversary) and not tile.has_occupant(Block) and not \
+                 tile.has_occupant(LevelKey) and not tile.has_occupant(LevelExit):
+                 friendly_tiles.append(t)
+
+        return friendly_tiles
 
     def _remove_from_tile(self, occ):
         """Find the occupant and remove them from the tile grid.

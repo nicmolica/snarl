@@ -13,7 +13,7 @@ from .player_impl import PlayerImpl
 from .observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
-    def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1):
+    def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels = []):
         if view_distance >= 1:
             self.view_distance = view_distance
         else:
