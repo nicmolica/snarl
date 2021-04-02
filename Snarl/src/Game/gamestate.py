@@ -37,6 +37,8 @@ class Gamestate:
         self.current_level = self.levels.pop(0)
         for c in self.characters:
             self.current_level.add_character(c)
+        
+        # Add adversaries
 
     def get_tiles(self) -> list:
         """ Return the full array of tiles in the current level.

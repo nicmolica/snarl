@@ -7,6 +7,7 @@ from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.enemy_ghost import EnemyGhost
 from Snarl.src.Game.observer_impl import ObserverImpl
 from Snarl.tests.parseJson import create_level_from_json
+from Snarl.src.Game.utils import grid_to_string
 
 # set up argument parser and parse the arguments
 parser = argparse.ArgumentParser(description = "game info")
@@ -16,10 +17,11 @@ parser.add_argument("--start", metavar = "start", type = int, nargs = 1)
 parser.add_argument("--observe", metavar = "observer", nargs = "?", const = True)
 args = parser.parse_args()
 
-args.players = args.players if not args.players == None else 1
-
+args.players = args.players[0] if not args.players == None else 1
 # take in the levels and parse them
-args.levels = args.levels if not args.levels == None else "snarl.levels"
+args.levels = args.levels[0] if not args.levels == None else "snarl.levels"
+args.start = args.start[0] if not args.start == None else 1
+
 f = open(args.levels)
 levels_string = f.read()
 levels_len = len(levels_string)
@@ -44,11 +46,24 @@ if args.players > 1:
     print("More than 1 player is currently not supported!")
     exit(0)
 
+class PlayerOut:
+    def write(self, arg):
+        """
+        """
+        if type(arg) is dict:
+            if arg["type"] == "update":
+                tiles = arg["layout"]
+                print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
+            elif arg["type"] == "move-result":
+                pass
+        else:
+            print(arg)
+
 # get usernames from players (right now that's just 1) and register them
 for i in range(args.players):
-    print("Please enter username for player " + str(i) + ":")
+    print("Please enter username for player " + str(i + 1) + ":")
     name = input()
-    player = PlayerImpl(name, name, sys.stdout)
+    player = PlayerImpl(name, name, out = PlayerOut())
     gm.add_player(player)
 
 # register an observer if the observe flag is passed
@@ -57,3 +72,9 @@ if args.observe:
     gm.register_observer(observer)
     # TODO make sure this works right
 
+# TODO: Is player movign correctly
+# TODO: Have way to randomly place adversaries and players
+# TODO: Allow player to add absolute location.
+first_level = levels.pop(args.start)
+gm.start_game(first_level)
+gm.run()

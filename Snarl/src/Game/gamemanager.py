@@ -7,13 +7,15 @@ from .level import Level
 from .enemy import Enemy
 from .tile import Tile
 from .player import Player
+from .enemy_zombie import EnemyZombie
+import math
 from .utils import grid_to_string
 from .moveresult import Moveresult
 from .player_impl import PlayerImpl
 from .observer import Observer # TODO uncomment this once it exists
 
 class Gamemanager:
-    def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels = []):
+    def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels : list = []):
         if view_distance >= 1:
             self.view_distance = view_distance
         else:
@@ -37,13 +39,18 @@ class Gamemanager:
         self.player_list = []
         self.enemy_list = []
         self.observers = []
+        self.init_levels = levels
 
     def start_game(self, level: Level):
         """ Begin the game by placing all the players in the top left room of the first level.
         """
         # Initialize game state and begin
-        # TODO: the '0' will be changed to # of adversaries when we add adversaries.
-        self.game_state = Gamestate(level, len(self.player_list), 0)
+        self.game_state = Gamestate(level, len(self.player_list), 1, self.init_levels)
+        # TODO: REALLY NEED RANDOM OPEN TILE METHOD
+        self.game_state.add_character(self.player_list[0].entity, Tile(2, 4))
+        # first_zombie = EnemyZombie("zombie", "zombie")
+        # TODO: Add adversaries properly. Also figure out how to do this for multiple levels
+        # self.game_state.add_adversary(first_zombie.entity, location)
         top_left_room = self.game_state.get_top_left_room()
         open_tiles = top_left_room.get_open_tiles()
 
@@ -202,14 +209,14 @@ class Gamemanager:
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
         """
-        if self.current_turn.entity in self.game_state.get_completed_characters():
+        if err:
+            return Moveresult.INVALID
+        elif self.current_turn.entity in self.game_state.get_completed_characters():
             return Moveresult.EXIT
         elif self.game_state.is_character_expelled(self.current_turn.entity):
             return Moveresult.EJECT
         elif self.game_state.is_current_level_unlocked() and not unlocked_before_move:
             return Moveresult.KEY
-        elif err:
-            return Moveresult.INVALID
         else:
             return Moveresult.OK
         
@@ -229,6 +236,5 @@ class Gamemanager:
                     self.move(move)
                     valid_move = True
                 except Exception as e:
-                    self.current_turn.notify(str(e))
-
+                    self.current_turn.notify({"type": "error", "error": e})
             # self.notify_observers()
