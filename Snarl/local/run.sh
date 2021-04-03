@@ -1,3 +1,3 @@
 source ../../Scripts/activate
 export PYTHONPATH=$(cd ../../ && pwd)$PYTHONPATH
-python localSnarl.py
+python3 localSnarl.py

@@ -90,7 +90,7 @@ class PlayerOut:
         res_string = f"Player {arg['name']} "
         if result == Moveresult.EXIT:
             print(res_string + "exited")
-        if result == Moveresult.EJECT:
+        elif result == Moveresult.EJECT:
             print(res_string + " was expelled")
         if result == Moveresult.KEY:
             print(res_string + "found the key")
