@@ -48,7 +48,20 @@ if args.players > 1:
     exit(0)
 
 class PlayerOut:
+    def __init__(self, output):
+        """Instantiate instance of this output object, with a boolean of whether or not
+        to actually print anything.
+        """
+        self.output = output
+    
     def write(self, arg):
+        """Write the argument, properly formatted, via print if self.output is True;
+        otherwise do nothing.
+        """
+        if self.output:
+            self._write(arg)
+
+    def _write(self, arg):
         """
         """
         if type(arg) is dict:
@@ -74,18 +87,22 @@ class PlayerOut:
         else:
             print(arg)
 
+player_output = True
+# register an observer if the observe flag is passed
+# we will override the player's view if this flag is present.
+if args.observe:
+    observer = ObserverImpl()
+    gm.register_observer(observer)
+    player_output = False
+    # TODO make sure this works right
+
 # get usernames from players (right now that's just 1) and register them
 for i in range(args.players):
     print("Please enter username for player " + str(i + 1) + ":")
     name = input()
-    player = PlayerImpl(name, name, out = PlayerOut())
+    player = PlayerImpl(name, name, out = PlayerOut(player_output))
     gm.add_player(player)
 
-# register an observer if the observe flag is passed
-if args.observe:
-    observer = ObserverImpl()
-    gm.register_observer(observer)
-    # TODO make sure this works right
 
 # TODO: Player is moving correctly, but surroundings sometimes display oddly
 # TODO: Have way to randomly place adversaries and players
