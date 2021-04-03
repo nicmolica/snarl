@@ -50,7 +50,8 @@ class Rulechecker:
         return len(level.characters) == 0
 
     def is_game_over(self, gamestate) -> bool:
-        """ Has the game been completed?
+        """ Has the game been completed? This means that either all the players are dead, or the game
+        has been properly completed.
         """
         all_players_dead = gamestate.all_players_expelled()
         state_complete = gamestate.game_complete()

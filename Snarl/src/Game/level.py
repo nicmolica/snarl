@@ -482,3 +482,8 @@ class Level:
                     return tile
         
         raise RuntimeError("No tile in this level has an exit on it.")
+
+    def is_level_completed(self):
+        """ Have all players either gotten to the exit or been ejected?
+        """
+        return not bool(self.characters)

@@ -41,6 +41,7 @@ class Gamemanager:
         self.enemy_list = []
         self.observers = []
         self.init_levels = levels
+        self.level_num = 1
 
     def start_game(self, level: Level):
         """ Begin the game by placing all the players in the top left room of the first level.
@@ -50,8 +51,8 @@ class Gamemanager:
         for player in self.player_list:
             spawn_tile = self.game_state.get_random_spawn_tile()
             self.game_state.add_character(player.entity, spawn_tile)
-        # First level has one enemy
-        first_zombie = EnemyZombie("Enemy Zombie", "Zomb")
+        # First level has one zombie and no ghosts
+        first_zombie = EnemyZombie("Zombie", "Zomb")
         self.add_enemies(first_zombie)
         for enemy in self.enemy_list:
             enemy_spawn = self.game_state.get_random_spawn_tile()
@@ -98,14 +99,13 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call update_players when the game has not started!")
-
         for player in self.player_list:
             # Do not update a player that has exited or been expelled from the level
             if not self.game_state.is_character_expelled(player.entity) and not \
                 player.entity in self.game_state.get_completed_characters():
                 self.update_player(player)
 
-    def update_player(self, player, update_grid = None):
+    def update_player(self, player: PlayerImpl, update_grid = None):
         """Sends an update notification to a single player.
         """
         grid = update_grid if update_grid is not None else \
@@ -124,14 +124,6 @@ class Gamemanager:
             raise RuntimeError("Cannot call render when the game has not started!")
 
         return self.game_state.render()
-
-    def begin_next_level(self):
-        """ Begin the next Level of the dungeon by moving all the players to the next
-        Level. If the game should end, then quit the game via self.quit_game().
-        """
-        # TODO: Implement later; per milestone spec this can be a stub for now.
-        if not self.game_state:
-            raise RuntimeError("Cannot call begin_next_level when the game has not started!")
 
     def quit_game(self):
         """ Quit the game.
@@ -200,13 +192,15 @@ class Gamemanager:
                     self.current_turn.notify(self._format_move_result_notification(move, result, e))
             else:
                 self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
+            # Notify players and adversaries of changes to the gamestate, including players who were killed
+            # on this turn. Note that this usually results in one rendering per move to all entities.
             self.update_players()
             self.update_adversaries()
             post_players = self.game_state.get_current_characters()
-            self.notify_dead_players(list(set(pre_players).difference(set(post_players))))
+            self.notify_killed_players(list(set(pre_players).difference(set(post_players))))
         self.current_turn = self.turn_order.next()
     
-    def notify_dead_players(self, chars_to_notify):
+    def notify_killed_players(self, chars_to_notify):
         """Notifies the players of the characters that have died that they are dead.
         """
         players = [player for player in self.player_list if player.entity in chars_to_notify]
@@ -259,6 +253,46 @@ class Gamemanager:
         for player in self.player_list:
             player.notify(notify)
 
+    def next_level(self):
+        """ Switch to the next level.
+        """
+        if not self.game_state:
+            raise RuntimeError("Cannot call begin_next_level when the game has not started!")
+
+        # switch the gamestate to the next level and iterate the level counter
+        try:
+            self.game_state.next_level()
+            self.level_num += 1
+        except IndexError:
+            return
+
+        # add all the characters to the new level
+        for c in self.game_state.characters:
+            self.game_state.current_level.add_character(c, self.game_state.current_level.random_spawn_tile())
+        
+        # create new adversaries
+        zombies = []
+        ghosts = []
+        for i in range(math.floor(self.level_num / 2) + 1):
+            zombies.append(EnemyZombie("zombie", "zombie"))
+        for i in range(math.floor((self.level_num - 1) / 2)):
+            ghosts.append(EnemyGhost("ghost", "ghost"))
+
+        # reset the turn order, update enemy_list, add enemies to gamestate
+        self.turn_order = Turnorder([])
+        self.enemy_list = []
+        for player in self.player_list:
+            self.turn_order.add(player)
+        for zombie in zombies:
+            self.turn_order.add(zombie)
+            self.enemy_list.append(zombie)
+            spawn = self.game_state.get_random_spawn_tile()
+            self.game_state.add_adversary(zombie.entity, spawn)
+        for ghost in ghosts:
+            self.turn_order.add(ghost)
+            self.enemy_list.append(ghost)
+            spawn = self.game_state.get_random_spawn_tile()
+            self.game_state.add_adversary(ghost.entity, spawn)
 
     def run(self):
         """ Main game loop.
@@ -266,8 +300,8 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call run when the game has not started!")
         
-        
-        self.current_turn = self.turn_order.next() # set initial current turn
+        # set initial current turn
+        self.current_turn = self.turn_order.next()
         # send initial player updates.
         self.update_players()
         self.update_adversaries()
@@ -284,7 +318,11 @@ class Gamemanager:
                     if isinstance(self.current_turn, Enemy):
                         print(f"Enemy {self.current_turn.name} provided invalid move: {e}")
                         self.current_turn = self.turn_order.next()
-                        raise e
+                        #raise e
+            if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):
+                self.next_level()
+                self.update_players()
+                self.update_adversaries()
             self.notify_observers()
         
         # TODO: Send endgame information

@@ -29,17 +29,18 @@ class Gamestate:
         """
         self.current_level.move_occupant(entity, dest)
 
-    def complete_level(self, are_we_done: bool):
+    def next_level(self): # TODO this used to have a boolean argument "are_we_done" but it wasn't used for anything, so gotta figure that out
         """ After a level has been completed, mark it as completed, generate
-        the next level, and move all the players up to the next level.
+        the next level, and move all the players to the next level.
         """
-        self.current_level.is_completed = True # TODO re-evaluate whether we need level.is_completed
+        self.current_level.is_completed = True
         self.num_levels_completed += 1
         self.current_level = self.levels.pop(0)
-        for c in self.characters:
-            self.current_level.add_character(c)
-        
-        # Add adversaries
+
+    def is_current_level_completed(self):
+        """ Is the current level completed?
+        """
+        return self.current_level.is_level_completed()
 
     def get_tile(self, tile):
         """Returns the level's tile at the given tile's coordinates.
@@ -90,12 +91,12 @@ class Gamestate:
         """
         return self.current_level.random_spawn_tile()
 
-    def all_players_expelled(self) -> list:
-        """Gets the list of players that are currently playing. Will not include expelled players.
+    def all_players_expelled(self) -> bool:
+        """ Have all the players been expelled?
         """
         current_players = list(self.current_level.characters)
         completed_players = self.current_level.completed_characters
-        if len(current_players) == 0 and len(completed_players) != self.num_of_players:
+        if len(current_players) == 0 and len(completed_players) == 0:
             return True
         return False
 
@@ -113,7 +114,7 @@ class Gamestate:
     def game_complete(self):
         """Does this gamestate represent a completed game of Snarl?
         """
-        return self.current_level.is_completed
+        return self.current_level.is_completed and len(self.levels) == 0
     
     def is_current_level_unlocked(self):
         """Has the current level's exit been unlocked?

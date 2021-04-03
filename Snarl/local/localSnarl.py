@@ -21,7 +21,7 @@ args = parser.parse_args()
 args.players = args.players[0] if not args.players == None else 1
 # take in the levels and parse them
 args.levels = args.levels[0] if not args.levels == None else "snarl.levels"
-args.start = args.start[0] if not args.start == None else 1
+args.start = args.start[0] if not args.start == None else 0
 
 f = open(args.levels)
 levels_string = f.read()
@@ -90,8 +90,8 @@ class PlayerOut:
         res_string = f"Player {arg['name']} "
         if result == Moveresult.EXIT:
             print(res_string + "exited")
-        elif result == Moveresult.EJECT:
-            print(res_string + " was expelled")
+        if result == Moveresult.EJECT:
+            print(res_string + "was expelled")
         if result == Moveresult.KEY:
             print(res_string + "found the key")
 
@@ -106,7 +106,7 @@ class PlayerOut:
             posn_string = f"[{posn.x}, {posn.y}]"
         print(f"Player Position:{posn_string}")
         print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
-        print()
+        print("\n")
 
 
 # If the --observe flag is present, this is set to false to disable player output in favor of
