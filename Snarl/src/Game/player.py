@@ -34,7 +34,5 @@ class Player(Actor):
             self.out.write(arg)
         if "layout" in arg:
             self.surroundings = arg["layout"]
-        if "loc" in arg:
-            self.location = arg["loc"]
-        if "error" in arg:
-            self.out.write(arg)
+        if "position" in arg:
+            self.location = arg["position"]

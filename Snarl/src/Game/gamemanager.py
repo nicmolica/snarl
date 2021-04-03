@@ -84,11 +84,10 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call get_player_move when the game has not started!")
-        try:
-            current_player = next(player for player in self.player_list if player.name == self.current_turn.name)
-            return current_player.move()
-        except:
+        current_player = next(player for player in self.player_list if player.name == self.current_turn.name)
+        if current_player is None:
             raise RuntimeError("Attempted to get player move from a player who does not exist!")
+        return current_player.move()
 
     def get_enemy_move(self) -> Tile:
         """ Receive the next move from an adversary either from STDIN or from some other entry
@@ -169,7 +168,6 @@ class Gamemanager:
         """
         self.observers.append(observer)
 
-    # TODO: should we just put players in this list and notify them that way? or do it separately?
     def notify_observers(self):
         """ Notify all Observers of a change to the Gamestate.
         """
@@ -192,19 +190,19 @@ class Gamemanager:
                     self.current_turn.notify(self._format_move_result_notification(move, result))
                 except Exception as e:
                     result = self._get_move_result(unlocked_before_move, e)
-                    self.current_turn.notify(self._format_move_result_notification(move, result))
+                    self.current_turn.notify(self._format_move_result_notification(move, result, e))
             else:
                 self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
             self.update_players()
         self.current_turn = self.turn_order.next()
     
-    def _format_move_result_notification(self, move, result):
+    def _format_move_result_notification(self, move, result, err = None):
         """Given a move result for hte current player, format a notification to send to
         that player' Actor.
         """
         return {"type": "move-result", "result": result, \
             "move" : {"type": "move", "to": None if move == None else [move.y, move.x]}, \
-                "name": self.current_turn.entity.name }
+                "name": self.current_turn.entity.name, "error": str(err) if err != None else None}
 
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
@@ -227,8 +225,9 @@ class Gamemanager:
             raise RuntimeError("Cannot call run when the game has not started!")
         
         self.current_turn = self.turn_order.next() # set initial current turn
+        # send initial player updates.
+        self.update_players() # might be deprecated and replaced with notify_observers
         while not self.rule_checker.is_game_over(self.game_state):
-            self.update_players() # might be deprecated and replaced with notify_observers
             valid_move = False
             while not valid_move:
                 try:
