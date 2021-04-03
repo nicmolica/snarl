@@ -34,21 +34,21 @@ class EnemyGhost(Enemy):
             return None
         
         # 2. remove moves that take us farther away from player
-        dist_to_player = lambda t: abs(t.x - player_loc.x) + abs(t.y - player_loc.y)
+        dist_to_player = lambda t: player_loc.distance(t)
         current_dist = dist_to_player(self.location)
         valid_progressive_moves = list(filter(lambda t: current_dist >= dist_to_player(t), valid_cardinal_moves))
-
+        
         # 3. remove moves that go right into a wall or block (in case we're in a hallway or at the edge of a room)
         valid_moves_not_walls = list(filter(lambda t: \
-            not self.state.current_level.get_tile(t).contains_occupant(Block), \
+            not self.state.current_level.get_tile(t).has_occupant(Block), \
                     valid_progressive_moves))
 
         # 4. if this leaves us with no moves, just move into the wall and hope for the best
         if len(valid_moves_not_walls) == 0:
-            return random.choice(valid_progressive_moves)
+            return random.choice(valid_cardinal_moves)
         
         # 5. if we are left with moves, pick the one that brings us closest to the player
-        return sorted(valid_progressive_moves, dist_to_player)[0]
+        return sorted(valid_progressive_moves, key=dist_to_player)[0]
 
     def _get_move_to_wall(self):
         """ Figure out where the closest wall is and provide a move that bring us closer to it.
@@ -57,24 +57,24 @@ class EnemyGhost(Enemy):
         if cardinals == None:
             return None
         else:
-            return sorted(cardinals, self._distance_to_closest_block)[0]
+            return sorted(cardinals, key=self._distance_to_closest_block)[0]
 
     def _distance_to_closest_block(self, tile):
         """ Determine the distance between this tile and the closest block.
         """
-        left, right, up, down = float("inf")
+        left, right, up, down = float("inf"), float("inf"), float("inf"), float("inf")
         width, height = self.state.current_level.calculate_level_dimensions()
         for i in range(tile.x):
-            if self.state.get_tile(i, tile.y).contains_occupant(Block):
+            if self.state.get_tile(Tile(i, tile.y)).has_occupant(Block):
                 left = tile.x - i
         for i in range(tile.y):
-            if self.state.get_tile(tile.x, i).contains_occupant(Block):
+            if self.state.get_tile(Tile(tile.x, i)).has_occupant(Block):
                 up = tile.y - i
         for i in range(tile.x, width):
-            if self.state.get_tile(i, tile.y).contains_occupant(Block):
+            if self.state.get_tile(Tile(i, tile.y)).has_occupant(Block):
                 right = i - tile.x
         for i in range(tile.y, height):
-            if self.state.get_tile(tile.x, i).contains_occupant(Block):
+            if self.state.get_tile(Tile(tile.x, i)).has_occupant(Block):
                 down = i - tile.y
 
         return min(left, right, up, down)
@@ -89,6 +89,6 @@ class EnemyGhost(Enemy):
         for character in characters:
             character_locs.append(self.state.get_entity_location(character))
         
-        chars_in_room = list(filter(lambda c : abs(c.x - self.location.x) + abs(c.y - self.location.y) < 10, character_locs))
+        chars_in_room = list(filter(lambda c : c.distance(self.location) < 10, character_locs))
         # Get closest character in room
-        return sorted(chars_in_room, lambda c : abs(c.x - self.location.x) + abs(c.y - self.location.y))
+        return sorted(chars_in_room, key=lambda c : c.distance(self.location))

@@ -1,18 +1,19 @@
 import random
 from .gamestate import Gamestate
 from .rulechecker import Rulechecker
-from .occupants import Entity, Character
+from .occupants import Entity, Character, Adversary
 from .turnorder import Turnorder
 from .level import Level
 from .enemy import Enemy
 from .tile import Tile
 from .player import Player
 from .enemy_zombie import EnemyZombie
+from .enemy_ghost import EnemyGhost
 import math
 from .utils import grid_to_string
 from .moveresult import Moveresult
 from .player_impl import PlayerImpl
-from .observer import Observer # TODO uncomment this once it exists
+from .observer import Observer 
 
 class Gamemanager:
     def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels : list = []):
@@ -46,26 +47,16 @@ class Gamemanager:
         """
         # Initialize game state and begin
         self.game_state = Gamestate(level, len(self.player_list), 1, self.init_levels)
-        # TODO: REALLY NEED RANDOM OPEN TILE METHOD
-        self.game_state.add_character(self.player_list[0].entity, Tile(2, 4))
-        # first_zombie = EnemyZombie("zombie", "zombie")
-        # TODO: Add adversaries properly. Also figure out how to do this for multiple levels
-        # self.game_state.add_adversary(first_zombie.entity, location)
-        top_left_room = self.game_state.get_top_left_room()
-        open_tiles = top_left_room.get_open_tiles()
-
-        if len(self.player_list) > len(open_tiles):
-            raise RuntimeError("There are not enough tiles in the first room for each player to have a spot.")
-
-        # This functionality was explicitly requested in Milestone 5 but is not quite compatible
-        # with the Milestone 7 testing harness. Therefore we are removing it for now.
-        # random.shuffle(open_tiles)
-        # for player in self.player_list:
-        #     character_location = open_tiles.pop()
-        #     self.game_state.add_character(player.entity, character_location)
-        
-        self.current_turn = self.turn_order.next()
-
+        for player in self.player_list:
+            spawn_tile = self.game_state.get_random_spawn_tile()
+            self.game_state.add_character(player.entity, spawn_tile)
+        # First level has one enemy
+        first_zombie = EnemyGhost("zombie", "zombie")
+        self.add_enemies(first_zombie)
+        for enemy in self.enemy_list:
+            enemy_spawn = self.game_state.get_random_spawn_tile()
+            self.game_state.add_adversary(enemy.entity, enemy_spawn)
+                    
     def get_move(self) -> Tile:
         """ Determine the type of the entity currently moving and get the move they want to make.
         """
@@ -93,9 +84,12 @@ class Gamemanager:
         """ Receive the next move from an adversary either from STDIN or from some other entry
         method/client.
         """
-        # TODO: No adversaries yet; can be implemented in a later milestone.
         if not self.game_state:
             raise RuntimeError("Cannot call get_enemy_move when the game has not started!")
+        current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
+        if current_enemy is None:
+            raise RuntimeError("Attempted to get a move from a nonexistent enemy!")
+        return current_enemy.move()
 
     def update_players(self):
         """ Update all the players about changes to the Gamestate surrounding them. This
@@ -156,6 +150,7 @@ class Gamemanager:
         """
         if isinstance(enemies, Enemy):
             self.enemy_list.append(enemies)
+            self.turn_order.add(enemies)
         elif all([isinstance(enemy, Enemy) for enemy in enemies]):
             for enemy in enemies:
                 self.enemy_list.append(enemy)
@@ -179,6 +174,11 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
+        if issubclass(type(self.current_turn), Adversary):
+            current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
+            self.notify_adversary(current_enemy)
+        # Players that are alive before this move
+        pre_players = self.game_state.get_current_characters()
         if not self.game_state.is_character_expelled(self.current_turn.entity) and \
             not self.current_turn.entity in self.game_state.get_completed_characters(): 
             if move != None:
@@ -194,15 +194,26 @@ class Gamemanager:
             else:
                 self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
             self.update_players()
+            self.update_adversaries()
+            post_players = self.game_state.get_current_characters()
+            self.notify_dead_players(list(set(pre_players).difference(set(post_players))))
         self.current_turn = self.turn_order.next()
     
-    def _format_move_result_notification(self, move, result, err = None):
+    def notify_dead_players(self, chars_to_notify):
+        """Notifies the players of the characters that have died that they are dead.
+        """
+        players = [player for player in self.player_list if player.entity in chars_to_notify]
+        for player in players:
+            player.notify(self._format_move_result_notification(None, Moveresult.EJECT, name=player.name))
+
+    def _format_move_result_notification(self, move, result, err = None, name = None):
         """Given a move result for hte current player, format a notification to send to
         that player' Actor.
         """
         return {"type": "move-result", "result": result, \
             "move" : {"type": "move", "to": None if move == None else [move.y, move.x]}, \
-                "name": self.current_turn.entity.name, "error": str(err) if err != None else None}
+                "name": name if name is not None else self.current_turn.entity.name, \
+                    "error": str(err) if err != None else None}
 
     def _get_move_result(self, unlocked_before_move : bool, err = None):
         """Gets the result of the current move
@@ -217,16 +228,40 @@ class Gamemanager:
             return Moveresult.KEY
         else:
             return Moveresult.OK
-        
+
+    def update_adversaries(self):
+        """Send game state updates to the adversaries.
+        """
+        for enemy in self.enemy_list:
+            self.notify_adversary(enemy)
+
+    def notify_adversary(self, enemy):
+        """Sends update to a single adversary.
+        """
+        loc = self.game_state.get_entity_location(enemy.entity)
+        enemy.notify({"state": self.game_state, "loc": loc})
+
+    def notify_players_endgame(self):
+        lvls_complete = self.game_state.num_levels_completed
+        won = not self.game_state.all_players_expelled()
+        failed_in = lvls_complete + 1
+        # TODO : Keep track of player keys; for now, not broken bc only one player locally.
+        notify = {"type": "end", "won": won, "failed-in": failed_in}
+        for player in self.player_list:
+            player.notify(notify)
+
+
     def run(self):
         """ Main game loop.
         """
         if not self.game_state:
             raise RuntimeError("Cannot call run when the game has not started!")
         
+        
         self.current_turn = self.turn_order.next() # set initial current turn
         # send initial player updates.
-        self.update_players() # might be deprecated and replaced with notify_observers
+        self.update_players()
+        self.update_adversaries()
         while not self.rule_checker.is_game_over(self.game_state):
             valid_move = False
             while not valid_move:
@@ -236,4 +271,11 @@ class Gamemanager:
                     valid_move = True
                 except Exception as e:
                     self.current_turn.notify({"type": "error", "error": e})
+                    if isinstance(self.current_turn, Enemy):
+                        print(f"Enemy {self.current_turn.name} provided invalid move: {e}")
+                        self.current_turn = self.turn_order.next()
+                        raise e
             # self.notify_observers()
+        
+        # TODO: Send endgame information
+        self.notify_players_endgame()

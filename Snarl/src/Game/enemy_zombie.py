@@ -16,12 +16,14 @@ class EnemyZombie(Enemy):
             raise RuntimeError("Cannot get Zombie move before Zombie has game info!")
         
         players_in_room = self._get_players_in_room()
+        move = None
         if len(players_in_room) > 0:
             # Move towards the closest player
-            return self._get_move_to_player(players_in_room[0])
+            move =  self._get_move_to_player(players_in_room[0])
         else:
             # Move in a random valid direction.
-            return self._get_random_open_dir()
+            move =  self._get_random_open_dir()
+        return move
     
     def _get_move_to_player(self, player_loc):
         """Gets a move that is closer to the given player location but still valid.
@@ -29,8 +31,8 @@ class EnemyZombie(Enemy):
         valid_moves = self._get_valid_cardinal_moves()
         if valid_moves == []:
             return None
-        dist_to_player = lambda t: abs(t.x - player_loc.x) + abs(t.y - player_loc.y)
-        return sorted(valid_moves, dist_to_player)[0]
+        dist_to_player = lambda t: player_loc.distance(t)
+        return sorted(valid_moves, key=dist_to_player)[0]
 
     def _get_random_open_dir(self):
         """Using the current state, return a tile that is a valid move in a random direction.
@@ -60,7 +62,7 @@ class EnemyZombie(Enemy):
         
         chars_in_room = list(filter(lambda c : my_room.contains(c), character_locs))
         # Get closest character in room
-        return sorted(chars_in_room, lambda c : abs(c.x - self.location.x) + abs(c.y - self.location.y))
+        return sorted(chars_in_room, key=lambda c: c.distance(self.location))
 
         
         

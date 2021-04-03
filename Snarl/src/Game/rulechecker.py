@@ -16,6 +16,8 @@ class Rulechecker:
         The player should be able to make 2 cardinal moves onto traversable tiles.
         """
         src = current_level.locate_occupant(character)
+        if src.coordinates_equal(dest):
+            return True
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self.is_open_tile(current_level.get_tile(dest), current_level)
@@ -67,7 +69,7 @@ class Rulechecker:
         has_player = tile.has_character()
         has_block = tile.has_block()
         # Adversaries are allowed to move onto player-occupied spaces.
-        if entity_type == Adversary:
+        if entity_type is not None and issubclass(entity_type, Adversary):
             has_player = False
             has_key = current_level.get_tile(tile).coordinates_equal(current_level.get_level_key())
             has_exit = current_level.get_tile(tile).coordinates_equal(current_level.get_level_exit())

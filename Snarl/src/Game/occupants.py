@@ -54,14 +54,15 @@ class Adversary(Entity):
         return 'A'
 
 class Zombie(Adversary):
-    """Represents an enemy.
+    zombie_count = 0
+    """Represents a zombie.
     """
     def __init__(self, name = ""):
-        self.name = name
+        self.name = name + str(Zombie.zombie_count)
+        Zombie.zombie_count += 1
 
     def __eq__(self, other):
-        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
-        return isinstance(other, Zombie)
+        return isinstance(other, Zombie) and self.name == other.name
 
     def __hash__(self):
         return hash(("zombie", self.name))
@@ -70,14 +71,15 @@ class Zombie(Adversary):
         return 'Z'
 
 class Ghost(Adversary):
-    """Represents an enemy.
+    ghost_count = 0
+    """Represents a ghost.
     """
     def __init__(self, name = ""):
-        self.name = name
+        self.name = name + str(Ghost.ghost_count)
+        Ghost.ghost_count += 1
     
     def __eq__(self, other):
-        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
-        return isinstance(other, Ghost)
+        return isinstance(other, Ghost) and self.name == other.name
 
     def __hash__(self):
         return hash(("ghost", self.name))

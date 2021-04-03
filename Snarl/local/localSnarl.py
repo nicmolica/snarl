@@ -71,6 +71,14 @@ class PlayerOut:
                 self._print_update(arg)
             elif arg["type"] == "move-result":
                 self._print_result(arg)
+            elif arg["type"] == "end":
+                won = arg["won"]
+                failed_in = arg["failed-in"]
+                if won:
+                    print("You won the game!")
+                    print(f"Keys collected: {failed_in - 1}")
+                else:
+                    print(f"You lost in level {failed_in}")
         else:
             print(arg)
     
@@ -116,16 +124,8 @@ for i in range(args.players):
     player = PlayerImpl(name, name, out = PlayerOut(player_output))
     gm.add_player(player)
 
-# TODO: Fix the rendering of player surroundings, not always correct right now.
-# TODO: Have way to randomly place adversaries and players at beginning of level.
 # TODO: When player exits, next level does not seem to start properly.
 # TODO: Verify that game ends with player victory or defeat as appropriate.
-# TODO: Verify that adversary code functions and is allowed turns in the proper manner.
-# * Suppress player output when observer is present. Have not yet provided observer rendering.
-# * Correctly displays move result notifications for moves that result in key/exit/eject
-# * Added player location to the stuff that gets sent to update
-# * Fixed a bug that cause some messages to be sent twice
-# * Improved handing of errors. Should display more nicely now.
 first_level = levels.pop(args.start)
 gm.start_game(first_level)
 gm.run()

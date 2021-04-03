@@ -2,7 +2,7 @@ import itertools
 import random
 from .room import Room
 from .hallway import Hallway
-from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant, Ghost
+from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant, Ghost, Door
 from .tile import Tile
 
 class Level:
@@ -161,6 +161,29 @@ class Level:
         chosen_room = random.choice(acceptable_rooms_tiles)
         chosen_tile = random.choice(chosen_room)
         self.move_occupant(ghost, chosen_tile)
+
+    def random_spawn_tile(self):
+        """Return a random tile onto which an Entity can be spawned.
+        """
+        room_tiles = list(map(lambda r: self._spawn_friendly_tiles(r), self.rooms))
+        acceptable_rooms_tiles = list(filter(lambda r: r != [], room_tiles))
+        chosen_room = random.choice(acceptable_rooms_tiles)
+        chosen_tile = random.choice(chosen_room)
+        return chosen_tile
+
+    def _spawn_friendly_tiles(self, room):
+        """Returns the tiles in a room on which an entity can be spawned.
+        """
+        friendly_tiles = []
+        for t in room.get_open_tiles():
+            tile = self.get_tile(t)
+            if not tile.has_occupant(Adversary) and not tile.has_occupant(Block) and not \
+                 tile.has_occupant(LevelKey) and not tile.has_occupant(LevelExit) and not \
+                     tile.has_character() and not tile.has_occupant(Door):
+                 friendly_tiles.append(t)
+
+        return friendly_tiles
+
 
     def _ghost_friendly_tiles(self, room):
         """ Does the provided room have tiles that a ghost can land on?

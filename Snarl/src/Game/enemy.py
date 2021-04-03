@@ -17,7 +17,8 @@ class Enemy(Actor):
         self.name = name
         self.entity = entity_type(entity_name)
         self.expelled = False
-        self.surroundings = None
+        self.state = None
+        self.location = None
         self.out = out
     
     def notify(self, arg):

@@ -11,6 +11,7 @@ class Gamestate:
         """
         self.levels = levels
         self.current_level = start_level
+        self.num_levels_completed = 0
         self.rule_checker = Rulechecker()
         self.characters = characters
         if num_of_players in range(1, 5):
@@ -33,12 +34,17 @@ class Gamestate:
         the next level, and move all the players up to the next level.
         """
         self.current_level.is_completed = True # TODO re-evaluate whether we need level.is_completed
-        
+        self.num_levels_completed += 1
         self.current_level = self.levels.pop(0)
         for c in self.characters:
             self.current_level.add_character(c)
         
         # Add adversaries
+
+    def get_tile(self, tile):
+        """Returns the level's tile at the given tile's coordinates.
+        """
+        return self.current_level.get_tile(tile)
 
     def get_tiles(self) -> list:
         """ Return the full array of tiles in the current level.
@@ -79,6 +85,11 @@ class Gamestate:
         """
         return self.current_level.get_top_left_room()
     
+    def get_random_spawn_tile(self):
+        """Gets a random tile onto which an Entity can be spawned.
+        """
+        return self.current_level.random_spawn_tile()
+
     def all_players_expelled(self) -> list:
         """Gets the list of players that are currently playing. Will not include expelled players.
         """
