@@ -51,11 +51,18 @@ class PlayerOut:
         """
         """
         if type(arg) is dict:
+            # TODO: Format these how the milestone requires
+            if "error" in arg and arg["error"] is not None:
+                print(arg["error"])
             if arg["type"] == "update":
                 tiles = arg["layout"]
+                print("===================================================")
+                posn = arg["position"]
+                print(f"Player Position: [{posn.x}, {posn.y}]")
                 print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
+                print()
             elif arg["type"] == "move-result":
-                pass
+                print(arg["result"])
         else:
             print(arg)
 
@@ -72,9 +79,12 @@ if args.observe:
     gm.register_observer(observer)
     # TODO make sure this works right
 
-# TODO: Is player movign correctly
+# TODO: Player is moving correctly, but surroundings sometimes display oddly
 # TODO: Have way to randomly place adversaries and players
-# TODO: Allow player to add absolute location.
+# TODO: Support levels ending/starting properly
+# * Added player location to the stuff that gets sent to update
+# * Fixed a bug that cause some messages to be sent twice
+# * Improved handing of errors. Should display more nicely now.
 first_level = levels.pop(args.start)
 gm.start_game(first_level)
 gm.run()
