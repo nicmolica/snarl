@@ -72,16 +72,28 @@ class PlayerOut:
             elif arg["type"] == "move-result":
                 self._print_result(arg)
             elif arg["type"] == "end":
-                won = arg["won"]
-                failed_in = arg["failed-in"]
-                if won:
-                    print("You won the game!")
-                    print(f"Keys collected: {failed_in - 1}")
-                else:
-                    print(f"You lost in level {failed_in}")
+                self._print_end(arg)
+            elif arg["type"] == "error":
+                self._print_error(arg)
         else:
             print(arg)
     
+    def _print_error(self, arg):
+        err = arg["error"]
+        print(err)
+
+    def _print_end(self, arg):
+        """Prints endgame info to console.
+        """
+        won = arg["won"]
+        failed_in = arg["failed-in"]
+        if won:
+            print("You won the game!")
+            print(f"Keys collected: {failed_in - 1}")
+        else:
+            print(f"You lost in level {failed_in}")
+
+
     def _print_result(self, arg):
         """Prints an update notifcation when the player EXITS, IS EJECTED, or LANDS ON THE KEY.
         Otherwise, will print nothing.
