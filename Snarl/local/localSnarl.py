@@ -62,31 +62,44 @@ class PlayerOut:
             self._write(arg)
 
     def _write(self, arg):
-        """
+        """Writes the arg to standard output with proper formatting.
         """
         if type(arg) is dict:
-            # TODO: Format these how the milestone requires
             if "error" in arg and arg["error"] is not None:
                 print(arg["error"])
             if arg["type"] == "update":
-                tiles = arg["layout"]
-                print("===================================================")
-                posn = arg["position"]
-                print(f"Player Position: [{posn.x}, {posn.y}]")
-                print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
-                print()
+                self._print_update(arg)
             elif arg["type"] == "move-result":
-                result = arg["result"]
-                res_string = f"Player {arg['name']} "
-                if result == Moveresult.EXIT:
-                    print(res_string + "exited")
-                if result == Moveresult.EJECT:
-                    print(res_string + " was expelled")
-                if result == Moveresult.KEY:
-                    print(res_string + "found the key")
+                self._print_result(arg)
         else:
             print(arg)
+    
+    def _print_result(self, arg):
+        """Prints an update notifcation when the player EXITS, IS EJECTED, or LANDS ON THE KEY.
+        Otherwise, will print nothing.
+        """
+        result = arg["result"]
+        res_string = f"Player {arg['name']} "
+        if result == Moveresult.EXIT:
+            print(res_string + "exited")
+        if result == Moveresult.EJECT:
+            print(res_string + " was expelled")
+        if result == Moveresult.KEY:
+            print(res_string + "found the key")
 
+    def _print_update(self, arg):
+        """Prints an update notification. This will show the player's current position as well as
+        the player's surroundings.
+        """
+        tiles = arg["layout"]
+        posn = arg["position"]
+        print(f"Player Position: [{posn.x}, {posn.y}]")
+        print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
+        print()
+
+
+# If the --observe flag is present, this is set to false to disable player output in favor of
+# observer's view.
 player_output = True
 # register an observer if the observe flag is passed
 # we will override the player's view if this flag is present.
@@ -94,7 +107,7 @@ if args.observe:
     observer = ObserverImpl()
     gm.register_observer(observer)
     player_output = False
-    # TODO make sure this works right
+    # TODO make sure this works right-should be able to see entire level.
 
 # get usernames from players (right now that's just 1) and register them
 for i in range(args.players):
@@ -103,10 +116,12 @@ for i in range(args.players):
     player = PlayerImpl(name, name, out = PlayerOut(player_output))
     gm.add_player(player)
 
-
-# TODO: Player is moving correctly, but surroundings sometimes display oddly
-# TODO: Have way to randomly place adversaries and players
-# TODO: Support levels ending/starting properly
+# TODO: Fix the rendering of player surroundings, not always correct right now.
+# TODO: Have way to randomly place adversaries and players at beginning of level.
+# TODO: When player exits, next level does not seem to start properly.
+# TODO: Verify that game ends with player victory or defeat as appropriate.
+# TODO: Verify that adversary code functions and is allowed turns in the proper manner.
+# * Suppress player output when observer is present. Have not yet provided observer rendering.
 # * Correctly displays move result notifications for moves that result in key/exit/eject
 # * Added player location to the stuff that gets sent to update
 # * Fixed a bug that cause some messages to be sent twice
