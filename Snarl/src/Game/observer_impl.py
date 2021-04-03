@@ -10,6 +10,7 @@ class ObserverImpl(Observer):
 
     def notify(self, gamestate):
         self.gamestate = gamestate
+        self.render()
 
     def render(self):
         """Returns an ASCII representation of the current `Gamestate`. This is useful for

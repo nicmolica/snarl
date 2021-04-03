@@ -150,7 +150,6 @@ class Gamemanager:
         
         self.player_list.append(player)
         self.turn_order.add(player)
-        self.observers.append(player)
 
     def add_enemies(self, enemies):
         """ Add all the provided adversaries to the enemy_list field and put them in the correct
@@ -272,6 +271,7 @@ class Gamemanager:
         # send initial player updates.
         self.update_players()
         self.update_adversaries()
+        self.notify_observers()
         while not self.rule_checker.is_game_over(self.game_state):
             valid_move = False
             while not valid_move:
@@ -285,7 +285,7 @@ class Gamemanager:
                         print(f"Enemy {self.current_turn.name} provided invalid move: {e}")
                         self.current_turn = self.turn_order.next()
                         raise e
-            # self.notify_observers()
+            self.notify_observers()
         
         # TODO: Send endgame information
         self.notify_players_endgame()
