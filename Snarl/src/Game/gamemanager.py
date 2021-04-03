@@ -103,11 +103,19 @@ class Gamemanager:
             # Do not update a player that has exited or been expelled from the level
             if not self.game_state.is_character_expelled(player.entity) and not \
                 player.entity in self.game_state.get_completed_characters():
+                self.update_player(player)
 
-                grid = self.game_state.get_character_surroundings(player.entity, self.view_distance)
-                
-                player.notify({"type":"update", "layout": grid, \
-                    "position": self.game_state.get_entity_location(player.entity), "name": player.name })
+    def update_player(self, player, update_grid = None):
+        """Sends an update notification to a single player.
+        """
+        grid = update_grid if update_grid is not None else \
+            self.game_state.get_character_surroundings(player.entity, self.view_distance)
+        try: 
+            position = self.game_state.get_entity_location(player.entity)
+        except:
+            position = None
+        player.notify({"type":"update", "layout": grid, \
+                    "position": position, "name": player.name })
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.
@@ -242,6 +250,8 @@ class Gamemanager:
         enemy.notify({"state": self.game_state, "loc": loc})
 
     def notify_players_endgame(self):
+        for player in self.player_list:
+            self.update_player(player, self.game_state.get_tiles())
         lvls_complete = self.game_state.num_levels_completed
         won = not self.game_state.all_players_expelled()
         failed_in = lvls_complete + 1

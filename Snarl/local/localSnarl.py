@@ -101,7 +101,10 @@ class PlayerOut:
         """
         tiles = arg["layout"]
         posn = arg["position"]
-        print(f"Player Position: [{posn.x}, {posn.y}]")
+        posn_string = "null"
+        if posn is not None:
+            posn_string = f"[{posn.x}, {posn.y}]"
+        print(f"Player Position:{posn_string}")
         print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
         print()
 
