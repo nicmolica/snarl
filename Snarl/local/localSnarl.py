@@ -8,6 +8,7 @@ from Snarl.src.Game.enemy_ghost import EnemyGhost
 from Snarl.src.Game.observer_impl import ObserverImpl
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
+from Snarl.src.Game.moveresult import Moveresult
 
 # set up argument parser and parse the arguments
 parser = argparse.ArgumentParser(description = "game info")
@@ -62,7 +63,14 @@ class PlayerOut:
                 print(grid_to_string(list(map(lambda row: map(lambda tile : tile.render(), row), tiles))))
                 print()
             elif arg["type"] == "move-result":
-                print(arg["result"])
+                result = arg["result"]
+                res_string = f"Player {arg['name']} "
+                if result == Moveresult.EXIT:
+                    print(res_string + "exited")
+                if result == Moveresult.EJECT:
+                    print(res_string + " was expelled")
+                if result == Moveresult.KEY:
+                    print(res_string + "found the key")
         else:
             print(arg)
 
@@ -82,6 +90,7 @@ if args.observe:
 # TODO: Player is moving correctly, but surroundings sometimes display oddly
 # TODO: Have way to randomly place adversaries and players
 # TODO: Support levels ending/starting properly
+# * Correctly displays move result notifications for moves that result in key/exit/eject
 # * Added player location to the stuff that gets sent to update
 # * Fixed a bug that cause some messages to be sent twice
 # * Improved handing of errors. Should display more nicely now.
