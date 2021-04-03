@@ -75,11 +75,12 @@ class Rulechecker:
             has_key = current_level.get_tile(tile).coordinates_equal(current_level.get_level_key())
             has_exit = current_level.get_tile(tile).coordinates_equal(current_level.get_level_exit())
             has_door = current_level.get_tile(tile).has_occupant(Door)
+            has_adv = current_level.get_tile(tile).has_adversary()
             if entity_type == Ghost:
                 # Ghosts can move through walls
-                has_block = has_exit or has_key
+                has_block = has_exit or has_key or has_adv
             if entity_type == Zombie:
                 # Zombies can't move onto doors
-                has_block = has_block or has_door or has_exit or has_key
+                has_block = has_block or has_door or has_exit or has_key or has_adv
         
         return not has_player and not has_block
