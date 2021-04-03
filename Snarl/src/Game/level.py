@@ -59,12 +59,13 @@ class Level:
     def get_tiles_range(self, tile1: Tile, tile2: Tile) -> list:
         """ Return the rectangle of tiles between the specified tiles.
         """
-        min_x = min(tile1.x, tile2.x)
-        min_y = min(tile1.y, tile2.y)
-        max_x = max(tile1.x, tile2.x) + 1
-        max_y = max(tile1.y, tile2.y) + 1
+        width, height = self.calculate_level_dimensions()
+        min_x = max(min(tile1.x, tile2.x), 0)
+        min_y = max(min(tile1.y, tile2.y), 0)
+        max_x = min(max(tile1.x, tile2.x) + 1, width)
+        max_y = min(max(tile1.y, tile2.y) + 1, height)
         # TODO test this method
-        return [row[min_x:max_x] for row in self.tiles.copy()[min_y:max_y]]
+        return [row[min_x:max_x] for row in self.get_tiles()[min_y:max_y]]
 
     def calculate_level_dimensions(self):
         """Returns a tuple (width, height) of the level's dimensions, determined by
