@@ -22,4 +22,4 @@ class ObserverImpl(Observer):
     def _render_to_stream(self, stream):
         """Renders to the particular output stream.
         """
-        stream.write(grid_to_string(self.gamestate.render()))
+        stream.write(grid_to_string(self.gamestate.render()) + "\n")

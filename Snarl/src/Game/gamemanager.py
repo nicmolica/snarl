@@ -125,13 +125,6 @@ class Gamemanager:
 
         return self.game_state.render()
 
-    def quit_game(self):
-        """ Quit the game.
-        """
-        # TODO: Implement later; per milestone spec this can be a stub for now.
-        if not self.game_state:
-            raise RuntimeError("Cannot call quit_game when the game has not started!")
-
     def add_player(self, player: Player):
         """ Register a new player to the game and add it to the correct spot in the turn order.
         """
@@ -182,14 +175,10 @@ class Gamemanager:
             not self.current_turn.entity in self.game_state.get_completed_characters(): 
             if move != None:
                 unlocked_before_move = self.game_state.is_current_level_unlocked()
-                try:
-                    self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
-                    self.game_state.move(self.current_turn.entity, move)
-                    result = self._get_move_result(unlocked_before_move)
-                    self.current_turn.notify(self._format_move_result_notification(move, result))
-                except Exception as e:
-                    result = self._get_move_result(unlocked_before_move, e)
-                    self.current_turn.notify(self._format_move_result_notification(move, result, e))
+                self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
+                self.game_state.move(self.current_turn.entity, move)
+                result = self._get_move_result(unlocked_before_move)
+                self.current_turn.notify(self._format_move_result_notification(move, result))
             else:
                 self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
             # Notify players and adversaries of changes to the gamestate, including players who were killed
@@ -319,11 +308,15 @@ class Gamemanager:
                         print(f"Enemy {self.current_turn.name} provided invalid move: {e}")
                         self.current_turn = self.turn_order.next()
                         #raise e
-            if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):
+            if self.game_state.is_current_level_completed():
                 self.next_level()
                 self.update_players()
                 self.update_adversaries()
             self.notify_observers()
+        
+        # might need these lines for something
+        # result = self._get_move_result(unlocked_before_move, e)
+        # self.current_turn.notify(self._format_move_result_notification(move, result, e))
         
         # TODO: Send endgame information
         self.notify_players_endgame()
