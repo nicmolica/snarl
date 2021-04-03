@@ -51,7 +51,7 @@ class Gamemanager:
             spawn_tile = self.game_state.get_random_spawn_tile()
             self.game_state.add_character(player.entity, spawn_tile)
         # First level has one enemy
-        first_zombie = EnemyGhost("zombie", "zombie")
+        first_zombie = EnemyZombie("Enemy Zombie", "Zomb")
         self.add_enemies(first_zombie)
         for enemy in self.enemy_list:
             enemy_spawn = self.game_state.get_random_spawn_tile()
