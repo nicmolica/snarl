@@ -40,6 +40,10 @@ class PlayerImpl(Player):
         input.
         """
         requested_input = self.input_func()
+        # TODO: We probably don't want this command to be present in production but it's good for testing.
+        if requested_input == 'q':
+            self.out.write("Exiting game...")
+            exit(0)
         input_json = json.loads(requested_input)
         if not type(input_json) == list or len(input_json) != 2:
             raise RuntimeError("User move input not valid: " + requested_input)
