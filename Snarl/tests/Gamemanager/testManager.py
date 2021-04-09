@@ -69,7 +69,6 @@ class TraceOutput:
     def _actors_from_layout(self, layout):
         """Gets all the actors in this layout.
         """
-        # TODO: remove the actor that the update was sent to from this list
         actors = []
         for row in layout:
             for tile in row:

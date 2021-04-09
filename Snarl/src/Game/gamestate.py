@@ -29,7 +29,7 @@ class Gamestate:
         """
         self.current_level.move_occupant(entity, dest)
 
-    def next_level(self): # TODO this used to have a boolean argument "are_we_done" but it wasn't used for anything, so gotta figure that out
+    def next_level(self):
         """ After a level has been completed, mark it as completed, generate
         the next level, and move all the players to the next level.
         """

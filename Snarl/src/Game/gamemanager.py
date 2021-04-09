@@ -178,6 +178,7 @@ class Gamemanager:
                 self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
                 self.game_state.move(self.current_turn.entity, move)
                 result = self._get_move_result(unlocked_before_move)
+                self.update_scoreboard(result)
                 self.current_turn.notify(self._format_move_result_notification(move, result))
             else:
                 self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
@@ -188,6 +189,16 @@ class Gamemanager:
             post_players = self.game_state.get_current_characters()
             self.notify_killed_players(list(set(pre_players).difference(set(post_players))))
         self.current_turn = self.turn_order.next()
+
+    def update_scoreboard(self, result):
+        """ Update the scoreboard of the player whose turn it is to reflect the given move result.
+        """
+        if result == Moveresult.KEY:
+            self.current_turn.keys_collected += 1
+        elif result == Moveresult.EXIT:
+            self.current_turn.successful_exits += 1
+        elif result == Moveresult.EJECT:
+            self.current_turn.times_ejected += 1
     
     def notify_killed_players(self, chars_to_notify):
         """Notifies the players of the characters that have died that they are dead.
@@ -234,13 +245,12 @@ class Gamemanager:
     def notify_players_endgame(self):
         for player in self.player_list:
             self.update_player(player, self.game_state.get_tiles())
-        lvls_complete = self.game_state.num_levels_completed
-        won = not self.game_state.all_players_expelled()
-        failed_in = lvls_complete + 1
-        # TODO : Keep track of player keys; for now, not broken bc only one player locally.
-        notify = {"type": "end", "won": won, "failed-in": failed_in}
+        end_game = {"type": "end-game", "scores": []}
         for player in self.player_list:
-            player.notify(notify)
+            end_game["scores"].append({"type": "player-score", "name": player.name, "exits": player.successful_exits, \
+                "ejects": player.times_ejected, "keys": player.keys_collected})
+        for player in self.player_list:
+            player.notify(end_game)
 
     def next_level(self):
         """ Switch to the next level.
@@ -318,5 +328,4 @@ class Gamemanager:
         # result = self._get_move_result(unlocked_before_move, e)
         # self.current_turn.notify(self._format_move_result_notification(move, result, e))
         
-        # TODO: Send endgame information
         self.notify_players_endgame()

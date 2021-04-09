@@ -44,7 +44,6 @@ class Adversary(Entity):
     """Represents an enemy.
     """
     def __eq__(self, other):
-        # TODO maybe fix the equality methods on Adversary/Zombie/Ghost
         return isinstance(other, Adversary)
 
     def __hash__(self):

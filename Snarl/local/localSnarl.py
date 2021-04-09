@@ -130,7 +130,6 @@ if args.observe:
     observer = ObserverImpl()
     gm.register_observer(observer)
     player_output = False
-    # TODO make sure this works right-should be able to see entire level.
 
 # get usernames from players (right now that's just 1) and register them
 for i in range(args.players):
@@ -139,8 +138,6 @@ for i in range(args.players):
     player = PlayerImpl(name, name, out = PlayerOut(player_output))
     gm.add_player(player)
 
-# TODO: When player exits, next level does not seem to start properly.
-# TODO: Verify that game ends with player victory or defeat as appropriate.
 first_level = levels.pop(args.start)
 gm.start_game(first_level)
 gm.run()

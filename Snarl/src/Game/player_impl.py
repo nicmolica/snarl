@@ -22,6 +22,9 @@ class PlayerImpl(Player):
         self.surroundings = None
         self.out = out
         self.input_func = input_func
+        self.keys_collected = 0
+        self.successful_exits = 0
+        self.times_ejected = 0
 
     def __eq__(self, other):
         """ Is this Player equal to another Player?
