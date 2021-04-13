@@ -2,7 +2,7 @@ from .rulechecker import Rulechecker
 from .level import Level
 from .tile import Tile
 from .room import Room
-from .occupants import Entity, Character, Adversary, Block
+from .occupants import Entity, Character, Adversary, Block, LevelExit, LevelKey
 
 class Gamestate:
     def __init__(self, start_level: Level, num_of_players: int, num_of_adversaries: int, levels = [], characters = []):
@@ -60,15 +60,20 @@ class Gamestate:
     def get_character_surroundings(self, character: Character, radius: int) -> list:
         """Return a square of the tiles around the given player in the given radius.
         """
+        tile1, tile2 = self.get_character_view_range(character, radius)
+        real_tiles = self.get_tiles_range(tile1, tile2)
+        return real_tiles
+
+    def get_character_view_range(self, character: Character, radius: int):
+        """ Get tiles on 2 corners of the rectangular view range of the character.
+        """
         loc = self.current_level.locate_occupant(character)
         level_width, level_height = self.current_level.calculate_level_dimensions()
         minx = max(0, loc.x - radius)
         maxx = min(level_width, loc.x + radius)
         miny = max(0, loc.y - radius)
         maxy = min(level_height, loc.y + radius)
-        real_tiles = self.get_tiles_range(Tile(minx, miny), Tile(maxx, maxy))
-        
-        return real_tiles
+        return (Tile(minx, miny), Tile(maxx, maxy))
 
     def add_character(self, character: Character, location: Tile):
         """ Add a character to the current Level.
@@ -141,3 +146,24 @@ class Gamestate:
         """ Renders the current level.
         """
         return self.current_level.render()
+
+    def objects_in_range(self, t1: Tile, t2: Tile) -> list:
+        """ Returns all the objects in the range between the two provided tiles.
+        """
+        objects = []
+        tile_list = self.current_level.get_tiles_range(t1, t2)
+        for tile in tile_list:
+            if tile.has_occupant(LevelKey):
+                objects.append((tile, LevelKey()))
+            elif tile.has_occupant(LevelExit):
+                objects.append((tile, LevelExit()))
+
+    def actors_in_range(self, t1: Tile, t2: Tile) -> list:
+        """ Returns all the actors in the range between the two provided tiles.
+        """
+        actors = []
+        tile_list = self.current_level.get_tiles_range(t1, t2)
+        for tile in tile_list:
+            for occ in tile.occupants:
+                if isinstance(occ, Entity):
+                    actors.append((tile, occ))

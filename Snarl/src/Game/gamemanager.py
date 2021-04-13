@@ -114,8 +114,12 @@ class Gamemanager:
             position = self.game_state.get_entity_location(player.entity)
         except:
             position = None
-        player.notify({"type":"update", "layout": grid, \
-                    "position": position, "name": player.name })
+
+        tile1, tile2 = self.game_state.get_character_view_range(player.entity, self.view_distance)
+        player.notify({"type": "update", "layout": grid, \
+                    "position": position, "name": player.name, \
+                    "objects": self.game_state.objects_in_range(tile1, tile2), \
+                    "actors": self.game_state.actors_in_range(tile1, tile2), "message": None})
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.

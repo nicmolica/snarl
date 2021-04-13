@@ -28,12 +28,12 @@ def process_move():
     valid_input = False
     input_json = None
     while not valid_input:
-        input_json = json.loads(requested_input)
+        input_json = json.loads(input())
         if type(input_json) == list and len(input_json) == 2:
             valid_input = True
     x, y = input_json
     send(json.dumps([x, y]))
-
+    # TODO if skipped, send none back
 
 def start_level(msg):
     """ Let the player know that we've started a new level and give them the relevant information.
@@ -105,7 +105,7 @@ def print_layout(layout, objects, actors, position):
             for actor in actor_posns:
                 if actor["position"] == [row, col]:
                     if actor["type"] == "player":
-                        print("O")
+                        print("P")
                     elif actor["type"] == "zombie":
                         print("Z")
                     elif actor["type"] == "ghost":
@@ -143,7 +143,7 @@ def player_update(msg):
     message = msg["message"]
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
-    if message is not none:
+    if message is not None:
         print(message)
     pass
 
