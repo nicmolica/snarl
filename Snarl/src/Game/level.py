@@ -28,16 +28,15 @@ class Level:
         if not self._are_hallways_connected_to_doors():
             raise ValueError("There are disconnected hallways on this level.")
 
+        self.key_location = key_loc
+        self.exit_location = exit_loc
+        self._update_tiles()
         if self.get_tile(key_loc).has_block() or self.get_tile(key_loc).has_occupant(Door):
             raise RuntimeError("Invalid key location. Cannot place a key on a block or a door.")
         if self.get_tile(exit_loc).has_block() or self.get_tile(exit_loc).has_occupant(Door):
             raise RuntimeError("Invalid exit location. Cannot place an exit on a block or a door.")
         if exit_loc == key_loc:
             raise RuntimeError("Cannot have the exit and the key located on the same tile.")
-        self.key_location = key_loc
-        self.exit_location = exit_loc
-        # This is done after we know that the room is valid.
-        self._update_tiles()
 
     def render(self) -> str:
         """Renders an ASCII representation of this level. Each coordinate in the level

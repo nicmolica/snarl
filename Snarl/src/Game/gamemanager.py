@@ -292,6 +292,8 @@ class Gamemanager:
             self.enemy_list.append(ghost)
             spawn = self.game_state.get_random_spawn_tile()
             self.game_state.add_adversary(ghost.entity, spawn)
+        
+        self.current_turn = self.turn_order.next()
 
     def run(self):
         """ Main game loop.
