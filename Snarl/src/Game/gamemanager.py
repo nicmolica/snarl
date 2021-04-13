@@ -186,7 +186,8 @@ class Gamemanager:
             # on this turn. Note that this usually results in one rendering per move to all entities.
             self.update_players()
             self.update_adversaries()
-            post_players = self.game_state.get_current_characters()
+            post_players = self.game_state.get_current_characters().copy()
+            post_players.extend(self.game_state.get_completed_characters())
             self.notify_killed_players(list(set(pre_players).difference(set(post_players))))
         self.current_turn = self.turn_order.next()
 
