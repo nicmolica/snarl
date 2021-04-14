@@ -2,6 +2,7 @@ import sys
 import socket
 import argparse
 import json
+from Snarl.src.Game.utils import grid_to_string
 
 parser = argparse.ArgumentParser(description = "socket connection info")
 parser.add_argument("--address", type = str, nargs = 1)
@@ -28,12 +29,19 @@ def process_move():
     valid_input = False
     input_json = None
     while not valid_input:
-        input_json = json.loads(input())
-        if type(input_json) == list and len(input_json) == 2:
-            valid_input = True
-    x, y = input_json
-    send(json.dumps([x, y]))
-    # TODO if skipped, send none back
+        to_send = None
+        coords = input()
+        try:
+            input_json = json.loads(coords)
+            if type(input_json) == list and len(input_json) == 2:
+                valid_input = True
+                x, y = input_json
+                to_send = [x, y]
+        except:
+            if coords == "skip":
+                valid_input = True
+    
+    send(json.dumps(to_send))
 
 def start_level(msg):
     """ Let the player know that we've started a new level and give them the relevant information.
@@ -81,6 +89,15 @@ def end_game(msg):
     for player in sorted(msg["scores"], key=lambda p : float(str(p["exits"]) + str(p["keys"]))):
         print(f'{player["name"]}                {player["exits"]}   {player["keys"]}    {player["ejects"]}')
 
+def map_tiles_nums_to_str(tile):
+    """Given a 0-1-2 tile, return the character used to render it.
+    """
+    if tile == 1:
+        return ' '
+    if tile == 2:
+        return 'D'
+    return 'X'
+
 def print_layout(layout, objects, actors, position):
     """Given a tile layout, a list of objects, a list of actors, and the player's position,
     render an ASCII grid representing the layout.
@@ -93,32 +110,42 @@ def print_layout(layout, objects, actors, position):
         new_x = position[1] - absolute_posn[1] + 2
         o["position"] = [new_y, new_x]
         return o
-    object_posns = list(map(objects, transform_coords))
-    actor_posns = list(map(actors, transform_coords))
+    object_posns = list(map(transform_coords, objects))
+    actor_posns = list(map(transform_coords, actors))
+    printed_layout = []
     for row in range(len(layout)):
-        for col in range(len(row)):
+        new_row = []
+        for col in range(row):
             # Do we need to render the player?
             if row == 2 and col == 2:
-                print("P")
+                new_row.append("P")
                 break
             # Do we need to render an actor?
             for actor in actor_posns:
                 if actor["position"] == [row, col]:
                     if actor["type"] == "player":
-                        print("P")
+                        new_row.append("P")
                     elif actor["type"] == "zombie":
-                        print("Z")
+                        new_row.append("Z")
                     elif actor["type"] == "ghost":
-                        print("G")
+                        new_row.append("G")
                     break
             # Do we need to render an object?
             for obj in object_posns:
                 if obj["position"] == [row, col]:
                     if obj["type"] == "key":
-                        print("K")
+                        new_row.append("K")
                     elif obj["type"] == "exit":
-                        print("E")
+                        new_row.append("E")
                     break
+            else:
+                new_row.append(map_tiles_nums_to_str(layout[row][col]))
+            
+        printed_layout.append(new_row)
+    
+    # TODO: This isn't working correctly. Getting the layouts but logic is wrong.
+    print(grid_to_string(printed_layout))
+            
             
 def player_update(msg):
     """ Update the player on what the dungeon looks like after another entity has made a move.
@@ -140,6 +167,7 @@ def player_update(msg):
     objects = msg["objects"]
     actors = msg["actors"]
     layout = msg["layout"]
+    print(layout)
     message = msg["message"]
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
@@ -150,6 +178,7 @@ def player_update(msg):
 def handle_string(msg):
     """ Deal with server messages that are only a single string, rather than dicts.
     """
+    print(msg)
     if msg == "name":
         print("What is your name?")
         send(input())
@@ -167,9 +196,7 @@ def handle_string(msg):
     elif msg == "Invalid":
         print("Your move was invalid. Please enter another:")
     else:
-        print("Malformed server message:")
         print(msg)
-        raise RuntimeError(f"Invalid server message: {msg}")
 
 def handle_server_message(msg):
     try:
@@ -183,7 +210,7 @@ def handle_server_message(msg):
         handle_string(msg)
     elif msg["type"] == "welcome":
         # Do nothing cause we don't need any server information right now. This could change.
-        pass
+        print("Welcome To SNARL")
     elif msg["type"] == "start-level":
         start_level(msg)
     elif msg["type"] == "end-level":
@@ -191,6 +218,7 @@ def handle_server_message(msg):
     elif msg["type"] == "end-game":
         end_game(msg)
     elif msg["type"] == "player-update":
+        print('updating player')
         player_update(msg)
     else:
         print("Malformed server message:")

@@ -27,8 +27,6 @@ class Actor(ABC):
         """Given the current state of their surroundings, get a move from this
         player and return the coordinates of the desired move.
         """
-        if self.out:
-            self.out.write("Please provide a move in the form [x, y]:\n")
         return self._determine_move()
 
     @abstractmethod
