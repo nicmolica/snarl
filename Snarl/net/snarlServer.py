@@ -84,41 +84,41 @@ class PlayerOut:
             if arg["type"] == "update":
                 self._send_update(arg)
             elif arg["type"] == "move-result":
-                self._print_result(arg)
+                self._send_result(arg)
+            elif arg["type"] == "start-level":
+                self._send_arg(arg)
+            elif arg["type"] == "end-level":
+                self._send_arg(arg)
             elif arg["type"] == "end":
-                self._print_end(arg)
+                self._send_end(arg)
             elif arg["type"] == "error":
-                self._print_error(arg)
+                self._send_error(arg)
         else:
             print(arg)
     
-    def _print_error(self, arg):
-        err = arg["error"]
-        print(err)
+    def _send_arg(self, arg):
+        """Sends the serialized argument.
+        """
+        send(self.output, json.dumps(arg))
 
-    def _print_end(self, arg):
+    def _send_error(self, arg):
+        err = arg["error"]
+        send(self.output, json.dumps({"error": str(err) }))
+
+    def _send_end(self, arg):
         """Prints endgame info to console.
         """
         won = arg["won"]
-        failed_in = arg["failed-in"]
-        if won:
-            print("You won the game!")
-            print(f"Keys collected: {failed_in - 1}")
-        else:
-            print(f"You lost in level {failed_in}")
+        client_msg = {"type": "end-game", "scores": arg["scores"], "game-won": won}
+        send(self.output, json.dumps(client_msg))
+        
 
-    def _print_result(self, arg):
+    def _send_result(self, arg):
         """Prints an update notifcation when the player EXITS, IS EJECTED, or LANDS ON THE KEY.
         Otherwise, will print nothing.
         """
         result = arg["result"]
-        res_string = f"Player {arg['name']} "
-        if result == Moveresult.EXIT:
-            print(res_string + "exited")
-        if result == Moveresult.EJECT:
-            print(res_string + "was expelled")
-        if result == Moveresult.KEY:
-            print(res_string + "found the key")
+        send(self.output, json.dumps(result.value))
 
     def _send_update(self, arg):
         """Prints an update notification. This will show the player's current position as well as
@@ -130,7 +130,7 @@ class PlayerOut:
             "actors": list(map(lambda x: {"type": "player" if isinstance(x[1], Character) else "zombie" if \
                 isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["objects"])),
             "message": None}
-        send(self.output, update_msg)
+        send(self.output, json.dumps(update_msg))
 
 for client in socks:
     msg = {}

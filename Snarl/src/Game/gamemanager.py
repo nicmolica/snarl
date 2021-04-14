@@ -257,12 +257,38 @@ class Gamemanager:
         for player in self.player_list:
             player.notify(end_game)
 
+    def notify_level_end(self):
+        """Notifies actors of a level's ending.
+        """
+        exits = self.game_state.get_completed_characters()
+        all_characters = list(map(lambda p : p.entity, self.player_list))
+        key = self.game_state.get_level_unlocked_by().name
+        ejects = set(all_characters) - set(exits) - set(self.game_state.get_current_characters())
+        ejects = list(ejects)
+        # Get only the names for the notification
+        ejects = list(map(lambda c : c.name, ejects))
+        exits = list(map(lambda c : c.name, exits))
+        notification = {"type":"end-level", "key": key, "exits": exits, "ejects": ejects}
+        for player in self.player_list:
+            player.notify(notification)
+
+    def notify_level_start(self):
+        """Notifies players of the beginning of a new level.
+        """
+        player_names = list(map(lambda p : p.name, self.player_list))
+        notification = {"type":"start-level", "level":self.level_num, "players":player_names}
+        for player in self.player_list:
+            player.notify(notification)
+
     def next_level(self):
         """ Switch to the next level.
         """
+        self.update_scoreboard(result)
+
         if not self.game_state:
             raise RuntimeError("Cannot call begin_next_level when the game has not started!")
 
+        self.notify_level_end()
         # switch the gamestate to the next level and iterate the level counter
         try:
             self.game_state.next_level()
@@ -270,6 +296,7 @@ class Gamemanager:
         except IndexError:
             return
 
+        self.notify_level_start()
         # add all the characters to the new level
         for c in self.game_state.characters:
             self.game_state.current_level.add_character(c, self.game_state.current_level.random_spawn_tile())

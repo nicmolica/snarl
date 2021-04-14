@@ -145,6 +145,8 @@ class Level:
                 self._remove_from_tile(character)
                 self.characters.pop(character)
         elif has_player and has_key:
+            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
+            self.unlocked_by = characters[0]
             self.unlock_level_exit()
         elif has_player and has_exit and self.level_exit_unlocked:
             # Happens twice because a character could have been killed before this happens

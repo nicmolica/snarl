@@ -152,18 +152,27 @@ class Gamestate:
         """
         objects = []
         tile_list = self.current_level.get_tiles_range(t1, t2)
-        for tile in tile_list:
-            if tile.has_occupant(LevelKey):
-                objects.append((tile, LevelKey()))
-            elif tile.has_occupant(LevelExit):
-                objects.append((tile, LevelExit()))
+        for row in tile_list:
+            for tile in row:
+                if tile.has_occupant(LevelKey):
+                    objects.append((tile, LevelKey()))
+                elif tile.has_occupant(LevelExit):
+                    objects.append((tile, LevelExit()))
 
     def actors_in_range(self, t1: Tile, t2: Tile) -> list:
         """ Returns all the actors in the range between the two provided tiles.
         """
         actors = []
         tile_list = self.current_level.get_tiles_range(t1, t2)
-        for tile in tile_list:
-            for occ in tile.occupants:
-                if isinstance(occ, Entity):
-                    actors.append((tile, occ))
+        for row in tile_list:
+            for tile in row:
+                for occ in tile.occupants:
+                    if isinstance(occ, Entity):
+                        actors.append((tile, occ))
+    
+    def get_level_unlocked_by(self):
+        """Return the character who unlocked the current level, or None if the level
+        is not unlocked.
+        """
+        if self.current_level.level_exit_unlocked:
+            return self.current_level.unlocked_by
