@@ -115,7 +115,7 @@ def print_layout(layout, objects, actors, position):
     printed_layout = []
     for row in range(len(layout)):
         new_row = []
-        for col in range(row):
+        for col in range(len(layout[0])):
             # Do we need to render the player?
             if row == 2 and col == 2:
                 new_row.append("P")
@@ -143,7 +143,6 @@ def print_layout(layout, objects, actors, position):
             
         printed_layout.append(new_row)
     
-    # TODO: This isn't working correctly. Getting the layouts but logic is wrong.
     print(grid_to_string(printed_layout))
             
             
@@ -167,7 +166,6 @@ def player_update(msg):
     objects = msg["objects"]
     actors = msg["actors"]
     layout = msg["layout"]
-    print(layout)
     message = msg["message"]
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
