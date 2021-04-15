@@ -116,10 +116,12 @@ class Gamemanager:
             position = None
 
         tile1, tile2 = self.game_state.get_character_view_range(player.entity, self.view_distance)
+        actors = self.game_state.actors_in_range(tile1, tile2)
+        actors = list(filter(lambda a: not a[1] == player.entity, actors))
         player.notify({"type": "update", "layout": grid, \
                     "position": position, "name": player.name, \
                     "objects": self.game_state.objects_in_range(tile1, tile2), \
-                    "actors": self.game_state.actors_in_range(tile1, tile2), "message": None})
+                    "actors": actors, "message": None})
 
     def render(self) -> str:
         """ Return an ASCII representation of the current game state.
@@ -262,7 +264,8 @@ class Gamemanager:
         """
         exits = self.game_state.get_completed_characters()
         all_characters = list(map(lambda p : p.entity, self.player_list))
-        key = self.game_state.get_level_unlocked_by().name
+        key_picked_up_by = self.game_state.get_level_unlocked_by()
+        key = None if key_picked_up_by == None else key_picked_up_by.name
         ejects = set(all_characters) - set(exits) - set(self.game_state.get_current_characters())
         ejects = list(ejects)
         # Get only the names for the notification
@@ -283,8 +286,6 @@ class Gamemanager:
     def next_level(self):
         """ Switch to the next level.
         """
-        self.update_scoreboard(result)
-
         if not self.game_state:
             raise RuntimeError("Cannot call begin_next_level when the game has not started!")
 

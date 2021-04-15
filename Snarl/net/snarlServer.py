@@ -2,11 +2,13 @@ import sys
 import socket
 import argparse
 import json
+import time # TODO remove this
 from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.moveresult import Moveresult
 from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.occupants import LevelExit, LevelKey, Character, Zombie, Door
 
 parser = argparse.ArgumentParser(description = "socket connection info")
@@ -46,7 +48,8 @@ except socket.timeout:
     print("No Additional Players")
 
 def send(conn, msg):
-    conn.sendall(msg.encode())
+    conn.send(msg.encode())
+    time.sleep(0.0001)
 
 def receive(conn):
     packet = conn.recv(32768)
@@ -151,11 +154,11 @@ class PlayerOut:
         """Prints an update notification. This will show the player's current position as well as
         the player's surroundings.
         """
-        update_msg = {"type": "player-update", "layout": transform_layout(arg["layout"]), "position": [arg["position"].x, arg["position"].y], \
+        update_msg = {"type": "player-update", "layout": transform_layout(arg["layout"]), "position": [arg["position"].y, arg["position"].x], \
             "objects": list(map(lambda x: {"type": "key" if isinstance(x[1], LevelKey) else "exit", "position": \
                 [x[0].y, x[0].x]}, arg["objects"])),
             "actors": list(map(lambda x: {"type": "player" if isinstance(x[1], Character) else "zombie" if \
-                isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["objects"])),
+                isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["actors"])),
             "message": None}
         send(self.output, json.dumps(update_msg))
 

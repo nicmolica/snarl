@@ -62,6 +62,20 @@ class Gamestate:
         """
         tile1, tile2 = self.get_character_view_range(character, radius)
         real_tiles = self.get_tiles_range(tile1, tile2)
+        loc = self.get_entity_location(character)
+        level_width, level_height = self.current_level.calculate_level_dimensions()
+
+        if loc.x - radius < 0:
+            for row in real_tiles:
+                row.insert(0, Tile(0, 0, [Block()]))
+        if level_width - (loc.x + radius + 1) < 0:
+            for row in real_tiles:
+                row.append(Tile(0, 0, [Block()]))
+        if loc.y - radius < 0:
+            real_tiles.insert(0, [Tile(0, 0, [Block()]) for tile in range(2*radius + 1)])
+        if level_height - (loc.y + radius +  1) < 0:
+            real_tiles.append([Tile(0, 0, [Block()]) for tile in range(2*radius + 1)])
+
         return real_tiles
 
     def get_character_view_range(self, character: Character, radius: int):

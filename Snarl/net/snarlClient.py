@@ -35,7 +35,7 @@ def process_move():
             input_json = json.loads(coords)
             if type(input_json) == list and len(input_json) == 2:
                 valid_input = True
-                x, y = input_json
+                y, x = input_json
                 to_send = [x, y]
         except:
             if coords == "skip":
@@ -103,18 +103,22 @@ def print_layout(layout, objects, actors, position):
     """
     # Convert object indices relative to player indices. Player should be in the middle of the
     # layout.
+    print(layout)
     def transform_coords(o):
         absolute_posn = o["position"]
-        new_y = position[0] - absolute_posn[0] + 2
-        new_x = position[1] - absolute_posn[1] + 2
+        dy = position[0] - 2
+        dx = position[1] - 2
+        new_y = absolute_posn[0] - dy
+        new_x = absolute_posn[1] - dx
         o["position"] = [new_y, new_x]
         return o
     object_posns = list(map(transform_coords, objects))
     actor_posns = list(map(transform_coords, actors))
     printed_layout = []
+    flag = False
     for row in range(len(layout)):
         new_row = []
-        for col in range(len(layout[0])):
+        for col in range(len(layout[row])):
             # Do we need to render the player?
             if row == 2 and col == 2:
                 new_row.append("P")
@@ -128,6 +132,7 @@ def print_layout(layout, objects, actors, position):
                             new_row.append("Z")
                         elif actor["type"] == "ghost":
                             new_row.append("G")
+                        flag = True
                         break
                 # Do we need to render an object?
                 for obj in object_posns:
@@ -136,8 +141,11 @@ def print_layout(layout, objects, actors, position):
                             new_row.append("K")
                         elif obj["type"] == "exit":
                             new_row.append("E")
+                        flag = True
                         break
-                new_row.append(map_tiles_nums_to_str(layout[row][col]))
+                if not flag:
+                    new_row.append(map_tiles_nums_to_str(layout[row][col]))
+                flag = False
             
         printed_layout.append(new_row)
     
@@ -178,7 +186,7 @@ def handle_string(msg):
         print("What is your name?")
         send(input())
     elif msg == "move":
-        print("Please provide a move in the form [x, y], or enter \"skip\" if you wish to skip your move.")
+        print("Please provide a move in the form [y, x], or enter \"skip\" if you wish to skip your move.")
         process_move()
     elif msg == "OK":
         print("Your move was successful.")
@@ -194,6 +202,7 @@ def handle_string(msg):
         print(msg)
 
 def handle_server_message(msg):
+    print(msg)
     try:
         msg = json.loads(msg)
         is_json = True
