@@ -54,7 +54,6 @@ def start_level(msg):
     player_names = ", ".join(msg["players"])
     print(f'Beginning level {msg["level"]} with players {player_names}')
     
-
 def end_level(msg):
     """ Let the player know that we've ended the level and give them the relevant information.
     Expects message of the form:
@@ -119,32 +118,30 @@ def print_layout(layout, objects, actors, position):
             # Do we need to render the player?
             if row == 2 and col == 2:
                 new_row.append("P")
-                break
-            # Do we need to render an actor?
-            for actor in actor_posns:
-                if actor["position"] == [row, col]:
-                    if actor["type"] == "player":
-                        new_row.append("P")
-                    elif actor["type"] == "zombie":
-                        new_row.append("Z")
-                    elif actor["type"] == "ghost":
-                        new_row.append("G")
-                    break
-            # Do we need to render an object?
-            for obj in object_posns:
-                if obj["position"] == [row, col]:
-                    if obj["type"] == "key":
-                        new_row.append("K")
-                    elif obj["type"] == "exit":
-                        new_row.append("E")
-                    break
             else:
+            # Do we need to render an actor?
+                for actor in actor_posns:
+                    if actor["position"] == [row, col]:
+                        if actor["type"] == "player":
+                            new_row.append("P")
+                        elif actor["type"] == "zombie":
+                            new_row.append("Z")
+                        elif actor["type"] == "ghost":
+                            new_row.append("G")
+                        break
+                # Do we need to render an object?
+                for obj in object_posns:
+                    if obj["position"] == [row, col]:
+                        if obj["type"] == "key":
+                            new_row.append("K")
+                        elif obj["type"] == "exit":
+                            new_row.append("E")
+                        break
                 new_row.append(map_tiles_nums_to_str(layout[row][col]))
             
         printed_layout.append(new_row)
     
-    print(grid_to_string(printed_layout))
-            
+    print(grid_to_string(printed_layout))           
             
 def player_update(msg):
     """ Update the player on what the dungeon looks like after another entity has made a move.
