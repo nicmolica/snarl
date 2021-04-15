@@ -2,7 +2,7 @@ import sys
 import socket
 import argparse
 import json
-import time # TODO remove this
+import time
 from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
@@ -49,7 +49,7 @@ except socket.timeout:
 
 def send(conn, msg):
     conn.send(msg.encode())
-    time.sleep(0.0001)
+    time.sleep(0.0001) # TODO consider fixing this cause it's pretty bad OR just comment to try to justify it
 
 def receive(conn):
     packet = conn.recv(32768)
@@ -183,3 +183,13 @@ for client in player_connections:
 # Start and run the game
 gm.start_game(levels[0])
 gm.run()
+
+# TODO fix these bugs:
+"""
+1. Game doesn't end when a single player is ejected: just spawns them on the next level.
+2. When a game ends, the client just spits out a bunch of endlines. Not sure if it's giving a proper endgame message.
+3. Test that multiple players works right.
+4. Go through and update comments and spec and whatnot to make sure it's all accurate.
+5. Unit testing :(
+6. Get rid of all the unnecessary print statements sitting in various places in the code.
+"""
