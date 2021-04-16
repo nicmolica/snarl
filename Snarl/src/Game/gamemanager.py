@@ -204,8 +204,6 @@ class Gamemanager:
             self.current_turn.keys_collected += 1
         elif result == Moveresult.EXIT:
             self.current_turn.successful_exits += 1
-        elif result == Moveresult.EJECT:
-            self.current_turn.times_ejected += 1
     
     def notify_killed_players(self, chars_to_notify):
         """Notifies the players of the characters that have died that they are dead.
@@ -213,6 +211,7 @@ class Gamemanager:
         players = [player for player in self.player_list if player.entity in chars_to_notify]
         for player in players:
             player.notify(self._format_move_result_notification(None, Moveresult.EJECT, name=player.name))
+            player.times_ejected += 1
 
     def _format_move_result_notification(self, move, result, err = None, name = None):
         """Given a move result for hte current player, format a notification to send to
@@ -251,8 +250,9 @@ class Gamemanager:
 
     def notify_players_endgame(self):
         for player in self.player_list:
-            self.update_player(player, self.game_state.get_tiles())
-        end_game = {"type": "end-game", "scores": []}
+            if player.entity in self.game_state.current_level.characters:
+                self.update_player(player, self.game_state.get_tiles())
+        end_game = {"type": "end-game", "scores": [], "won": self.rule_checker.did_players_win(self.game_state)}
         for player in self.player_list:
             end_game["scores"].append({"type": "player-score", "name": player.name, "exits": player.successful_exits, \
                 "ejects": player.times_ejected, "keys": player.keys_collected})
@@ -348,19 +348,13 @@ class Gamemanager:
                     self.move(move)
                     valid_move = True
                 except Exception as e:
-                    self.current_turn.notify({"type": "error", "error": e})
                     if isinstance(self.current_turn, Enemy):
-                        print(f"Enemy {self.current_turn.name} provided invalid move: {e}")
+                        print(f"Enemy {self.current_turn.name} provided invalid move: {e}") # TODO consider removing this print
                         self.current_turn = self.turn_order.next()
-                        #raise e
-            if self.game_state.is_current_level_completed():
+            if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):
                 self.next_level()
                 self.update_players()
                 self.update_adversaries()
             self.notify_observers()
-        
-        # might need these lines for something
-        # result = self._get_move_result(unlocked_before_move, e)
-        # self.current_turn.notify(self._format_move_result_notification(move, result, e))
         
         self.notify_players_endgame()

@@ -2,6 +2,7 @@ import sys
 import socket
 import argparse
 import json
+import time
 from Snarl.src.Game.utils import grid_to_string
 
 parser = argparse.ArgumentParser(description = "socket connection info")
@@ -16,7 +17,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((args.address, args.port))
 
 def receive():
-    packet = sock.recv(32768)
+    packet = sock.recv(4096)
     msg = packet.decode('utf-8')
     return msg
 
@@ -84,9 +85,14 @@ def end_game(msg):
     }
     """
     print("Game has ended.")
-    print("PLAYER NAME      EXITS   KEYS    EJECTS")
+    headers = ["PLAYER NAME", "EXITS", "KEYS", "EJECTS"]
+    data = []
     for player in sorted(msg["scores"], key=lambda p : float(str(p["exits"]) + str(p["keys"]))):
-        print(f'{player["name"]}                {player["exits"]}   {player["keys"]}    {player["ejects"]}')
+        data.append([player["name"], player["exits"], player["keys"], player["ejects"]])
+    format_row = "{:<15}" * (len(headers) + 1)
+    print(format_row.format("", *headers).lstrip())
+    for row in data:
+        print(format_row.format("", *row).lstrip())
 
 def map_tiles_nums_to_str(tile):
     """Given a 0-1-2 tile, return the character used to render it.
@@ -103,7 +109,6 @@ def print_layout(layout, objects, actors, position):
     """
     # Convert object indices relative to player indices. Player should be in the middle of the
     # layout.
-    print(layout)
     def transform_coords(o):
         absolute_posn = o["position"]
         dy = position[0] - 2
@@ -181,7 +186,6 @@ def player_update(msg):
 def handle_string(msg):
     """ Deal with server messages that are only a single string, rather than dicts.
     """
-    print(msg)
     if msg == "name":
         print("What is your name?")
         send(input())
@@ -199,10 +203,11 @@ def handle_string(msg):
     elif msg == "Invalid":
         print("Your move was invalid. Please enter another:")
     else:
+        print("Malformed server message:")
         print(msg)
+        #raise RuntimeError(msg) # TODO get rid of this after debugging is done
 
 def handle_server_message(msg):
-    print(msg)
     try:
         msg = json.loads(msg)
         is_json = True
@@ -221,15 +226,17 @@ def handle_server_message(msg):
         end_level(msg)
     elif msg["type"] == "end-game":
         end_game(msg)
+        exit(0)
     elif msg["type"] == "player-update":
         print('updating player')
         player_update(msg)
     else:
         print("Malformed server message:")
         print(msg)
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) # TODO get rid of this after debugging is done
 
 # main loop for client functionality
 while True:
     msg = receive()
-    handle_server_message(msg)
+    if msg != "":
+        handle_server_message(msg)

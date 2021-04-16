@@ -48,11 +48,12 @@ except socket.timeout:
     print("No Additional Players")
 
 def send(conn, msg):
+    print(msg)
     conn.send(msg.encode())
     time.sleep(0.0001) # TODO consider fixing this cause it's pretty bad OR just comment to try to justify it
 
 def receive(conn):
-    packet = conn.recv(32768)
+    packet = conn.recv(4096)
     msg = packet.decode('utf-8')
     return msg
 
@@ -119,7 +120,7 @@ class PlayerOut:
                 self._send_arg(arg)
             elif arg["type"] == "end-level":
                 self._send_arg(arg)
-            elif arg["type"] == "end":
+            elif arg["type"] == "end-game":
                 self._send_end(arg)
             elif arg["type"] == "error":
                 self._send_error(arg)
@@ -142,7 +143,6 @@ class PlayerOut:
         client_msg = {"type": "end-game", "scores": arg["scores"], "game-won": won}
         send(self.output, json.dumps(client_msg))
         
-
     def _send_result(self, arg):
         """Sends an update notifcation when the player EXITS, IS EJECTED, or LANDS ON THE KEY.
         Otherwise, will send nothing.
@@ -175,8 +175,7 @@ for client in player_connections:
         name = receive(client)
         if not name in set(players.keys()):
             name_valid = True
-            # TODO: Player input
-            player_input = lambda : receive(conn)
+            player_input = lambda : receive(client)
             player = PlayerImpl(name, name, out=PlayerOut(client), input_func=player_input)
             gm.add_player(player)
             
@@ -186,10 +185,7 @@ gm.run()
 
 # TODO fix these bugs:
 """
-1. Game doesn't end when a single player is ejected: just spawns them on the next level.
-2. When a game ends, the client just spits out a bunch of endlines. Not sure if it's giving a proper endgame message.
 3. Test that multiple players works right.
 4. Go through and update comments and spec and whatnot to make sure it's all accurate.
 5. Unit testing :(
-6. Get rid of all the unnecessary print statements sitting in various places in the code.
 """

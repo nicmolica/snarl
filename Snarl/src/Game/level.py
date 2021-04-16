@@ -68,7 +68,6 @@ class Level:
         min_y = max(min(tile1.y, tile2.y), 0)
         max_x = min(max(tile1.x, tile2.x) + 1, width)
         max_y = min(max(tile1.y, tile2.y) + 1, height)
-        # TODO test this method
         return [row[min_x:max_x] for row in self.get_tiles()[min_y:max_y]]
 
     def calculate_level_dimensions(self):

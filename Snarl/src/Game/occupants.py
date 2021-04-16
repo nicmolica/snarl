@@ -8,7 +8,7 @@ class Occupant:
         pass
 
     def __eq__(self, other):
-        return False
+        return isinstance(other, Occupant)
 
     def __hash__(self):
         return 1
@@ -20,7 +20,7 @@ class Entity(Occupant):
         pass
 
     def __eq__(self, other):
-        return False
+        return isinstance(other, Entity)
 
     def __hash__(self):
         return 3
@@ -32,7 +32,7 @@ class Character(Entity):
         self.name = name
 
     def __eq__(self, other):
-        return self.name == other.name
+        return isinstance(other, Character) and self.name == other.name
 
     def __hash__(self):
         return hash((self.name))
@@ -90,7 +90,7 @@ class LevelKey(Occupant):
     """Represents the key to unlock a level exit.
     """
     def __eq__(self, other):
-        pass
+        return isinstance(other, LevelKey)
 
     def __hash__(self):
         pass
@@ -102,7 +102,7 @@ class LevelExit(Occupant):
     """Represents the exit for a level.
     """
     def __eq__(self, other):
-        pass
+        return isinstance(other, LevelExit)
 
     def __hash__(self):
         pass
@@ -114,7 +114,7 @@ class Door(Occupant):
     """Represents the exit for a level.
     """
     def __eq__(self, other):
-        pass
+        return isinstance(other, Door)
 
     def __hash__(self):
         pass
@@ -127,7 +127,7 @@ class Block(Occupant):
     """Represents the exit for a level.
     """
     def __eq__(self, other):
-        pass
+        return isinstance(other, Block)
 
     def __hash__(self):
         pass
@@ -139,7 +139,7 @@ class Wall(Block):
     """Represents the exit for a level.
     """
     def __eq__(self, other):
-        pass
+        return isinstance(other, Wall)
 
     def __hash__(self):
         pass
