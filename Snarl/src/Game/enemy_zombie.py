@@ -5,6 +5,8 @@ from .rulechecker import Rulechecker
 from .tile import Tile
 
 class EnemyZombie(Enemy):
+    """Represents the controller of a Zombie in a SNARL game.
+    """
     def __init__(self, name : str, entity_name : str) -> None:
         super().__init__(name, Zombie, entity_name)
     

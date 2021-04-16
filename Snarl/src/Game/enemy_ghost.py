@@ -7,6 +7,8 @@ from .tile import Tile
 from .rulechecker import Rulechecker
 
 class EnemyGhost(Enemy):
+    """Represents the controller of a Ghost in a SNARL game.
+    """
     def __init__(self, name : str, entity_name : str) -> None:
         super().__init__(name, Ghost, entity_name)
     

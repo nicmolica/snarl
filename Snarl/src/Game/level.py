@@ -6,6 +6,8 @@ from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupan
 from .tile import Tile
 
 class Level:
+    """Represents a SNARL Level.
+    """
     def __init__(self, rooms: list, hallways: list, key_loc, exit_loc):
         """Creates the given level layout. Requires that no two rooms
         or hallways overlap and that all hallways connect two room doors.
@@ -138,18 +140,15 @@ class Level:
         has_exit = self.get_tile(dest).has_occupant(LevelExit)
         has_block = self.get_tile(dest).has_block()
         
+        characters = self._get_characters_on_tile(dest)
         if has_player and has_adv:
-            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
                 self._remove_from_tile(character)
                 self.characters.pop(character)
         elif has_player and has_key:
-            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             self.unlocked_by = characters[0]
             self.unlock_level_exit()
         elif has_player and has_exit and self.level_exit_unlocked:
-            # Happens twice because a character could have been killed before this happens
-            characters = [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
             for character in characters:
                 self._remove_from_tile(character)
                 self.completed_characters.append(character)
@@ -157,6 +156,11 @@ class Level:
 
         if has_ghost and has_block:
             self._teleport_ghost(self.get_tile(dest).get_adversary())
+
+    def _get_characters_on_tile(self, dest):
+        """Gets any characters that are present on the tile.
+        """
+        return [occupant for occupant in self.get_tile(dest).occupants if isinstance(occupant, Character)]
 
     def _teleport_ghost(self, ghost):
         """ Teleport the ghost on the provided tile to a random tile in a random room.
@@ -188,7 +192,6 @@ class Level:
                  friendly_tiles.append(t)
 
         return friendly_tiles
-
 
     def _ghost_friendly_tiles(self, room):
         """ Does the provided room have tiles that a ghost can land on?

@@ -7,6 +7,9 @@ from .rulechecker import Rulechecker
 import json
 
 class Enemy(Actor):
+    """Represents basic behavior for a SNARL enemy, including information about the entity
+    that it plays in the game.
+    """
     def __init__(self, name : str, entity_type, entity_name, out = None):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as

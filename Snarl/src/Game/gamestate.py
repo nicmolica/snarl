@@ -5,6 +5,8 @@ from .room import Room
 from .occupants import Entity, Character, Adversary, Block, LevelExit, LevelKey
 
 class Gamestate:
+    """Represents the state of a SNARL game.
+    """
     def __init__(self, start_level: Level, num_of_players: int, num_of_adversaries: int, levels = [], characters = []):
         """ Creates a Gamestate with the given initial level and number of
         players and adversaries to create the game with.
@@ -59,6 +61,7 @@ class Gamestate:
     
     def get_character_surroundings(self, character: Character, radius: int) -> list:
         """Return a square of the tiles around the given player in the given radius.
+        This will provide padding if the character is close enough to an edge.
         """
         tile1, tile2 = self.get_character_view_range(character, radius)
         real_tiles = self.get_tiles_range(tile1, tile2)
