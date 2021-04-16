@@ -186,7 +186,11 @@ gm.run()
 
 # TODO fix these bugs:
 """
-3. Test that multiple players works right.
-4. Go through and update comments and spec and whatnot to make sure it's all accurate.
-5. Unit testing :(
+3. Get multiple client connections working.
+    . Ferd's video https://www.youtube.com/watch?v=ZvAgjIuAvrA for networking
+4. Go through Gamemanager and refactor/update comments.
+    . Could possibly split it up into some smaller components.
+5. Ensure unit test coverage is appropriate.
+    . Ty can use the coverage tool to measure this. Make sure any obvious
+    gaps are covered, but some things can probably be considered "integration-only".
 """
