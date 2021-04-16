@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from .gamestate import Gamestate
 
-class Observer(ABC):
+class AbstractObserver(ABC):
+    """Abstract observer interface that can receive updates about the current gamestate.
+    """
     @abstractmethod
     def notify(self, gamestate: Gamestate):
         """This is essentially a setter. It sets the `gamestate` field of this `Observer` object

@@ -5,14 +5,14 @@ from Snarl.src.Game.tile import Tile
 from Snarl.src.Game.room import Room
 from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.level import Level
-from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.occupants import Character, Adversary, Zombie, LevelKey, LevelExit
 from Snarl.src.Game.rulechecker import Rulechecker
 from Snarl.src.Game.gamestate import Gamestate
 
 class TestRulechecker(unittest.TestCase):
     def test_valid_move_player(self):
-        p = PlayerImpl("player name", "character name")
+        p = Player("player name", "character name")
         rulechecker = Rulechecker()
         room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(1, 1), Tile(2, 2)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
@@ -33,7 +33,7 @@ class TestRulechecker(unittest.TestCase):
 
     def test_is_not_open_when_player_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        is_open = rulechecker.is_open_tile(Tile(3, 4, [Character("Character 1")]), None)
+        is_open = rulechecker._is_open_tile(Tile(3, 4, [Character("Character 1")]), None)
         self.assertFalse(is_open)
 
     def test_is_open_when_adversary_moves_to_player_tile(self):
@@ -43,7 +43,7 @@ class TestRulechecker(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1], Tile(3, 4), Tile(3, 20))
 
-        is_open = rulechecker.is_open_tile(Tile(3, 3, [Character("Character 1")]), level, Adversary)
+        is_open = rulechecker._is_open_tile(Tile(3, 3, [Character("Character 1")]), level, Adversary)
         self.assertTrue(is_open)
 
     def test_valid_player_move_2_steps_diagonal(self):

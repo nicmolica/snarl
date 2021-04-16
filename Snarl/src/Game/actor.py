@@ -43,12 +43,6 @@ class Actor(ABC):
         pass
 
     @abstractmethod
-    def expel(self):
-        """Tell this actor that they were expelled from the level.
-        """
-        pass
-
-    @abstractmethod
     def get_entity(self):
         """Return the entity representing this Actor.
         """

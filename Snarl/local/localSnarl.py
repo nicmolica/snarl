@@ -2,10 +2,10 @@ import sys
 import argparse
 import json
 from Snarl.src.Game.gamemanager import Gamemanager
-from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.enemy_ghost import EnemyGhost
-from Snarl.src.Game.observer_impl import ObserverImpl
+from Snarl.src.Game.observer_impl import Observer
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.moveresult import Moveresult
@@ -127,7 +127,7 @@ player_output = True
 # register an observer if the observe flag is passed
 # we will override the player's view if this flag is present.
 if args.observe:
-    observer = ObserverImpl()
+    observer = Observer()
     gm.register_observer(observer)
     player_output = False
 
@@ -135,7 +135,7 @@ if args.observe:
 for i in range(args.players):
     print("Please enter username for player " + str(i + 1) + ":")
     name = input()
-    player = PlayerImpl(name, name, out = PlayerOut(player_output))
+    player = Player(name, name, out = PlayerOut(player_output))
     gm.add_player(player)
 
 first_level = levels.pop(args.start)

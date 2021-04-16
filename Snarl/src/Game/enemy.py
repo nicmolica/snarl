@@ -1,4 +1,4 @@
-from .player import Player
+from .player import AbstractPlayer
 from .tile import Tile
 import sys
 from .actor import Actor

@@ -1,12 +1,19 @@
 from .occupants import Character
-from .player import Player
+from .player import AbstractPlayer
 from .tile import Tile
 from .moveresult import Moveresult
 import sys
 from .utils import grid_to_string
 import json
 
-class PlayerImpl(Player):
+class Player(AbstractPlayer):
+    """Represents a player in the game of Snarl. Has several fields to keep track of important
+    telemetry such as keys collected, name, and the entity that it is responsible for in the game
+    itself.
+
+    May optionally be given methods to input and output information. Defaults to sys.stdout and
+    input.
+    """
     def __init__(self, name : str, entity_name : str, out = sys.stdout, input_func = input):
         """ Initialize this Player with a name and a Character, aliased by a name. Initially,
         the player is not expelled and has no surroundings. These fields may be changed as
@@ -29,7 +36,7 @@ class PlayerImpl(Player):
     def __eq__(self, other):
         """ Is this Player equal to another Player?
         """
-        if not isinstance(other, Player):
+        if not isinstance(other, AbstractPlayer):
             return False
         return self.name == other.name and self.entity == other.entity
 
@@ -44,10 +51,6 @@ class PlayerImpl(Player):
         """
         self.out.write("move")
         requested_input = self.input_func()
-        # TODO: We probably don't want this command to be present in production but it's good for testing.
-        if requested_input == 'q':
-            self.out.write("Exiting game...")
-            exit(0)
         input_json = json.loads(requested_input)
         if input_json is None:
             return None
@@ -55,17 +58,6 @@ class PlayerImpl(Player):
             raise RuntimeError("User move input not valid: " + requested_input)
         x, y = input_json
         return Tile(x, y)
-
-    def render(self):
-        """Renders the current surroundings and other info to the output stream.
-        """
-        char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.surroundings)
-        self.out.write(grid_to_string(char_grid))
-        
-    def expel(self):
-        """Tell this player that they were expelled from the level.
-        """
-        self.expelled = True
 
     def get_entity(self):
         return self.entity

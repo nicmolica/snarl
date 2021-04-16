@@ -6,14 +6,14 @@ from .turnorder import Turnorder
 from .level import Level
 from .enemy import Enemy
 from .tile import Tile
-from .player import Player
+from .player import AbstractPlayer
 from .enemy_zombie import EnemyZombie
 from .enemy_ghost import EnemyGhost
 import math
 from .utils import grid_to_string
 from .moveresult import Moveresult
-from .player_impl import PlayerImpl
-from .observer import Observer 
+from .player_impl import Player
+from .observer import AbstractObserver 
 
 class Gamemanager:
     def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels : list = []):
@@ -63,7 +63,7 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call get_move when the game has not started!")
-        if isinstance(self.current_turn, PlayerImpl):
+        if isinstance(self.current_turn, Player):
             return self.get_player_move()
         elif isinstance(self.current_turn, Enemy):
             return self.get_enemy_move()
@@ -105,7 +105,7 @@ class Gamemanager:
                 player.entity in self.game_state.get_completed_characters():
                 self.update_player(player)
 
-    def update_player(self, player: PlayerImpl, update_grid = None):
+    def update_player(self, player: Player, update_grid = None):
         """Sends an update notification to a single player.
         """
         grid = update_grid if update_grid is not None else \
@@ -131,7 +131,7 @@ class Gamemanager:
 
         return self.game_state.render()
 
-    def add_player(self, player: Player):
+    def add_player(self, player: AbstractPlayer):
         """ Register a new player to the game and add it to the correct spot in the turn order.
         """
         if player in set(self.player_list.copy()):
@@ -156,7 +156,7 @@ class Gamemanager:
         else:
             raise TypeError("All enemies must be of the type \"Enemy.\"")
 
-    def register_observer(self, observer: Observer):
+    def register_observer(self, observer: AbstractObserver):
         """ Register a new Observer by adding it to the list of observers.
         """
         self.observers.append(observer)

@@ -2,7 +2,10 @@ from .actor import Actor
 from abc import abstractmethod
 from .tile import Tile
 
-class Player(Actor):
+class AbstractPlayer(Actor):
+    """(Mostly) abstract representation of a player. Defines interface for notifying player
+    about the game and getting moves/entity information from the player.
+    """
     @abstractmethod
     def __eq__(self, other):
         """ Is this Player equal to another Player?

@@ -5,7 +5,7 @@ from Snarl.src.Game.tile import Tile
 from Snarl.src.Game.room import Room
 from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.level import Level
-from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.occupants import Zombie
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.gamemanager import Gamemanager
@@ -25,29 +25,29 @@ class TestGamemanager(unittest.TestCase):
 
     def test_add_player_adds_successfully(self):
         manager = Gamemanager()
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
+        player = Player("Ty", "Tulkas Astaldo")
         manager.add_player(player)
         self.assertEqual(len(manager.player_list), 1)
     
     def test_add_player_cannot_add_duplicate_player_names(self):
         manager = Gamemanager()
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
-        player_same = PlayerImpl("Ty", "Tulkas Astaldo")
+        player = Player("Ty", "Tulkas Astaldo")
+        player_same = Player("Ty", "Tulkas Astaldo")
         manager.add_player(player)
         with self.assertRaises(ValueError):
             manager.add_player(player_same)
     
     def test_add_player_cannot_add_more_than_max_players(self):
         manager = Gamemanager(1)
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
-        player2 = PlayerImpl("Nic", "Morgoth Bauglir")
+        player = Player("Ty", "Tulkas Astaldo")
+        player2 = Player("Nic", "Morgoth Bauglir")
         manager.add_player(player)
         with self.assertRaises(RuntimeError):
             manager.add_player(player2)
 
     def test_add_player_registers_observer(self):
         manager = Gamemanager(1)
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
+        player = Player("Ty", "Tulkas Astaldo")
         manager.add_player(player)
         self.assertEqual(len(manager.observers), 1)
 
@@ -55,7 +55,7 @@ class TestGamemanager(unittest.TestCase):
         manager = Gamemanager(1)
         # for now, since players are observers, just add one of these
         # (do not do this if you want the player as an actual player)
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
+        player = Player("Ty", "Tulkas Astaldo")
         manager.register_observer(player)
         self.assertEqual(len(manager.observers), 1)
 
@@ -82,7 +82,7 @@ class TestGamemanager(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2], Tile(6, 6), Tile(7, 7))
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
+        player = Player("Ty", "Tulkas Astaldo")
         manager = Gamemanager()
         manager.add_player(player)
         manager.start_game(level)
@@ -94,9 +94,9 @@ class TestGamemanager(unittest.TestCase):
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2], Tile(6, 6), Tile(7, 7))
-        player = PlayerImpl("Ty", "Tulkas Astaldo")
-        player2 = PlayerImpl("Nic", "Morgoth Bauglir")
-        player3 = PlayerImpl("Ferd", "Túrin Turambar Neithan Gorthol Agarwaen Adanedhel Mormegil")
+        player = Player("Ty", "Tulkas Astaldo")
+        player2 = Player("Nic", "Morgoth Bauglir")
+        player3 = Player("Ferd", "Túrin Turambar Neithan Gorthol Agarwaen Adanedhel Mormegil")
         manager = Gamemanager()
         manager.add_player(player)
         manager.add_player(player2)

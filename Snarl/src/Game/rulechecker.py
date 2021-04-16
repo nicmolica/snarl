@@ -3,6 +3,8 @@ from .tile import Tile
 from .level import Level
 
 class Rulechecker:
+    """Provides functions to validate some of the game rules.
+    """
     def is_valid_move(self, entity: Entity, dest: Tile, current_level: Level) -> bool:
         """ Is moving the entity from src to dest a valid move on the provided level?
         """
@@ -20,7 +22,7 @@ class Rulechecker:
             return True
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
-        dest_open = self.is_open_tile(current_level.get_tile(dest), current_level)
+        dest_open = self._is_open_tile(current_level.get_tile(dest), current_level)
         too_far = x_dist + y_dist > 2 
         if too_far or not dest_open:
             s= "Invalid move: "
@@ -39,7 +41,7 @@ class Rulechecker:
         src = current_level.locate_occupant(adversary)
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
-        dest_open = self.is_open_tile(current_level.get_tile(dest), current_level, type(adversary))
+        dest_open = self._is_open_tile(current_level.get_tile(dest), current_level, type(adversary))
         
         return x_dist + y_dist < 2 and dest_open
 
@@ -57,13 +59,12 @@ class Rulechecker:
         state_complete = gamestate.game_complete()
         return state_complete or all_players_dead
         
-
     def did_players_win(self, gamestate) -> bool:
         """ Are there any players left alive? This method assumes the game is over.
         """
-        return gamestate.current_level.characters != []
+        return gamestate.current_level.completed_characters != []
 
-    def is_open_tile(self, tile: Tile, current_level, entity_type: type = None) -> bool:
+    def _is_open_tile(self, tile: Tile, current_level, entity_type: type = None) -> bool:
         """Checks that this tile is a type that can be moved to. In the future, this may need
         to take the type of the moving entity in order to check validity.
         """

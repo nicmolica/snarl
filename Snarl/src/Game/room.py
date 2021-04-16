@@ -27,7 +27,7 @@ class Room:
         self.height = height
         self._room_doors = room_doors
         self._open_tiles = open_tiles
-        if not self.is_valid():
+        if not self._is_valid():
             raise ValueError("Invalid room parameters")
 
     def __eq__(self, other):
@@ -52,7 +52,7 @@ class Room:
             return self.position.y < other.position.y
         return self_manhattan < other_manhattan
 
-    def is_valid(self) -> bool:
+    def _is_valid(self) -> bool:
         """Determine if the given parameters constitute a valid room.
 
         A room is invalid if the given exit_door location is not at the
@@ -61,15 +61,15 @@ class Room:
         """
         room_has_door = self._room_doors != []
         room_doors_are_tiles = all([isinstance(d, Tile) for d in self._room_doors])
-        return isinstance(self.position, Tile) and room_has_door and self.are_dimensions_positive() \
-                and self.are_doors_on_walls() and room_doors_are_tiles and self.tiles_are_valid()
+        return isinstance(self.position, Tile) and room_has_door and self._are_dimensions_positive() \
+                and self._are_doors_on_walls() and room_doors_are_tiles and self._tiles_are_valid()
 
-    def are_dimensions_positive(self) -> bool:
+    def _are_dimensions_positive(self) -> bool:
         """Are the width and height positive?
         """
         return self.width > 0 and self.height > 0
 
-    def tiles_are_valid(self) -> bool:
+    def _tiles_are_valid(self) -> bool:
         """Makes sure that all of the open tiles given in the open tile layout are actually valid.
         """
         # Should not allow open tiles on the boundary.
@@ -88,7 +88,7 @@ class Room:
 
         return True
 
-    def are_doors_on_walls(self) -> bool:
+    def _are_doors_on_walls(self) -> bool:
         """Are the doors of this room on the room's walls?
         """
         x_min = self.position.x
@@ -173,34 +173,6 @@ class Room:
                     self.tiles[y][x] = Tile(abs_x, abs_y, VerticalWall())
                 else:
                     self.tiles[y][x] = Tile(abs_x, abs_y, [Block()])
-
-    def render(self) -> str:
-        self.update_tiles()
-        render_grid = [['X' for x in range(self.width)] for y in range(self.height)]
-        for y in range(self.height):
-            for x in range(self.width):
-                render_grid[y][x] = self.tiles[y][x].render()
-        
-        return render_grid
-
-    def open_tiles_around(self, src: Tile, radius: int) -> list:
-        """Returns all open tiles in this room around the src Tile in a cardinal radius.
-        """
-        if not self.contains(src):
-            raise RuntimeError(f"Given tile with position ({src.x}, {src.y}) is not inside this room!")
-        if radius < 1:
-            raise ValueError(f"Radius must be positive, received {radius}")
-        
-        def cardinal_diff(src, tile):
-            return abs(src.x - tile.x) + abs(src.y - tile.y)
-
-        def nearby(src, tile):
-            return cardinal_diff(src, tile) <= radius and cardinal_diff(src, tile) > 0
-
-        open_tile_nearby = [tile for tile in self._open_tiles if nearby(src, tile)]
-        door_nearby = [tile for tile in self._room_doors if nearby(src, tile)]
-        
-        return open_tile_nearby + door_nearby
 
     def is_straddled_by(self, way1: Tile, way2: Tile) -> bool:
         """ Is this room straddled by the two waypoints?

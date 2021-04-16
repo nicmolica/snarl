@@ -6,7 +6,7 @@ from Snarl.src.Game.level import Level
 from Snarl.src.Game.enemy import Enemy
 from Snarl.src.Game.gamestate import Gamestate
 from Snarl.src.Game.gamemanager import Gamemanager
-from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit
 from Snarl.src.Game.enemy_zombie import EnemyZombie
@@ -106,7 +106,7 @@ class TraceOutput:
 trace = TraceOutput()
 # register the players
 for character in characters:
-    player = PlayerImpl(character.name, character.name, trace)
+    player = Player(character.name, character.name, trace)
     manager.add_player(player)
     players.append(player)
 
@@ -141,7 +141,7 @@ for i in range(num_of_turns):
     player_move_dict = turns[turn_list_i][0]
     to = create_point_from_json(player_move_dict["to"])
     # Skip Enemy moves for now
-    while not isinstance(manager.current_turn, PlayerImpl):
+    while not isinstance(manager.current_turn, Player):
         manager.current_turn = manager.turn_order.next()
     turns[turn_list_i].pop(0)
     manager.move(to)

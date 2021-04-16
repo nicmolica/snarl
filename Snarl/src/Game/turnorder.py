@@ -1,6 +1,9 @@
 from .occupants import Entity
 
 class Turnorder:
+    """Keeps track of a turn ordering. Contains methods to add, remove, and get the next
+    entity in the order.
+    """
     def __init__(self, init_order: list):
         """ Creates a Turnorder object, which is used by the Gamemanager to handle
         the logic behind ensuring turn orders are correct.

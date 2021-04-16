@@ -1,14 +1,17 @@
-from .observer import Observer
+from .observer import AbstractObserver
 from .utils import grid_to_string
 from .gamestate import Gamestate
 import sys
 
-class ObserverImpl(Observer):
+class Observer(AbstractObserver):
     def __init__(self):
         self.gamestate = None
         self.ip = None
 
     def notify(self, gamestate):
+        """Notifies this observer with the new gamestate information. This observer
+        will render when notified.
+        """
         self.gamestate = gamestate
         self.render()
 

@@ -53,9 +53,9 @@ class Adversary(Entity):
         return 'A'
 
 class Zombie(Adversary):
-    zombie_count = 0
     """Represents a zombie.
     """
+    zombie_count = 0
     def __init__(self, name = ""):
         self.name = name + str(Zombie.zombie_count)
         Zombie.zombie_count += 1
@@ -70,9 +70,9 @@ class Zombie(Adversary):
         return 'Z'
 
 class Ghost(Adversary):
-    ghost_count = 0
     """Represents a ghost.
     """
+    ghost_count = 0
     def __init__(self, name = ""):
         self.name = name + str(Ghost.ghost_count)
         Ghost.ghost_count += 1
@@ -148,9 +148,13 @@ class Wall(Block):
         return '#'
 
 class VerticalWall(Wall):
+    """Represents a vertical wall block.
+    """
     def render(self):
         return '|'
 
 class HorizontalWall(Wall):
+    """Represents a horizontal wall block.
+    """
     def render(self):
         return '-'

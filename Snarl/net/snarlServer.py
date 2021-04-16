@@ -7,7 +7,7 @@ from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.moveresult import Moveresult
-from Snarl.src.Game.player_impl import PlayerImpl
+from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.occupants import LevelExit, LevelKey, Character, Zombie, Door
 
@@ -35,6 +35,7 @@ players = {}
 player_connections = []
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((args.address, args.port))
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.listen()
 
 # Allow players to connect up to a max timeout
@@ -176,7 +177,7 @@ for client in player_connections:
         if not name in set(players.keys()):
             name_valid = True
             player_input = lambda : receive(client)
-            player = PlayerImpl(name, name, out=PlayerOut(client), input_func=player_input)
+            player = Player(name, name, out=PlayerOut(client), input_func=player_input)
             gm.add_player(player)
             
 # Start and run the game

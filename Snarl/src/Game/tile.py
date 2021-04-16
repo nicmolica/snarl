@@ -2,7 +2,8 @@ from .occupants import Occupant, Character, Adversary, Block
 
 class Tile:
     """Represents an (x, y) tile in a Cartesian grid with nonnegative coordinates.
-    May be occupied by an Occupant.
+    May be occupied by an Occupant. This class is used both to communicate locations
+    and to store actual game state data.
     """
     def __init__(self, x: int, y: int, occupants: list = []):
         """Constructs a new tile, possibly with an occupant.
@@ -42,23 +43,6 @@ class Tile:
         """ Overwriting hash for Tiles because we overwrote ==.
         """
         return hash((self.x, self.y, str(self.occupants)))
-
-    def render(self) -> str:
-        """Renders the given tile, showing a player or adversary if any exist on this tile.
-        """
-        if self.occupants != []:
-            # We always want to show a character avatar if there is one. Otehrwise we could end up
-            # with invisible characters.
-            character = next(iter([occ for occ in self.occupants if isinstance(occ, Character)]), None)
-            if character is not None:
-                return character.render()
-            # Similarly with adversaries.
-            adv = next(iter([occ for occ in self.occupants if isinstance(occ, Adversary)]), None)
-            if adv is not None:
-                return adv.render()
-            return self.occupants[0].render()
-        else:
-            return ' '
 
     def add_occupant(self, occupant: Occupant):
         """ Blindly add the passed Occupant to this Tile, without verifying if there are
@@ -131,6 +115,8 @@ class Tile:
         return self.x == other.x and self.y == other.y
 
     def remove_occupant(self, occupant) -> None:
+        """Removes the given occupant from this tile's occupants.
+        """
         self.occupants.pop(self.occupants.index(occupant))
 
     def distance(self, other) -> int:

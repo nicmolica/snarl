@@ -1,18 +1,18 @@
-from Snarl.src.Game.observer_impl import ObserverImpl
+from Snarl.src.Game.observer_impl import Observer
 import unittest
 from unittest.mock import Mock
 
 class TestObserverImpl(unittest.TestCase):
     def test_inits_to_no_gamestate(self):
-        o = ObserverImpl()
+        o = Observer()
         self.assertIsNone(o.gamestate)
 
     def test_inits_to_no_ip(self):
-        o = ObserverImpl()
+        o = Observer()
         self.assertFalse(o.ip)
     
     def test_notify_sets_gamestate(self):
-        o = ObserverImpl()
+        o = Observer()
         gamestate = Mock()
         gamestate.render = lambda : [['X', 'X', 'X'], ['X', ' ', 'X'], ['X', 'X', 'X']]
         o.notify(gamestate)
