@@ -123,3 +123,20 @@ class Tile:
         """ Manhattan distance between this and another tile.
         """
         return abs(self.x - other.x) + abs(self.y - other.y)
+    
+    def render(self) -> str:
+        """Renders the given tile, showing a player or adversary if any exist on this tile.
+        """
+        if self.occupants != []:
+            # We always want to show a character avatar if there is one. Otehrwise we could end up
+            # with invisible characters.
+            character = next(iter([occ for occ in self.occupants if isinstance(occ, Character)]), None)
+            if character is not None:
+                return character.render()
+            # Similarly with adversaries.
+            adv = next(iter([occ for occ in self.occupants if isinstance(occ, Adversary)]), None)
+            if adv is not None:
+                return adv.render()
+            return self.occupants[0].render()
+        else:
+            return ' '
