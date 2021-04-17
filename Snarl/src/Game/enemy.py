@@ -63,7 +63,7 @@ class Enemy(Actor):
         return self.entity
 
     def _get_valid_cardinal_moves(self):
-        """Return the possible cardinal moves for this ghost.
+        """Return the possible cardinal moves for this enemy.
         """
         # If any coordinate is 0, can't move in that axis's negative direction.
         up = Tile(self.location.x, self.location.y + 1)

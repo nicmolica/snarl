@@ -53,7 +53,7 @@ class Gamemanager:
             spawn_tile = self.game_state.get_random_spawn_tile()
             self.game_state.add_character(player.entity, spawn_tile)
         # First level has one zombie and no ghosts
-        first_zombie = EnemyZombie("Zombie", "Zomb")
+        first_zombie = EnemyZombie("Zombie", "zombi")
         self.add_enemies(first_zombie)
         for enemy in self.enemy_list:
             enemy_spawn = self.game_state.get_random_spawn_tile()
@@ -198,7 +198,8 @@ class Gamemanager:
     def _handle_completed_characters(self, completed_before_turn):
         """Notifies the characters that they exited the level, and removes them from the turn order.
         """
-        completed_chars = list(set(self.game_state.get_completed_characters()) - set(completed_before_turn))
+        completed_after_turn = self.game_state.get_completed_characters().copy()
+        completed_chars = list(set(completed_after_turn).difference(set(completed_before_turn)))
         players = [player for player in self.player_list if player.entity in completed_chars]
         for player in players:
             player.notify(self._format_move_result_notification(None, Moveresult.EXIT))
@@ -359,9 +360,6 @@ class Gamemanager:
         
         self._notify_level_start()
         self.current_turn = self.turn_order.next()
-        print("Current turn is " + str(self.current_turn))
-        print("Turn order:")
-        print(self.turn_order.order)
 
     def run(self):
         """ Main game loop.
@@ -385,7 +383,6 @@ class Gamemanager:
                 except Exception as e:
                     traceback.print_exc()
                     if isinstance(self.current_turn, Enemy):
-                        print(f"Enemy {self.current_turn.name} provided invalid move: {e}") # TODO consider removing this print
                         self.current_turn = self.turn_order.next()
             if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):
                 self._next_level()

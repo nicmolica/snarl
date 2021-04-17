@@ -99,7 +99,7 @@ class Gamestate:
         self.current_level.add_character(character, location)
 
     def add_adversary(self, adversary: Adversary, location: Tile):
-        """ Add a character to the current Level.
+        """ Add an adversary to the current Level.
         """
         self.current_level.add_adversary(adversary, location)
 
@@ -152,7 +152,7 @@ class Gamestate:
         """Returns a list of the characters taht have completed the current level.
         """
         completed = self.current_level.completed_characters
-        return completed if completed is not None else []
+        return completed.copy() if completed is not None else []
     
     def get_entity_location(self, occupant):
         """Return the coordinates of the current occupant.
