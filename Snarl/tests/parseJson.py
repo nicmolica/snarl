@@ -173,9 +173,9 @@ def create_dict_from_state(state: Gamestate) -> dict:
     json_state = {}
     json_state["type"] = "state"
     json_state["level"] = create_dict_from_level(state.current_level)
-    json_state["players"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_occupant(x)), \
+    json_state["players"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_entity(x)), \
         state.current_level.characters))
-    json_state["adversaries"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_occupant(x)), \
+    json_state["adversaries"] = list(map(lambda x: create_dict_from_entity(x, state.current_level.locate_entity(x)), \
         state.current_level.adversaries))
     json_state["exit-locked"] = not state.current_level.level_exit_unlocked
     return json_state

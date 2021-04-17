@@ -95,7 +95,7 @@ class Level:
         
         return max_width, max_height
     
-    def locate_occupant(self, occupant: Occupant) -> Tile:
+    def locate_entity(self, occupant: Occupant) -> Tile:
         """ Locate the given occupant on the current level if it is a Character or Adversary.
         """
         if isinstance(occupant, Adversary):
@@ -207,15 +207,17 @@ class Level:
 
         return friendly_tiles
 
-    def _remove_from_tile(self, occ):
+    def _remove_from_tile(self, occ, tile = None):
         """Find the occupant and remove them from the tile grid.
         """
-        self.get_tile(self.locate_occupant(occ)).remove_occupant(occ)
+        loc = self.locate_entity(occ) if tile is None else tile
+        self.get_tile(loc).remove_occupant(occ)
 
     def unlock_level_exit(self):
         """Unlocks the level exit tile.
         """
         self.level_exit_unlocked = True
+        self._remove_from_tile(LevelKey(), self.key_location)
 
     def set_level_exit_status(self, status: bool):
         """Sets whether or not the level exit is unlocked.
@@ -333,7 +335,7 @@ class Level:
         self.tiles = [[Tile(x, y, Block()) for x in range(width)] for y in range(height)]
         self._update_rooms_tiles()
         self._update_hallways_tiles()
-        key = self.locate_occupant(LevelKey)
+        key = self.locate_entity(LevelKey)
         if not key and self.key_location:
             self.tiles[self.key_location.y][self.key_location.x].add_occupant(LevelKey())
             self.tiles[self.exit_location.y][self.exit_location.x].add_occupant(LevelExit())

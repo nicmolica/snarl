@@ -17,7 +17,7 @@ class Rulechecker:
         """ Is moving the player from src to dest a valid move on the provided level?
         The player should be able to make 2 cardinal moves onto traversable tiles.
         """
-        src = current_level.locate_occupant(character)
+        src = current_level.locate_entity(character)
         if src.coordinates_equal(dest):
             return True
         x_dist = abs(src.x - dest.x)
@@ -38,7 +38,7 @@ class Rulechecker:
     def _is_valid_adversary_move(self, adversary: Adversary, dest: Tile, current_level: Level) -> bool:
         """ Is moving the adversary from src to dest a valid move on the provided level?
         """
-        src = current_level.locate_occupant(adversary)
+        src = current_level.locate_entity(adversary)
         x_dist = abs(src.x - dest.x)
         y_dist = abs(src.y - dest.y)
         dest_open = self._is_open_tile(current_level.get_tile(dest), current_level, type(adversary))

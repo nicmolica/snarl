@@ -87,7 +87,7 @@ class TestLevel(unittest.TestCase):
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_adversary(Adversary(), Tile(5, 5))
-        self.assertEqual(level.locate_occupant(Adversary()), level.get_tile(Tile(5, 5)))
+        self.assertEqual(level.locate_entity(Adversary()), level.get_tile(Tile(5, 5)))
 
     def test_locate_occupant_player(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(1, 1), Tile(2, 2)])
@@ -97,7 +97,7 @@ class TestLevel(unittest.TestCase):
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
-        self.assertEqual(level.locate_occupant(Character("Nic")), level.get_tile(Tile(5, 5)))
+        self.assertEqual(level.locate_entity(Character("Nic")), level.get_tile(Tile(5, 5)))
 
     def test_move_occupant_player(self):
         room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5), Tile(1, 1), Tile(2, 2)])

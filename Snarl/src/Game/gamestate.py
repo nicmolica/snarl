@@ -84,7 +84,7 @@ class Gamestate:
     def get_character_view_range(self, character: Character, radius: int):
         """ Get tiles on 2 corners of the rectangular view range of the character.
         """
-        loc = self.current_level.locate_occupant(character)
+        loc = self.current_level.locate_entity(character)
         level_width, level_height = self.current_level.calculate_level_dimensions()
         minx = max(0, loc.x - radius)
         maxx = min(level_width, loc.x + radius)
@@ -157,7 +157,7 @@ class Gamestate:
     def get_entity_location(self, occupant):
         """Return the coordinates of the current occupant.
         """
-        return self.current_level.locate_occupant(occupant)
+        return self.current_level.locate_entity(occupant)
 
     def render(self) -> str:
         """ Renders the current level.
