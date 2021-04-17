@@ -169,8 +169,7 @@ class Gamemanager:
         self.game_state.move(self.current_turn.entity, move)
         result = self._get_move_result(unlocked_before_move)
         self._update_scoreboard(result)
-        if result not in [Moveresult.EJECT, Moveresult.EXIT]:
-            self.current_turn.notify(self._format_move_result_notification(move, result))
+        self.current_turn.notify(self._format_move_result_notification(move, result))
 
     def _move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
@@ -178,8 +177,8 @@ class Gamemanager:
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
         # Adversaries are supposed to be notified of new info right before they move.
-        if issubclass(type(self.current_turn), Adversary):
-            current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
+        if issubclass(type(self.current_turn), Enemy):
+            current_enemy = next(enemy for enemy in self.enemy_list if enemy.entity.name == self.current_turn.entity.name)
             self._notify_adversary(current_enemy)
         # Players that are alive before this move
         pre_players = self.game_state.get_current_characters()
@@ -381,8 +380,7 @@ class Gamemanager:
                     move = self._get_move()
                     self._move(move)
                     valid_move = True
-                except Exception as e:
-                    traceback.print_exc()
+                except Exception:
                     if isinstance(self.current_turn, Enemy):
                         self.current_turn = self.turn_order.next()
             if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):

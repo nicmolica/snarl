@@ -77,6 +77,7 @@ def end_game(msg):
     Expects message of the form:
     { "type": "end-game",
     "scores": (player-score-list)
+    "won": True/False
     }
     (player-score-list) is a list of
     { "type": "player-score",
@@ -86,7 +87,7 @@ def end_game(msg):
     "keys": (natural)
     }
     """
-    print("Game has ended.")
+    print("Game has ended. " + ("Players" if bool(msg["game-won"]) else "Monsters") + " have won!")
     headers = ["PLAYER NAME", "EXITS", "KEYS", "EJECTS"]
     data = []
     for player in sorted(msg["scores"], key=lambda p : float(str(p["exits"]) + str(p["keys"]))):
@@ -178,12 +179,8 @@ def player_update(msg):
     objects = msg["objects"]
     actors = msg["actors"]
     layout = msg["layout"]
-    message = msg["message"]
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
-    if message is not None:
-        print(message)
-    pass
 
 def handle_string(msg):
     """ Deal with server messages that are only a single string, rather than dicts.
@@ -207,7 +204,6 @@ def handle_string(msg):
     else:
         print("Malformed server message:")
         print(msg)
-        #raise RuntimeError(msg) # TODO get rid of this after debugging is done
 
 def handle_server_message(msg):
     try:
@@ -234,7 +230,6 @@ def handle_server_message(msg):
     else:
         print("Malformed server message:")
         print(msg)
-        raise RuntimeError(msg) # TODO get rid of this after debugging is done
 
 # main loop for client functionality
 while True:

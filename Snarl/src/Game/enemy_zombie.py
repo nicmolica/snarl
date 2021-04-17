@@ -21,10 +21,10 @@ class EnemyZombie(Enemy):
         move = None
         if len(players_in_room) > 0:
             # Move towards the closest player
-            move =  self._get_move_to_player(players_in_room[0])
+            move = self._get_move_to_player(players_in_room[0])
         else:
             # Move in a random valid direction.
-            move =  self._get_random_open_dir()
+            move = self._get_random_open_dir()
         return move
     
     def _get_move_to_player(self, player_loc):
@@ -41,7 +41,7 @@ class EnemyZombie(Enemy):
         If there are no valid move directions, this method returns None.
         """
         valid_moves = self._get_valid_cardinal_moves()
-        if valid_moves == []:
+        if valid_moves == None:
             return None
         return random.choice(valid_moves)
 
