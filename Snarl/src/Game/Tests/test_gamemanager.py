@@ -128,6 +128,13 @@ class TestGamemanager(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             manager._get_player_move()
 
+    def test_get_move_before_starting_game(self):
+        manager = Gamemanager(1)
+        with self.assertRaises(RuntimeError):
+            manager._get_move()
+
+    
+
 
 if __name__ == '__main__':
     unittest.main()
