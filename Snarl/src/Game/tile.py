@@ -122,6 +122,8 @@ class Tile:
     def distance(self, other) -> int:
         """ Manhattan distance between this and another tile.
         """
+        if not isinstance(other, Tile):
+            raise TypeError("Cannot measure distance to something that is not a tile!")
         return abs(self.x - other.x) + abs(self.y - other.y)
     
     def render(self) -> str:

@@ -2,7 +2,7 @@ import sys
 import unittest
 import random
 from Snarl.src.Game.tile import Tile
-from Snarl.src.Game.occupants import Occupant, Character, Adversary, Block
+from Snarl.src.Game.occupants import Occupant, Character, Adversary, Block, Zombie
 
 class TestPosn(unittest.TestCase):
     def test_tile_can_be_unoccupied(self):
@@ -85,6 +85,31 @@ class TestPosn(unittest.TestCase):
     def test_tile_render_multiple_occupants_renders_first_occupant(self):
         tile = Tile(0, 0, [Character("Character 1"), Adversary()])
         self.assertEqual('P', tile.render())
+
+    def test_tile_constructor_occupants_must_be_occupants(self):
+        with self.assertRaises(TypeError):
+            Tile(1, 1, "small cats")
+    
+    def test_cannot_add_non_occupant_to_tile_occupants(self):
+        tile = Tile(0, 0)
+        with self.assertRaises(TypeError):
+            tile.add_occupant("I am not an occupant")
+    
+    def test_tile_distance_raises_error_when_measuring_to_not_a_tile(self):
+        tile = Tile(0, 0)
+        with self.assertRaises(TypeError):
+            tile.distance("I am not a tile")
+    
+    def test_tile_distance(self):
+        tile = Tile(0, 0)
+        tile2 = Tile(1, 1)
+        self.assertEqual(tile.distance(tile2), 2)
+
+    def test_tile_renders_adversary_occupant(self):
+        tile = Tile(0, 0)
+        tile.add_occupant(Zombie("I am a zombie"))
+        self.assertEqual(tile.render(), 'Z')
+
 
 if __name__ == '__main__':
     unittest.main()
