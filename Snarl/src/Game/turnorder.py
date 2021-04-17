@@ -1,4 +1,4 @@
-from .occupants import Entity
+from .actor import Actor
 
 class Turnorder:
     """Keeps track of a turn ordering. Contains methods to add, remove, and get the next
@@ -14,7 +14,7 @@ class Turnorder:
         # increments current, so this should be set to -1 at first.
         self.current = -1
 
-    def eject(self, entity: Entity):
+    def eject(self, entity: Actor):
         """ Eject the entity from the turn order and modify the order to match.
         """
         if not entity in self.order:
@@ -24,7 +24,7 @@ class Turnorder:
         if entity_index <= self.current:
             self.decrement()
 
-    def add(self, entity: Entity, position: int = -1):
+    def add(self, entity: Actor, position: int = -1):
         """ Add the entity to the turn order at the given position and motify the order to match.
         """
         if position < -1:
@@ -54,7 +54,7 @@ class Turnorder:
             raise RuntimeError("You can't move to the previous turn when there are no turns yet.")
         self.current = (self.current - 1) % (len(self.order))
 
-    def next(self) -> Entity:
+    def next(self) -> Actor:
         """ Jump to the next turn and return the entity whose turn it now is.
         """
         self._increment()

@@ -170,8 +170,6 @@ class Gamemanager:
     def move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
         """
-        print(self.current_turn.name)
-        print(self.turn_order.order)
         if not self.game_state:
             raise RuntimeError("Cannot call move when the game has not started!")
         # Adversaries are supposed to be notified of new info right before they move.
@@ -196,7 +194,6 @@ class Gamemanager:
         self._handle_completed_characters()
         self._handle_killed_players(pre_players)
         self.current_turn = self.turn_order.next()
-        print(self.current_turn.name)
 
     def _handle_completed_characters(self):
         """Notifies the characters that they exited the level, and removes them from the turn order.
@@ -205,8 +202,7 @@ class Gamemanager:
         players = [player for player in self.player_list if player.entity in completed_chars]
         for player in players:
             player.notify(None, Moveresult.EXIT)
-        for character in completed_chars:
-            self.turn_order.eject(character)
+            self.turn_order.eject(player)
 
     def update_scoreboard(self, result):
         """ Update the scoreboard of the player whose turn it is to reflect the given move result.
@@ -234,17 +230,17 @@ class Gamemanager:
         for character in chars_to_remove:
             self.turn_order.eject(character)
 
-    def _handle_killed_players(self, pre_players):
+    def _handle_killed_players(self, pre_chars):
         """Notifies the players of the characters that have died that they are dead, updates the players'
         times_ejected field, and removes the characters from the turn order.
         """
-        post_players = self.game_state.get_current_characters().copy()
-        post_players.extend(self.game_state.get_completed_characters())
-        killed_players = list(set(pre_players).difference(set(post_players)))
-        players = [player for player in self.player_list if player.entity in killed_players]
+        post_chars = self.game_state.get_current_characters().copy()
+        post_chars.extend(self.game_state.get_completed_characters())
+        killed_chars = list(set(pre_chars).difference(set(post_chars)))
+        players = [player for player in self.player_list if player.entity in killed_chars]
         self._notify_killed_players(players)
         self._update_killed_players_eject_count(players)
-        self._remove_killed_chars_from_turn_order(killed_players)
+        self._remove_killed_chars_from_turn_order(players)
         
     def _format_move_result_notification(self, move, result, err = None, name = None):
         """Given a move result for hte current player, format a notification to send to
