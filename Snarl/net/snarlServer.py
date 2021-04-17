@@ -9,6 +9,7 @@ from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
 from Snarl.src.Game.moveresult import Moveresult
 from Snarl.src.Game.player_impl import Player
+from Snarl.src.Game.observer_impl import Observer
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.occupants import LevelExit, LevelKey, Character, Zombie, Door
 
@@ -69,6 +70,10 @@ while error_index < levels_len and len(levels_string) > 0:
 num_of_levels = level_jsons.pop(0)
 levels = list(map(create_level_from_json, level_jsons))
 gm = Gamemanager(args.clients, num_of_levels = num_of_levels, levels = levels)
+
+# Add an Observer if specified.
+if args.observe:
+    gm.register_observer(Observer())
 
 def tile_to_num(tile):
     """Transforms the given tile into a number 0, 1, 2, as specified by assignment.
