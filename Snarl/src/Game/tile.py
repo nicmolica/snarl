@@ -112,7 +112,7 @@ class Tile:
     def coordinates_equal(self, other) -> bool:
         """ Do the coordinates of this tile match the coordinates of the other tile?
         """
-        return self.x == other.x and self.y == other.y
+        return isinstance(other, Tile) and self.x == other.x and self.y == other.y
 
     def remove_occupant(self, occupant) -> None:
         """Removes the given occupant from this tile's occupants.
