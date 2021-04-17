@@ -37,7 +37,7 @@ class Level:
             raise RuntimeError("Invalid key location. Cannot place a key on a block or a door.")
         if self.get_tile(exit_loc).has_block() or self.get_tile(exit_loc).has_occupant(Door):
             raise RuntimeError("Invalid exit location. Cannot place an exit on a block or a door.")
-        if exit_loc == key_loc:
+        if exit_loc.coordinates_equal(key_loc):
             raise RuntimeError("Cannot have the exit and the key located on the same tile.")
 
     def render(self) -> str:
@@ -361,7 +361,6 @@ class Level:
             end (Tile): the position of the segment end.
         """
         self.tiles[start.y][start.x] = Tile(start.x, start.y)
-        self.tiles[end.y][end.x] = Tile(end.x, end.y)
         y_min = min(start.y, end.y)
         y_max = max(start.y, end.y)
         x_min = min(start.x, end.x)
