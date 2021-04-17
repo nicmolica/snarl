@@ -330,7 +330,8 @@ class Gamemanager:
 
         # add all the characters to the new level
         for c in self.game_state.characters:
-            self.game_state.current_level.add_character(c, self.game_state.current_level.random_spawn_tile())
+            random_spawn_tile = self.game_state.get_random_spawn_tile()
+            self.game_state.add_character(c, random_spawn_tile)
         
         # create new adversaries
         zombies = []
@@ -358,6 +359,9 @@ class Gamemanager:
         
         self._notify_level_start()
         self.current_turn = self.turn_order.next()
+        print("Current turn is " + str(self.current_turn))
+        print("Turn order:")
+        print(self.turn_order.order)
 
     def run(self):
         """ Main game loop.
