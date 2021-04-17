@@ -331,7 +331,7 @@ class Gamemanager:
         # add all the characters to the new level
         for c in self.game_state.characters:
             random_spawn_tile = self.game_state.get_random_spawn_tile()
-            self.game_state.add_character(c, random_spawn_tile)
+            self.game_state.current_level.add_character(c, random_spawn_tile)
         
         # create new adversaries
         zombies = []

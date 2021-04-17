@@ -69,6 +69,7 @@ while error_index < levels_len and len(levels_string) > 0:
 # instantiate a gamemanager
 num_of_levels = level_jsons.pop(0)
 levels = list(map(create_level_from_json, level_jsons))
+first_level = levels.pop(0)
 gm = Gamemanager(args.clients, num_of_levels = num_of_levels, levels = levels)
 
 # Add an Observer if specified.
@@ -191,7 +192,7 @@ for client in player_connections:
             gm.add_player(player)
             
 # Start and run the game
-gm.start_game(levels[0])
+gm.start_game(first_level)
 gm.run()
 
 # Close the client sockets
