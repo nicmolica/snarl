@@ -130,5 +130,33 @@ class TestEnemies(unittest.TestCase):
         move = z._determine_move()
         self.assertTrue(move.coordinates_equal(open_loc))
 
+    def test_ghost_moves_to_closest_wall_when_no_player_in_range(self):
+        room1 = Room(Tile(0, 0), 6, 3, [Tile(1, 2)], [Tile(1, 1), Tile(2, 1)])
+        room2 = Room(Tile(0, 8), 4, 4, [Tile(1, 8)], [Tile(1, 9), Tile(2, 9)])
+        hall = Hallway([], Tile(1,2), Tile(1,8))
+        level = Level([room1, room2], [hall], Tile(1,9), Tile(2, 9))
+        g = EnemyGhost("El Ghost", "gost")
+        state = Gamestate(level, 1, 1)
+        state.add_adversary(g.entity, Tile(2, 1))
+        g.notify({"state": state, "loc": Tile(2, 1)})
+        move = g._determine_move()
+        self.assertTrue(move.coordinates_equal(Tile(3, 1)))
+
+    def test_ghost_moves_to_player_when_player_in_room(self):
+        room1 = Room(Tile(0, 0), 6, 3, [Tile(1, 2)], [Tile(1, 1), Tile(2, 1)])
+        room2 = Room(Tile(0, 8), 4, 4, [Tile(1, 8)], [Tile(1, 9), Tile(2, 9)])
+        hall = Hallway([], Tile(1,2), Tile(1,8))
+        level = Level([room1, room2], [hall], Tile(1,9), Tile(2, 9))
+        g = EnemyGhost("El Ghost", "gost")
+        state = Gamestate(level, 1, 1)
+        state.add_adversary(g.entity, Tile(2, 1))
+        character = Character("char")
+        character_loc = Tile(1, 1)
+        state.add_character(character, character_loc)
+        g.notify({"state": state, "loc": Tile(2, 1)})
+        move = g._determine_move()
+        self.assertTrue(move.coordinates_equal(character_loc))
+
+
 if __name__ == '__main__':
     unittest.main()
