@@ -169,7 +169,8 @@ class Gamemanager:
         self.game_state.move(self.current_turn.entity, move)
         result = self._get_move_result(unlocked_before_move)
         self._update_scoreboard(result)
-        self.current_turn.notify(self._format_move_result_notification(move, result))
+        if result not in [Moveresult.EJECT, Moveresult.EXIT]:
+            self.current_turn.notify(self._format_move_result_notification(move, result))
 
     def _move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
