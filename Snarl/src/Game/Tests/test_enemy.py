@@ -1,6 +1,10 @@
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.enemy_ghost import EnemyGhost
 from Snarl.src.Game.tile import Tile
+from Snarl.src.Game.room import Room
+from Snarl.src.Game.level import Level
+from Snarl.src.Game.hallway import Hallway
+from Snarl.src.Game.gamestate import Gamestate
 from Snarl.src.Game.occupants import Zombie
 import unittest
 import json
@@ -41,14 +45,20 @@ class TestEnemies(unittest.TestCase):
         z = EnemyZombie("Zomb", "Karl")
         self.assertEqual(type(z.__hash__()),int)
 
-    def test_expel_marks_as_expelled(self):
-        z = EnemyZombie("Zomb", "Karl")
-        z.expel()
-        self.assertTrue(z.expelled)
-
     def test_get_entity_returns_entity(self):
         z = EnemyZombie("Zomb", "Karl")
         self.assertEqual(type(z.get_entity()), Zombie)
+
+    def test_get_cardinal_moves_returns_none_when_no_moves(self):
+        room1 = Room(Tile(0, 0), 3, 3, [Tile(1, 2)], [Tile(1, 1)])
+        room2 = Room(Tile(0, 8), 4, 4, [Tile(1, 8)], [Tile(1, 9), Tile(2, 9)])
+        hall = Hallway([], Tile(1,2), Tile(1,8))
+        level = Level([room1, room2], [hall], Tile(1,9), Tile(2, 9))
+        z = EnemyZombie("Zombi", "Zombo")
+        state = Gamestate(level, 1, 1)
+        state.add_adversary(z.entity, Tile(1, 1))
+        z.notify({"state": state, "loc": Tile(1, 1)})
+        self.assertIsNone(z._get_valid_cardinal_moves())
 
 if __name__ == '__main__':
     unittest.main()

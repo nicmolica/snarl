@@ -46,19 +46,7 @@ class Enemy(Actor):
         """ Return a hash of the two identifying characteristics of a Player.
         """
         return hash((self.name, self.entity))
-
-    def render(self):
-        """Renders the current surroundigns and other info to the output stream.
-        """
-        char_grid = map(lambda row : map(lambda tile : tile.render(), row), self.state.get_tiles())
-        if self.out:
-            self.out.write(grid_to_string(char_grid))
         
-    def expel(self):
-        """Tell this enemy that they were expelled from the level.
-        """
-        self.expelled = True
-
     def get_entity(self):
         return self.entity
 
