@@ -63,11 +63,11 @@ def end_level(msg):
         print(f'Level has ended. Player {msg["key"]} picked up the key.')
     else:
         print("No player picked up the key.")
-    if exited is not "":
+    if exited != "":
         print(f'Players {exited} exited the level.')
     else:
         print("No players exited the level.")
-    if ejected is not "":
+    if ejected != "":
         print(f'Players {ejected} were ejected from the level.')
     else:
         print("No players were ejected from the level.")
@@ -143,7 +143,7 @@ def print_layout(layout, objects, actors, position):
                         break
                 # Do we need to render an object?
                 for obj in object_posns:
-                    if obj["position"] == [row, col]:
+                    if obj["position"] == [row, col] and not flag:
                         if obj["type"] == "key":
                             new_row.append("K")
                         elif obj["type"] == "exit":

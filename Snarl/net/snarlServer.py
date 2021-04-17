@@ -196,13 +196,11 @@ for client in player_connections:
 
 # TODO fix these bugs:
 """
-1. last player on top of key is registered as person who picked it up (just remove key from level to fix)
-2. Ejected/completed players are still being prompted to move
-    . Refactoring move would probably help
-3. Verify starting next level works appropriately.
-4. Go through Gamemanager and refactor/update comments.
+1. Verify starting next level works appropriately.
+2. Go through Gamemanager and refactor/update comments.
     . Could possibly split it up into some smaller components.
-5. Ensure unit test coverage is appropriate.
+3. Ensure unit test coverage is appropriate.
     . Ty can use the coverage tool to measure this. Make sure any obvious
     gaps are covered, but some things can probably be considered "integration-only".
+4. When level exit is not unlocked, it causes rendering append bug with player on top of exit.
 """
