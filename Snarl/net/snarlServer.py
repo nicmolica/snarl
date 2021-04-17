@@ -3,6 +3,7 @@ import socket
 import argparse
 import json
 import time
+from netutils import send, receive
 from Snarl.src.Game.gamemanager import Gamemanager
 from Snarl.tests.parseJson import create_level_from_json
 from Snarl.src.Game.utils import grid_to_string
@@ -48,15 +49,8 @@ try:
 except socket.timeout:
     print("No Additional Players")
 
-def send(conn, msg):
-    print(msg)
-    conn.send(msg.encode())
-    time.sleep(0.0001) # TODO consider fixing this cause it's pretty bad OR just comment to try to justify it
-
-def receive(conn):
-    packet = conn.recv(4096)
-    msg = packet.decode('utf-8')
-    return msg
+# Close the listening socket when player connections are established.
+sock.close()
 
 f = open(args.levels)
 levels_string = f.read()
@@ -155,18 +149,30 @@ class PlayerOut:
         """Prints an update notification. This will show the player's current position as well as
         the player's surroundings.
         """
-        update_msg = {"type": "player-update", "layout": transform_layout(arg["layout"]), "position": [arg["position"].y, arg["position"].x], \
-            "objects": list(map(lambda x: {"type": "key" if isinstance(x[1], LevelKey) else "exit", "position": \
-                [x[0].y, x[0].x]}, arg["objects"])),
-            "actors": list(map(lambda x: {"type": "player" if isinstance(x[1], Character) else "zombie" if \
-                isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["actors"])),
-            "message": None}
+        layout = transform_layout(arg["layout"])
+        position = [arg["position"].y, arg["position"].x]
+        objects = list(map(lambda x: {"type": "key" if isinstance(x[1], LevelKey) else "exit", "position": \
+                [x[0].y, x[0].x]}, arg["objects"]))
+        actors = list(map(lambda x: {"type": "player" if isinstance(x[1], Character) else "zombie" if \
+                isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["actors"]))
+        update_msg = {"type": "player-update", "layout": layout, "position": position, \
+            "objects": objects, "actors": actors, "message": None}
         send(self.output, json.dumps(update_msg))
 
 # Send welcome message
 for client in player_connections:
     msg = {"type": "welcome", "info": "No"}
     send(client, json.dumps(msg))
+
+def make_player_input(client):
+    """Given a client socket connection, return a function that can be called to receive player input.
+    This used to just be a lambda but it caused an issue with multiple clients for some reason.
+    """
+    def input_func():
+        """This function is the input function for a Player object. Call it to get a message from the player.
+        """
+        return receive(client)
+    return input_func
 
 # Register players with game manager
 for client in player_connections:
@@ -176,13 +182,17 @@ for client in player_connections:
         name = receive(client)
         if not name in set(players.keys()):
             name_valid = True
-            player_input = lambda : receive(client)
+            player_input = make_player_input(client)
             player = Player(name, name, out=PlayerOut(client), input_func=player_input)
             gm.add_player(player)
             
 # Start and run the game
 gm.start_game(levels[0])
 gm.run()
+
+# Close the client sockets
+for client in player_connections:
+    client.close()
 
 # TODO fix these bugs:
 """

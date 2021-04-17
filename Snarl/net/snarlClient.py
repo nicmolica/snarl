@@ -3,6 +3,7 @@ import socket
 import argparse
 import json
 import time
+from netutils import send, receive
 from Snarl.src.Game.utils import grid_to_string
 
 parser = argparse.ArgumentParser(description = "socket connection info")
@@ -15,14 +16,6 @@ args.port = args.port[0] if not args.port == None else 45678
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((args.address, args.port))
-
-def receive():
-    packet = sock.recv(4096)
-    msg = packet.decode('utf-8')
-    return msg
-
-def send(msg):
-    sock.sendall(msg.encode())
 
 def process_move():
     """ Verify that a user-entered move has valid syntax before sending it to the server.
@@ -42,7 +35,7 @@ def process_move():
             if coords == "skip":
                 valid_input = True
     
-    send(json.dumps(to_send))
+    send(sock, json.dumps(to_send))
 
 def start_level(msg):
     """ Let the player know that we've started a new level and give them the relevant information.
@@ -188,7 +181,7 @@ def handle_string(msg):
     """
     if msg == "name":
         print("What is your name?")
-        send(input())
+        send(sock, input())
     elif msg == "move":
         print("Please provide a move in the form [y, x], or enter \"skip\" if you wish to skip your move.")
         process_move()
@@ -228,7 +221,6 @@ def handle_server_message(msg):
         end_game(msg)
         exit(0)
     elif msg["type"] == "player-update":
-        print('updating player')
         player_update(msg)
     else:
         print("Malformed server message:")
@@ -237,6 +229,6 @@ def handle_server_message(msg):
 
 # main loop for client functionality
 while True:
-    msg = receive()
+    msg = receive(sock)
     if msg != "":
         handle_server_message(msg)
