@@ -202,5 +202,4 @@ for client in player_connections:
 3. Ensure unit test coverage is appropriate.
     . Ty can use the coverage tool to measure this. Make sure any obvious
     gaps are covered, but some things can probably be considered "integration-only".
-4. When level exit is not unlocked, it causes rendering append bug with player on top of exit.
 """

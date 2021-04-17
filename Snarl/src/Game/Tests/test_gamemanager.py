@@ -112,7 +112,7 @@ class TestGamemanager(unittest.TestCase):
     def test_get_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.move(Tile(3, 4))
+            manager._move(Tile(3, 4))
 
     def test_quit_game_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
@@ -132,17 +132,17 @@ class TestGamemanager(unittest.TestCase):
     def test_update_players_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.update_players()
+            manager._update_players()
 
     def test_get_adversary_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.get_enemy_move()
+            manager._get_enemy_move()
 
     def test_get_player_move_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.get_player_move()
+            manager._get_player_move()
 
 
 if __name__ == '__main__':

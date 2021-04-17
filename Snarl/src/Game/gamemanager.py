@@ -57,79 +57,6 @@ class Gamemanager:
         for enemy in self.enemy_list:
             enemy_spawn = self.game_state.get_random_spawn_tile()
             self.game_state.add_adversary(enemy.entity, enemy_spawn)
-                    
-    def get_move(self) -> Tile:
-        """ Determine the type of the entity currently moving and get the move they want to make.
-        """
-        if not self.game_state:
-            raise RuntimeError("Cannot call get_move when the game has not started!")
-        if isinstance(self.current_turn, Player):
-            return self.get_player_move()
-        elif isinstance(self.current_turn, Enemy):
-            return self.get_enemy_move()
-        else:
-            raise TypeError("You're trying to move something that isn't a character or an adversary.")
-
-    def get_player_move(self) -> Tile:
-        """ Receive the next move from a player either from STDIN or from some other entry
-        method/client.
-        """
-        if not self.game_state:
-            raise RuntimeError("Cannot call get_player_move when the game has not started!")
-        current_player = next(player for player in self.player_list if player.name == self.current_turn.name)
-        if current_player is None:
-            raise RuntimeError("Attempted to get player move from a player who does not exist!")
-        return current_player.move()
-
-    def get_enemy_move(self) -> Tile:
-        """ Receive the next move from an adversary either from STDIN or from some other entry
-        method/client.
-        """
-        if not self.game_state:
-            raise RuntimeError("Cannot call get_enemy_move when the game has not started!")
-        current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
-        if current_enemy is None:
-            raise RuntimeError("Attempted to get a move from a nonexistent enemy!")
-        return current_enemy.move()
-
-    def update_players(self):
-        """ Update all the players about changes to the Gamestate surrounding them. This
-        happens every time any player moves or there is an interaction that could change
-        the way the level looks.
-        """
-        if not self.game_state:
-            raise RuntimeError("Cannot call update_players when the game has not started!")
-        for player in self.player_list:
-            # Do not update a player that has exited or been expelled from the level
-            if not self.game_state.is_character_expelled(player.entity) and not \
-                player.entity in self.game_state.get_completed_characters():
-                self.update_player(player)
-
-    def update_player(self, player: Player, update_grid = None):
-        """Sends an update notification to a single player.
-        """
-        grid = update_grid if update_grid is not None else \
-            self.game_state.get_character_surroundings(player.entity, self.view_distance)
-        try: 
-            position = self.game_state.get_entity_location(player.entity)
-        except:
-            position = None
-
-        tile1, tile2 = self.game_state.get_character_view_range(player.entity, self.view_distance)
-        actors = self.game_state.actors_in_range(tile1, tile2)
-        actors = list(filter(lambda a: not a[1] == player.entity, actors))
-        player.notify({"type": "update", "layout": grid, \
-                    "position": position, "name": player.name, \
-                    "objects": self.game_state.objects_in_range(tile1, tile2), \
-                    "actors": actors, "message": None})
-
-    def render(self) -> str:
-        """ Return an ASCII representation of the current game state.
-        """
-        if not self.game_state:
-            raise RuntimeError("Cannot call render when the game has not started!")
-
-        return self.game_state.render()
 
     def add_player(self, player: AbstractPlayer):
         """ Register a new player to the game and add it to the correct spot in the turn order.
@@ -161,13 +88,89 @@ class Gamemanager:
         """
         self.observers.append(observer)
 
-    def notify_observers(self):
+    def _get_move(self) -> Tile:
+        """ Determine the type of the entity currently moving and get the move they want to make.
+        """
+        if not self.game_state:
+            raise RuntimeError("Cannot call get_move when the game has not started!")
+        if isinstance(self.current_turn, Player):
+            return self._get_player_move()
+        elif isinstance(self.current_turn, Enemy):
+            return self._get_enemy_move()
+        else:
+            raise TypeError("You're trying to move something that isn't a character or an adversary.")
+
+    def _get_player_move(self) -> Tile:
+        """ Receive the next move from a player either from STDIN or from some other entry
+        method/client.
+        """
+        if not self.game_state:
+            raise RuntimeError("Cannot call get_player_move when the game has not started!")
+        current_player = next(player for player in self.player_list if player.name == self.current_turn.name)
+        if current_player is None:
+            raise RuntimeError("Attempted to get player move from a player who does not exist!")
+        return current_player.move()
+
+    def _get_enemy_move(self) -> Tile:
+        """ Receive the next move from an adversary either from STDIN or from some other entry
+        method/client.
+        """
+        if not self.game_state:
+            raise RuntimeError("Cannot call get_enemy_move when the game has not started!")
+        current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
+        if current_enemy is None:
+            raise RuntimeError("Attempted to get a move from a nonexistent enemy!")
+        return current_enemy.move()
+
+    def _update_players(self):
+        """ Update all the players about changes to the Gamestate surrounding them. This
+        happens every time any player moves or there is an interaction that could change
+        the way the level looks.
+        """
+        if not self.game_state:
+            raise RuntimeError("Cannot call update_players when the game has not started!")
+        for player in self.player_list:
+            # Do not update a player that has exited or been expelled from the level
+            if not self.game_state.is_character_expelled(player.entity) and not \
+                player.entity in self.game_state.get_completed_characters():
+                self._update_player(player)
+
+    def _update_player(self, player: Player, update_grid = None):
+        """Sends an update notification to a single player.
+        """
+        grid = update_grid if update_grid is not None else \
+            self.game_state.get_character_surroundings(player.entity, self.view_distance)
+        try: 
+            position = self.game_state.get_entity_location(player.entity)
+        except:
+            position = None
+
+        tile1, tile2 = self.game_state.get_character_view_range(player.entity, self.view_distance)
+        actors = self.game_state.actors_in_range(tile1, tile2)
+        actors = list(filter(lambda a: not a[1] == player.entity, actors))
+        player.notify({"type": "update", "layout": grid, \
+                    "position": position, "name": player.name, \
+                    "objects": self.game_state.objects_in_range(tile1, tile2), \
+                    "actors": actors, "message": None})
+
+    def _notify_observers(self):
         """ Notify all Observers of a change to the Gamestate.
         """
         for observer in self.observers:
             observer.notify(self.game_state)
 
-    def move(self, move: Tile):
+    def _move_and_update(self, move):
+        """Check that the move is valid, execute it, notify the player, and update the player's score if
+        necessary.
+        """
+        unlocked_before_move = self.game_state.is_current_level_unlocked()
+        self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
+        self.game_state.move(self.current_turn.entity, move)
+        result = self._get_move_result(unlocked_before_move)
+        self._update_scoreboard(result)
+        self.current_turn.notify(self._format_move_result_notification(move, result))
+
+    def _move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
         """
         if not self.game_state:
@@ -175,22 +178,17 @@ class Gamemanager:
         # Adversaries are supposed to be notified of new info right before they move.
         if issubclass(type(self.current_turn), Adversary):
             current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
-            self.notify_adversary(current_enemy)
+            self._notify_adversary(current_enemy)
         # Players that are alive before this move
         pre_players = self.game_state.get_current_characters()
         if move != None:
-            unlocked_before_move = self.game_state.is_current_level_unlocked()
-            self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
-            self.game_state.move(self.current_turn.entity, move)
-            result = self._get_move_result(unlocked_before_move)
-            self.update_scoreboard(result)
-            self.current_turn.notify(self._format_move_result_notification(move, result))
+            self._move_and_update(move)
         else:
             self.current_turn.notify(self._format_move_result_notification(None, Moveresult.OK))
         # Notify players and adversaries of changes to the gamestate, including players who were killed
         # on this turn. Note that this usually results in one rendering per move to all entities.
-        self.update_players()
-        self.update_adversaries()
+        self._update_players()
+        self._update_adversaries()
         self._handle_completed_characters()
         self._handle_killed_players(pre_players)
         self.current_turn = self.turn_order.next()
@@ -204,7 +202,7 @@ class Gamemanager:
             player.notify(None, Moveresult.EXIT)
             self.turn_order.eject(player)
 
-    def update_scoreboard(self, result):
+    def _update_scoreboard(self, result):
         """ Update the scoreboard of the player whose turn it is to reflect the given move result.
         """
         if result == Moveresult.KEY:
@@ -265,22 +263,22 @@ class Gamemanager:
         else:
             return Moveresult.OK
 
-    def update_adversaries(self):
+    def _update_adversaries(self):
         """Send game state updates to the adversaries.
         """
         for enemy in self.enemy_list:
-            self.notify_adversary(enemy)
+            self._notify_adversary(enemy)
 
-    def notify_adversary(self, enemy):
+    def _notify_adversary(self, enemy):
         """Sends update to a single adversary.
         """
         loc = self.game_state.get_entity_location(enemy.entity)
         enemy.notify({"state": self.game_state, "loc": loc})
 
-    def notify_players_endgame(self):
+    def _notify_players_endgame(self):
         for player in self.player_list:
             if player.entity in self.game_state.current_level.characters:
-                self.update_player(player, self.game_state.get_tiles())
+                self._update_player(player, self.game_state.get_tiles())
         end_game = {"type": "end-game", "scores": [], "won": self.rule_checker.did_players_win(self.game_state)}
         for player in self.player_list:
             end_game["scores"].append({"type": "player-score", "name": player.name, "exits": player.successful_exits, \
@@ -288,7 +286,7 @@ class Gamemanager:
         for player in self.player_list:
             player.notify(end_game)
 
-    def notify_level_end(self):
+    def _notify_level_end(self):
         """Notifies actors of a level's ending.
         """
         exits = self.game_state.get_completed_characters()
@@ -304,7 +302,7 @@ class Gamemanager:
         for player in self.player_list:
             player.notify(notification)
 
-    def notify_level_start(self):
+    def _notify_level_start(self):
         """Notifies players of the beginning of a new level. Also sends a player update notification
         with the new surroundings.
         """
@@ -312,15 +310,15 @@ class Gamemanager:
         notification = {"type":"start-level", "level":self.level_num, "players":player_names}
         for player in self.player_list:
             player.notify(notification)
-            self.update_player(player)
+            self._update_player(player)
 
-    def next_level(self):
+    def _next_level(self):
         """ Switch to the next level.
         """
         if not self.game_state:
             raise RuntimeError("Cannot call begin_next_level when the game has not started!")
 
-        self.notify_level_end()
+        self._notify_level_end()
         # switch the gamestate to the next level and iterate the level counter
         try:
             self.game_state.next_level()
@@ -328,7 +326,7 @@ class Gamemanager:
         except IndexError:
             return
 
-        self.notify_level_start()
+        self._notify_level_start()
         # add all the characters to the new level
         for c in self.game_state.characters:
             self.game_state.current_level.add_character(c, self.game_state.current_level.random_spawn_tile())
@@ -368,24 +366,24 @@ class Gamemanager:
         # set initial current turn
         self.current_turn = self.turn_order.next()
         # send initial player updates.
-        self.update_players()
-        self.update_adversaries()
-        self.notify_observers()
+        self._update_players()
+        self._update_adversaries()
+        self._notify_observers()
         while not self.rule_checker.is_game_over(self.game_state):
             valid_move = False
             while not valid_move:
                 try:
-                    move = self.get_move()
-                    self.move(move)
+                    move = self._get_move()
+                    self._move(move)
                     valid_move = True
                 except Exception as e:
                     if isinstance(self.current_turn, Enemy):
                         print(f"Enemy {self.current_turn.name} provided invalid move: {e}") # TODO consider removing this print
                         self.current_turn = self.turn_order.next()
             if self.game_state.is_current_level_completed() and not self.rule_checker.is_game_over(self.game_state):
-                self.next_level()
-                self.update_players()
-                self.update_adversaries()
-            self.notify_observers()
+                self._next_level()
+                self._update_players()
+                self._update_adversaries()
+            self._notify_observers()
         
-        self.notify_players_endgame()
+        self._notify_players_endgame()

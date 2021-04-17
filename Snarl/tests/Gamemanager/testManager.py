@@ -144,7 +144,7 @@ for i in range(num_of_turns):
     while not isinstance(manager.current_turn, Player):
         manager.current_turn = manager.turn_order.next()
     turns[turn_list_i].pop(0)
-    manager.move(to)
+    manager._move(to)
     # print(grid_to_string(manager.render()))
     # print("\n")
 
