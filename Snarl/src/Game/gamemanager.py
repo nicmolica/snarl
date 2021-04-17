@@ -177,8 +177,7 @@ class Gamemanager:
             self.notify_adversary(current_enemy)
         # Players that are alive before this move
         pre_players = self.game_state.get_current_characters()
-        if not self.game_state.is_character_expelled(self.current_turn.entity) and \
-            not self.current_turn.entity in self.game_state.get_completed_characters(): 
+        if not self.current_turn.entity in self.game_state.get_completed_characters(): 
             if move != None:
                 unlocked_before_move = self.game_state.is_current_level_unlocked()
                 self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
@@ -194,7 +193,8 @@ class Gamemanager:
             self.update_adversaries()
             post_players = self.game_state.get_current_characters().copy()
             post_players.extend(self.game_state.get_completed_characters())
-            self.notify_killed_players(list(set(pre_players).difference(set(post_players))))
+            killed_players = list(set(pre_players).difference(set(post_players)))
+            self._handle_killed_players(killed_players)
         self.current_turn = self.turn_order.next()
 
     def update_scoreboard(self, result):
@@ -205,14 +205,33 @@ class Gamemanager:
         elif result == Moveresult.EXIT:
             self.current_turn.successful_exits += 1
     
-    def notify_killed_players(self, chars_to_notify):
-        """Notifies the players of the characters that have died that they are dead.
+    def _notify_killed_players(self, players_to_notify):
+        """Notifies the given list of players that they got killed.
         """
-        players = [player for player in self.player_list if player.entity in chars_to_notify]
-        for player in players:
+        for player in players_to_notify:
             player.notify(self._format_move_result_notification(None, Moveresult.EJECT, name=player.name))
-            player.times_ejected += 1
 
+    def _update_killed_players_eject_count(self, players_to_update):
+        """Adds 1 to the times_ejected field of the given players.
+        """
+        for player in players_to_update:
+            player.times_ejected += 1
+    
+    def _remove_killed_chars_from_turn_order(self, chars_to_remove):
+        """Remove all of the given characters from the turn order.
+        """
+        for character in chars_to_remove:
+            self.turn_order.eject(character)
+
+    def _handle_killed_players(self, killed_chars):
+        """Notifies the players of the characters that have died that they are dead, updates the players'
+        times_ejected field, and removes the characters from the turn order.
+        """
+        players = [player for player in self.player_list if player.entity in killed_chars]
+        self._notify_killed_players(players)
+        self._update_killed_players_eject_count(players)
+        self._remove_killed_chars_from_turn_order(killed_chars)
+        
     def _format_move_result_notification(self, move, result, err = None, name = None):
         """Given a move result for hte current player, format a notification to send to
         that player' Actor.
@@ -276,12 +295,14 @@ class Gamemanager:
             player.notify(notification)
 
     def notify_level_start(self):
-        """Notifies players of the beginning of a new level.
+        """Notifies players of the beginning of a new level. Also sends a player update notification
+        with the new surroundings.
         """
         player_names = list(map(lambda p : p.name, self.player_list))
         notification = {"type":"start-level", "level":self.level_num, "players":player_names}
         for player in self.player_list:
             player.notify(notification)
+            self.update_player(player)
 
     def next_level(self):
         """ Switch to the next level.

@@ -59,9 +59,18 @@ def end_level(msg):
     """
     exited = ", ".join(msg["exits"])
     ejected = ", ".join(msg["ejects"])
-    print(f'Level has ended. Player {msg["key"]} picked up the key.')
-    print(f'Players {exited} exited the level.')
-    print(f'Players {ejected} were ejected from the level.')
+    if msg["key"] is not None:
+        print(f'Level has ended. Player {msg["key"]} picked up the key.')
+    else:
+        print("No player picked up the key.")
+    if exited is not "":
+        print(f'Players {exited} exited the level.')
+    else:
+        print("No players exited the level.")
+    if ejected is not "":
+        print(f'Players {ejected} were ejected from the level.')
+    else:
+        print("No players were ejected from the level.")
 
 def end_game(msg):
     """ Let the player know that we've ended the game and give them the relevant information.

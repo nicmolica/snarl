@@ -196,8 +196,10 @@ for client in player_connections:
 
 # TODO fix these bugs:
 """
-3. Get multiple client connections working.
-    . Ferd's video https://www.youtube.com/watch?v=ZvAgjIuAvrA for networking
+1. last player on top of key is registered as person who picked it up (just remove key from level to fix)
+2. Ejected/completed players are still being prompted to move
+    . Refactoring move would probably help
+3. Verify starting next level works appropriately.
 4. Go through Gamemanager and refactor/update comments.
     . Could possibly split it up into some smaller components.
 5. Ensure unit test coverage is appropriate.
