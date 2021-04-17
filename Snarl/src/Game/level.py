@@ -176,6 +176,8 @@ class Level:
         """
         room_tiles = list(map(lambda r: self._spawn_friendly_tiles(r), self.rooms))
         acceptable_rooms_tiles = list(filter(lambda r: r != [], room_tiles))
+        if acceptable_rooms_tiles == []:
+            raise RuntimeError("No suitable spawn rooms found!")
         chosen_room = random.choice(acceptable_rooms_tiles)
         chosen_tile = random.choice(chosen_room)
         return chosen_tile

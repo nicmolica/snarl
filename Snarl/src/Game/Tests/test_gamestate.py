@@ -116,16 +116,6 @@ class TestGamestate(unittest.TestCase):
         # player was successfully removed from old tile
         self.assertEqual(gs.current_level.get_tile(Tile(1, 6)).get_character(), None)
 
-    # TODO change this to reflect the fact that we have multiple levels as part of a gamestate
-    def test_complete_level_marks_level_as_complete(self):
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(1, 2), Tile(2, 3)])
-        hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1], Tile(1, 2), Tile(2, 3))
-        gs = Gamestate(level, 1, 0)
-        gs.complete_level(False)
-        self.assertTrue(gs.current_level.is_completed)
-
     def test_get_tiles_gets_current_level_tiles(self):
         room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(1, 2), Tile(2, 3)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))

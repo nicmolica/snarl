@@ -32,9 +32,10 @@ class TestEnemies(unittest.TestCase):
         self.assertNotEqual(z, "I am a string")
 
     def test_enemies_with_equal_name_and_entities_are_equal(self):
-        z1 = EnemyZombie("Zomb", "Karl")
-        z2 = EnemyZombie("Zomb", "Karl")
-        self.assertEqual(z1, z2)
+        e1 = EnemyGhost("Ghast", "Karl")
+        e2 = EnemyGhost("Ghast", "Karl")
+        e2.entity = e1.entity
+        self.assertEqual(e1, e2)
 
     def test_hash_returns_hash(self):
         z = EnemyZombie("Zomb", "Karl")

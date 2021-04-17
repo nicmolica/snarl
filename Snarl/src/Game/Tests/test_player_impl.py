@@ -44,11 +44,6 @@ class TestPlayerImpl(unittest.TestCase):
         p.notify({"dummy": "surroundings"})
         self.assertIsNotNone(out.output)
     
-    def test_expel_alters_expel_field(self):
-        p = Player("Player Name", "Character Name")
-        p.expel()
-        self.assertTrue(p.expelled)
-    
     def test_move_requires_array_input(self):
         p = Player("Player Name", "Character Name", input_func = lambda : "Not an array")
         with self.assertRaises(json.JSONDecodeError):

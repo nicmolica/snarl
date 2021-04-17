@@ -45,12 +45,6 @@ class TestGamemanager(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             manager.add_player(player2)
 
-    def test_add_player_registers_observer(self):
-        manager = Gamemanager(1)
-        player = Player("Ty", "Tulkas Astaldo")
-        manager.add_player(player)
-        self.assertEqual(len(manager.observers), 1)
-
     def test_register_observer_registers_observer(self):
         manager = Gamemanager(1)
         # for now, since players are observers, just add one of these
@@ -88,7 +82,7 @@ class TestGamemanager(unittest.TestCase):
         manager.start_game(level)
 
     def test_start_game_errors_when_not_enough_space_in_first_room(self):
-        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(7, 5)])
+        room1 = Room(Tile(0, 0), 10, 10, [Tile(3, 9), Tile(9, 5)], [Tile(5, 5), Tile(6, 6), Tile(8, 8), Tile(7, 7), Tile(7, 5)])
         hallway1 = Hallway([], Tile(3, 9), Tile(3, 20))
         room2 = Room(Tile(0, 20), 10, 10, [Tile(3, 20)])
         hallway2 = Hallway([Tile(12, 5), Tile(12, 2), Tile(15, 2)], Tile(9, 5), Tile(18, 2))
@@ -113,21 +107,11 @@ class TestGamemanager(unittest.TestCase):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
             manager._move(Tile(3, 4))
-
-    def test_quit_game_raises_error_when_called_before_game_start(self):
-        manager = Gamemanager()
-        with self.assertRaises(RuntimeError):
-            manager.quit_game()
         
     def test_begin_next_level_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()
         with self.assertRaises(RuntimeError):
-            manager.begin_next_level()
-    
-    def test_render_raises_error_when_called_before_game_start(self):
-        manager = Gamemanager()
-        with self.assertRaises(RuntimeError):
-            manager.render()
+            manager._next_level()
     
     def test_update_players_raises_error_when_called_before_game_start(self):
         manager = Gamemanager()

@@ -38,11 +38,10 @@ class TestRulechecker(unittest.TestCase):
 
     def test_is_open_when_adversary_moves_to_player_tile(self):
         rulechecker = Rulechecker()
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4), Tile(3, 3)])
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(2,2)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1], Tile(3, 4), Tile(3, 20))
-
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)], [Tile(2, 22)])
+        level = Level([room1, room2], [hallway1], Tile(2, 2), Tile(2, 22))
         is_open = rulechecker._is_open_tile(Tile(3, 3, [Character("Character 1")]), level, Adversary)
         self.assertTrue(is_open)
 
@@ -92,10 +91,10 @@ class TestRulechecker(unittest.TestCase):
 
     def test_valid_adversary_move(self):
         rulechecker = Rulechecker()
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(2,2)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1], Tile(3, 4), Tile(3, 20))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)], [Tile(2, 22)])
+        level = Level([room1, room2], [hallway1], Tile(2, 2), Tile(2, 22))
         adv = Zombie()
         level.add_adversary(adv, Tile(1, 8))
         is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 7), level)
@@ -103,10 +102,10 @@ class TestRulechecker(unittest.TestCase):
     
     def test_invalid_adversary_move_too_far(self):
         rulechecker = Rulechecker()
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(2,2)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1], Tile(3, 4), Tile(3, 20))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)], [Tile(2, 22)])
+        level = Level([room1, room2], [hallway1], Tile(2, 2), Tile(2, 22))
         adv = Zombie()
         level.add_adversary(adv, Tile(1, 11))
         is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 7), level)
@@ -114,10 +113,10 @@ class TestRulechecker(unittest.TestCase):
 
     def test_invalid_adversary_move_blocked_dest(self):
         rulechecker = Rulechecker()
-        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)])
+        room1 = Room(Tile(0, 0), 5, 5, [Tile(3, 4)], [Tile(2,2)])
         hallway1 = Hallway([Tile(3, 6), Tile(1, 6), Tile(1, 18), Tile(3, 18)], Tile(3, 4), Tile(3, 20))
-        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
-        level = Level([room1, room2], [hallway1], Tile(3, 4), Tile(3, 20))
+        room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)], [Tile(2, 22)])
+        level = Level([room1, room2], [hallway1], Tile(2, 2), Tile(2, 22))
         adv = Zombie()
         level.add_adversary(adv, Tile(0, 0))
         is_valid = rulechecker._is_valid_adversary_move(adv, Tile(1, 0), level)
@@ -130,6 +129,7 @@ class TestRulechecker(unittest.TestCase):
         room2 = Room(Tile(0, 20), 5, 10, [Tile(3, 20)])
         level = Level([room1, room2], [hallway1], Tile(1, 1), Tile(2, 2))
         state = Gamestate(level, 2, 0)
+        level.completed_characters.append(Character("Hello World"))
         players_won = rulechecker.did_players_win(state)
         self.assertTrue(players_won)
 

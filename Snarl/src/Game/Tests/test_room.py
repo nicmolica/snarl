@@ -29,59 +29,7 @@ class TestRoom(unittest.TestCase):
         room1 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)])
         room2 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)])
         self.assertTrue(room1 == room2)
-
-    def test_room_open_tiles_around_0_radius_fails(self):
-        room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
-        with self.assertRaises(ValueError):
-            room1.open_tiles_around(Tile(1, 1), 0)
-
-    def test_room_open_tiles_around_outside_room_fails(self):
-        room1 = Room(Tile(0, 0), 5, 6, [Tile(0, 3)])
-        with self.assertRaises(RuntimeError):
-            room1.open_tiles_around(Tile(100, 100), 2)
-    
-    def test_room_open_tiles_around_1_radius_does_not_return_self(self):
-        player = Character("Character 1")
-        enemy1 = Adversary()
-        enemy2 = Adversary()
-        level_key = LevelKey()
-        level_exit = LevelExit()
-        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
-            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
-        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
-        tiles = room.render()
-        open_tiles_around = room.open_tiles_around(Tile(5, 6), 1)
-        self.assertNotIn((5, 6), [(tile.x, tile.y) for tile in open_tiles_around])
-
-    def test_room_open_tiles_around_1_radius_returns_correct_tiles(self):
-        player = Character("Character 1")
-        enemy1 = Adversary()
-        enemy2 = Adversary()
-        level_key = LevelKey()
-        level_exit = LevelExit()
-        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
-            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
-        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
-        tiles = room.render()
-        open_tiles_around = room.open_tiles_around(Tile(5, 6), 1)
-        coords = [(tile.x, tile.y) for tile in open_tiles_around]
-        self.assertIn((4, 6), coords)
-        self.assertIn((5, 7), coords)
-
-    def test_room_open_tiles_around_radius_returns_door(self):
-        player = Character("Character 1")
-        enemy1 = Adversary()
-        enemy2 = Adversary()
-        level_key = LevelKey()
-        level_exit = LevelExit()
-        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
-            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
-        room = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
-        tiles = room.render()
-        open_tiles_around = room.open_tiles_around(Tile(4, 5), 1)
-        coords = [(tile.x, tile.y) for tile in open_tiles_around]
-        self.assertIn((3, 5), coords)
-
+        
     def test_nonstraddled_room(self):
         room = Room(Tile(2, 2), 5, 5, [Tile(2, 4)], [])
         way1 = Tile(1, 1)
@@ -99,20 +47,6 @@ class TestRoom(unittest.TestCase):
         way1 = Tile(1, 4)
         way2 = Tile(10, 4)
         self.assertTrue(room.is_straddled_by(way1, way2))
-
-    def test_room_rendering(self):
-        player = Character("Character 1")
-        enemy1 = Adversary()
-        enemy2 = Adversary()
-        level_key = LevelKey()
-        level_exit = LevelExit()
-        open_tiles = [Tile(4, 5, player), Tile(4, 6, level_key), Tile(4, 7, enemy1), \
-            Tile(5, 6), Tile(5, 7, enemy2), Tile(6, 7, level_exit)]
-        room1 = Room(Tile(3, 4), 5, 6, [Tile(3, 5)], open_tiles)
-        tiles = room1.render()
-        expected_string = "-   -   -   -   -" + "\nD   P   X   X   |" + "\n|   K       X   |" \
-            + "\n|   A   A   E   |" + "\n|   X   X   X   |" + "\n-   -   -   -   -"
-        self.assertEqual(expected_string, grid_to_string(tiles))
 
 if __name__ == '__main__':
     unittest.main()
