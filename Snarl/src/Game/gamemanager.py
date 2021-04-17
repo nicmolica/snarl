@@ -14,6 +14,7 @@ from .utils import grid_to_string
 from .moveresult import Moveresult
 from .player_impl import Player
 from .observer import AbstractObserver 
+import traceback
 
 class Gamemanager:
     def __init__(self, max_players: int = 4, view_distance: int = 2, num_of_levels: int = 1, levels : list = []):
@@ -181,6 +182,7 @@ class Gamemanager:
             self._notify_adversary(current_enemy)
         # Players that are alive before this move
         pre_players = self.game_state.get_current_characters()
+        completed_before_turn = self.game_state.get_completed_characters()
         if move != None:
             self._move_and_update(move)
         else:
@@ -189,17 +191,17 @@ class Gamemanager:
         # on this turn. Note that this usually results in one rendering per move to all entities.
         self._update_players()
         self._update_adversaries()
-        self._handle_completed_characters()
+        self._handle_completed_characters(completed_before_turn)
         self._handle_killed_players(pre_players)
         self.current_turn = self.turn_order.next()
 
-    def _handle_completed_characters(self):
+    def _handle_completed_characters(self, completed_before_turn):
         """Notifies the characters that they exited the level, and removes them from the turn order.
         """
-        completed_chars = self.game_state.get_completed_characters()
+        completed_chars = list(set(self.game_state.get_completed_characters()) - set(completed_before_turn))
         players = [player for player in self.player_list if player.entity in completed_chars]
         for player in players:
-            player.notify(None, Moveresult.EXIT)
+            player.notify(self._format_move_result_notification(None, Moveresult.EXIT))
             self.turn_order.eject(player)
 
     def _update_scoreboard(self, result):
@@ -326,7 +328,6 @@ class Gamemanager:
         except IndexError:
             return
 
-        self._notify_level_start()
         # add all the characters to the new level
         for c in self.game_state.characters:
             self.game_state.current_level.add_character(c, self.game_state.current_level.random_spawn_tile())
@@ -355,6 +356,7 @@ class Gamemanager:
             spawn = self.game_state.get_random_spawn_tile()
             self.game_state.add_adversary(ghost.entity, spawn)
         
+        self._notify_level_start()
         self.current_turn = self.turn_order.next()
 
     def run(self):
@@ -377,6 +379,7 @@ class Gamemanager:
                     self._move(move)
                     valid_move = True
                 except Exception as e:
+                    traceback.print_exc()
                     if isinstance(self.current_turn, Enemy):
                         print(f"Enemy {self.current_turn.name} provided invalid move: {e}") # TODO consider removing this print
                         self.current_turn = self.turn_order.next()

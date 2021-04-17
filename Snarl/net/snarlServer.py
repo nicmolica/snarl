@@ -36,7 +36,6 @@ players = {}
 player_connections = []
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.bind((args.address, args.port))
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.listen()
 
 # Allow players to connect up to a max timeout

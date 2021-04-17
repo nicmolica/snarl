@@ -152,7 +152,7 @@ class Gamestate:
         """Returns a list of the characters taht have completed the current level.
         """
         completed = self.current_level.completed_characters
-        return  completed if completed is not None else []
+        return completed if completed is not None else []
     
     def get_entity_location(self, occupant):
         """Return the coordinates of the current occupant.
