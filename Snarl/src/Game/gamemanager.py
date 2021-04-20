@@ -53,7 +53,7 @@ class Gamemanager:
             spawn_tile = self.game_state.get_random_spawn_tile()
             self.game_state.add_character(player.entity, spawn_tile)
         # First level has one zombie and no ghosts
-        first_zombie = EnemyZombie("Zombie", "zombi")
+        first_zombie = EnemyZombie("zombie", "zombie")
         self.add_enemies(first_zombie)
         for enemy in self.enemy_list:
             enemy_spawn = self.game_state.get_random_spawn_tile()
@@ -118,7 +118,7 @@ class Gamemanager:
         """
         if not self.game_state:
             raise RuntimeError("Cannot call get_enemy_move when the game has not started!")
-        current_enemy = next(enemy for enemy in self.enemy_list if enemy.name == self.current_turn.name)
+        current_enemy = next(enemy for enemy in self.enemy_list if enemy == self.current_turn)
         if current_enemy is None:
             raise RuntimeError("Attempted to get a move from a nonexistent enemy!")
         return current_enemy.move()
@@ -168,8 +168,9 @@ class Gamemanager:
         self.rule_checker.is_valid_move(self.current_turn.entity, move, self.game_state.current_level)
         self.game_state.move(self.current_turn.entity, move)
         result = self._get_move_result(unlocked_before_move)
+        if result != Moveresult.EJECT and result != Moveresult.EXIT:
+            self.current_turn.notify(self._format_move_result_notification(move, result))
         self._update_scoreboard(result)
-        self.current_turn.notify(self._format_move_result_notification(move, result))
 
     def _move(self, move: Tile):
         """ Determine if the provided move is valid. If so, perform it.
