@@ -198,13 +198,3 @@ gm.run()
 # Close the client sockets
 for client in player_connections:
     client.close()
-
-# TODO fix these bugs:
-"""
-1. Verify starting next level works appropriately.
-2. Go through Gamemanager and refactor/update comments.
-    . Could possibly split it up into some smaller components.
-3. Ensure unit test coverage is appropriate.
-    . Ty can use the coverage tool to measure this. Make sure any obvious
-    gaps are covered, but some things can probably be considered "integration-only".
-"""
