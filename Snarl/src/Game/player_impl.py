@@ -51,12 +51,14 @@ class Player(AbstractPlayer):
         """
         self.out.write("move")
         requested_input = self.input_func()
+        if requested_input == "skip":
+            return None
         input_json = json.loads(requested_input)
         if input_json is None:
             return None
         if not type(input_json) == list or len(input_json) != 2:
             raise RuntimeError("User move input not valid: " + requested_input)
-        x, y = input_json
+        y, x = input_json
         return Tile(x, y)
 
     def get_entity(self):

@@ -30,7 +30,7 @@ def process_move():
             if type(input_json) == list and len(input_json) == 2:
                 valid_input = True
                 y, x = input_json
-                to_send = [x, y]
+                to_send = [y, x]
         except:
             if coords == "skip":
                 valid_input = True
