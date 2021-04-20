@@ -26,13 +26,6 @@ class EnemyZombie(Enemy):
             # Move in a random valid direction.
             move = self._get_random_open_dir()
         
-        print("self.location: ")
-        print("x: " + str(self.location.x) + ", y: " + str(self.location.y))
-        print("next move: ")
-        if move == None:
-            print("move is null")
-        else:
-            print("x: " + str(move.x) + ", y: " + str(move.y))
         return move
     
     def _get_move_to_player(self, player_loc):
