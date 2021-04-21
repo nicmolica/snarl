@@ -12,6 +12,7 @@ from Snarl.src.Game.player_impl import Player
 from Snarl.src.Game.observer_impl import Observer
 from Snarl.src.Game.enemy_zombie import EnemyZombie
 from Snarl.src.Game.occupants import LevelExit, LevelKey, Character, Zombie, Door
+import copy
 
 parser = argparse.ArgumentParser(description = "socket connection info")
 parser.add_argument("--levels", type = str, nargs = 1)
@@ -20,6 +21,7 @@ parser.add_argument("--wait", type = int, nargs = 1)
 parser.add_argument("--observe", nargs = "?", const = True)
 parser.add_argument("--address", type = str, nargs = 1)
 parser.add_argument("--port", type = int, nargs = 1)
+parser.add_argument("--games", type = int, nargs = 1)
 args = parser.parse_args()
 
 args.levels = args.levels[0] if not args.levels == None else "snarl.levels"
@@ -32,6 +34,7 @@ else:
 args.wait = args.wait[0] if not args.wait == None else 60
 args.address = args.address[0] if not args.address == None else "127.0.0.1"
 args.port = args.port[0] if not args.port == None else 45678
+args.games = args.games[0] if not args.games == None else 1
 
 players = {}
 player_connections = []
@@ -116,14 +119,12 @@ class PlayerOut:
                 self._send_update(arg)
             elif arg["type"] == "move-result":
                 self._send_result(arg)
-            elif arg["type"] == "start-level":
-                self._send_arg(arg)
-            elif arg["type"] == "end-level":
-                self._send_arg(arg)
             elif arg["type"] == "end-game":
                 self._send_end(arg)
             elif arg["type"] == "error":
                 self._send_error(arg)
+            else:
+                self._send_arg(arg)
         else:
             self._send_arg(arg)
         
@@ -191,10 +192,32 @@ for client in player_connections:
             player = Player(name, name, out=PlayerOut(client), input_func=player_input)
             gm.add_player(player)
             
-# Start and run the game
-gm.start_game(first_level)
-gm.run()
+def run_games():
+    """Run as many games as needed; then wait for the user to enter the shutdown command.
+    """
+    while True:
+        # Run as many games as needed. At the end of the games loop, allow the server to shut down
+        # with the "exit" command send via stdin
+        for game in range(args.games):
+            # Start and run the game
+            print(f"Starting game {game + 1}")
+            # Do the necessary resets for subsequent games
+            if game != 0:
+                # Remake the levels to avoid unwantedly persistent data
+                new_levels = list(map(create_level_from_json, level_jsons))
+                new_levels.pop(0)
+                gm.reset_game(new_levels)
+            gm.start_game(copy.deepcopy(first_level))
+            gm.run()
+        # Wait for the client to give us the exit command, then shut everything down
+        cmd = input()
+        if cmd == "exit":
+            print("Server shutting down")
+            # Send the client sockets the shutdown message and then kill them all.
+            for client in player_connections:
+                send(client, "server-shutdown")
+                client.close()
+            exit(0)
+            break
 
-# Close the client sockets
-for client in player_connections:
-    client.close()
+run_games()

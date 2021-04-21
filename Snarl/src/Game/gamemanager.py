@@ -39,6 +39,8 @@ class Gamemanager:
         self.turn_order = Turnorder([])
         self.current_turn = None
         self.player_list = []
+        # Stores total stats for players-DO NOT USE TO CONTROL GAME
+        self.player_stats = []
         self.enemy_list = []
         self.observers = []
         self.init_levels = levels
@@ -62,6 +64,8 @@ class Gamemanager:
     def add_player(self, player: AbstractPlayer):
         """ Register a new player to the game and add it to the correct spot in the turn order.
         """
+        if not isinstance(player, AbstractPlayer):
+            raise RuntimeError("Cannot add something that is not a player!")
         if player in set(self.player_list.copy()):
             raise ValueError("Cannot have duplicate players in a game!")
         elif len(self.player_list) == self.max_players:
@@ -69,7 +73,12 @@ class Gamemanager:
         
         self.player_list.append(player)
         self.turn_order.add(player)
-
+        # Add this player to the running stat totals if they are not already there.
+        try:
+            self.player_stats.index(player)
+        except(ValueError):
+            self.player_stats.append(player.copy())
+        
     def add_enemies(self, enemies):
         """ Add all the provided adversaries to the enemy_list field and put them in the correct
         place in the turn order list.
@@ -285,10 +294,61 @@ class Gamemanager:
                 self._update_player(player, self.game_state.get_tiles())
         end_game = {"type": "end-game", "scores": [], "won": self.rule_checker.did_players_win(self.game_state)}
         for player in self.player_list:
-            end_game["scores"].append({"type": "player-score", "name": player.name, "exits": player.successful_exits, \
-                "ejects": player.times_ejected, "keys": player.keys_collected})
+            end_game["scores"].append(self._make_player_score(player))
         for player in self.player_list:
             player.notify(end_game)
+
+    def _make_player_score(self, player):
+        """Returns a dictionary with player score information. This may be for the current game only, or it may
+        be a running total for all games.
+        """
+        player_totals = {"type": "player-score", "name": player.name, "exits": player.successful_exits, \
+                "ejects": player.times_ejected, "keys": player.keys_collected}
+        return player_totals
+
+    def _reset_players_stats(self):
+        """Resets the stats stored on the players. Does NOT reset the running totals.
+        """
+        for player in self.player_list:
+            player.keys_collected = 0
+            player.times_ejected = 0
+            player.successful_exits = 0
+
+    def reset_game(self, next_levels):
+        """Reset per-game player stats and the level counts.
+        """
+        self._reset_players_stats()
+        self.enemy_list = []
+        self.num_of_levels = 1 + len(next_levels)
+        self.level_num = 1
+        self.init_levels = next_levels
+        self.turn_order = Turnorder([])
+        for player in self.player_list:
+            self.turn_order.add(player)
+        self.game_state = None
+
+    def _calculate_running_stat_totals(self):
+        """Adds the stats from the current game to the running totals. Relies on player names staying the same
+        between games.
+        """
+        for player in self.player_list:
+            stat = next(stat for stat in self.player_stats if stat.name == player.name)
+            stat.successful_exits += player.successful_exits
+            stat.times_ejected += player.times_ejected
+            stat.keys_collected += player.keys_collected
+
+    def _notify_running_stat_totals(self):
+        """Notifies the players of their current running stat totals. Make sure to increment the stat totals
+        before doing this!
+        """
+        stat_totals = {"type": "stat-totals", "scores": []}
+        for player in self.player_stats:
+            score = self._make_player_score(player)
+            stat_totals["scores"].append(score)
+        
+        for player in self.player_list:
+            player.notify(stat_totals)
+
 
     def _notify_level_end(self):
         """Notifies actors of a level's ending.
@@ -391,3 +451,5 @@ class Gamemanager:
             self._notify_observers()
         
         self._notify_players_endgame()
+        self._calculate_running_stat_totals()
+        self._notify_running_stat_totals()

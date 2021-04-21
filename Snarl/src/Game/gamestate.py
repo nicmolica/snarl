@@ -95,7 +95,9 @@ class Gamestate:
     def add_character(self, character: Character, location: Tile):
         """ Add a character to the current Level.
         """
-        self.characters.append(character)
+        already_present = len([c for c in self.characters if c == character]) > 0
+        if not already_present:
+            self.characters.append(character)
         self.current_level.add_character(character, location)
 
     def add_adversary(self, adversary: Adversary, location: Tile):

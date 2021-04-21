@@ -45,6 +45,16 @@ class Player(AbstractPlayer):
         """
         return hash((self.name, self.entity))
 
+    def copy(self):
+        """Returns a Player object whose names and stats are a copy of this object.
+        Does not preserve input, output.
+        """
+        new = Player(self.name, self.entity.name)
+        new.keys_collected = self.keys_collected
+        new.successful_exits = self.successful_exits
+        new.times_ejected = self.times_ejected
+        return new
+
     def _determine_move(self):
         """Returns a player move given the input string representing the player
         input.

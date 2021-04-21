@@ -72,7 +72,7 @@ def end_level(msg):
     else:
         print("No players were ejected from the level.")
 
-def end_game(msg):
+def end_game(msg, running_totals = False):
     """ Let the player know that we've ended the game and give them the relevant information.
     Expects message of the form:
     { "type": "end-game",
@@ -87,7 +87,10 @@ def end_game(msg):
     "keys": (natural)
     }
     """
-    print("Game has ended. " + ("Players" if bool(msg["game-won"]) else "Monsters") + " have won!")
+    if running_totals:
+        print("Running total of scores are as follows:")
+    else:
+        print("Game has ended. " + ("Players" if bool(msg["game-won"]) else "Monsters") + " have won!")
     headers = ["PLAYER NAME", "EXITS", "KEYS", "EJECTS"]
     data = []
     for player in sorted(msg["scores"], key=lambda p : float(str(p["exits"]) + str(p["keys"]))):
@@ -201,6 +204,9 @@ def handle_string(msg):
         print("You were ejected from the level :(")
     elif msg == "Invalid":
         print("Your move was invalid. Please enter another:")
+    elif msg == "server-shutdown":
+        print("Server has shut down, terminating this client")
+        exit(0)
     else:
         print("Malformed server message:")
         print(msg)
@@ -224,9 +230,10 @@ def handle_server_message(msg):
         end_level(msg)
     elif msg["type"] == "end-game":
         end_game(msg)
-        exit(0)
     elif msg["type"] == "player-update":
         player_update(msg)
+    elif msg["type"] == "stat-totals":
+        end_game(msg, True)
     else:
         print("Malformed server message:")
         print(msg)
