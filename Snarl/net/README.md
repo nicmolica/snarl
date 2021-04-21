@@ -1,10 +1,14 @@
 # Starting the Server
 
-To start the server, run the `snarlServer` executable with the appropriate command line arguments.
+To start the server, run the `snarlServer1` executable with the appropriate command line arguments.
+
+Specify the `--games` command-line argument in order to run a given number of games. Each game will
+run with the same set of players and the same levels, and will show a running score total at the end
+of every game. Once all games have been completed, shut down the server by typing `exit`.
 
 # Starting the Client
 
-To start the client, run the `snarlClient` executable with the appropriate arguments.
+To start the client, run the `snarlClient1` executable with the appropriate arguments.
 To interact with the client, you will be prompted for a name, and then for moves when it is your turn.
 The name should be provided without quotes. Please note that you may not select a name that another
 player has already claimed.
