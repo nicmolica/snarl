@@ -130,7 +130,7 @@ class Level:
         """Triggers any necessary interactions between the occupants of this tile. The interactions
         are as follows:
         1. Character + Key = unlock the level exit
-        2. Character + Adversary = kill the player
+        2. Character + Adversary = character takes damage.
         3. Character + Exit and level unlocked = complete the level
         """
         has_player = self.get_tile(dest).has_character()

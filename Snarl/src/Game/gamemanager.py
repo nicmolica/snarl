@@ -1,7 +1,7 @@
 import random
 from .gamestate import Gamestate
 from .rulechecker import Rulechecker
-from .occupants import Entity, Character, Adversary
+from .occupants import Entity, Character, Adversary, CHARACTER_HP
 from .turnorder import Turnorder
 from .level import Level
 from .enemy import Enemy
@@ -152,7 +152,7 @@ class Gamemanager:
         player.notify({"type": "update", "layout": grid, \
                     "position": position, "name": player.name, \
                     "objects": self.game_state.objects_in_range(tile1, tile2), \
-                    "actors": actors, "message": None, "hitpoints": player.entity.hitpoints})
+                    "actors": actors, "message": None, "hitpoints": [player.entity.hitpoints, CHARACTER_HP]})
 
     def _notify_observers(self):
         """ Notify all Observers of a change to the Gamestate.
@@ -332,6 +332,8 @@ class Gamemanager:
 
         # add all the characters to the new level
         for c in self.game_state.characters:
+            # reset all character HP values to the default maximum
+            c.hitpoints = CHARACTER_HP
             random_spawn_tile = self.game_state.get_random_spawn_tile()
             self.game_state.current_level.add_character(c, random_spawn_tile)
         

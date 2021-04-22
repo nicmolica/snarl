@@ -159,14 +159,15 @@ def print_layout(layout, objects, actors, position):
     
     print(grid_to_string(printed_layout))           
 
-def print_healthbar(hp):
-    """Prints a healthbar display and a numerical value of remaining HP.
+def print_healthbar(hp, max):
+    """Prints a healthbar display, showing the current HP relative to the max HP.
     """
     bar = ""
     for i in range(hp):
-        bar += "█"
-    print(f"HP:{bar} ({hp})")
-
+        bar += "███"
+    for i in range(max - hp):
+        bar+= "░░░"
+    print(f"HP:{bar}")
 
 def player_update(msg):
     """ Update the player on what the dungeon looks like after another entity has made a move.
@@ -189,7 +190,7 @@ def player_update(msg):
     actors = msg["actors"]
     layout = msg["layout"]
     hitpoints = msg["hitpoints"]
-    print_healthbar(hitpoints)
+    print_healthbar(*hitpoints)
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
 
