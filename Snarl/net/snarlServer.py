@@ -160,8 +160,9 @@ class PlayerOut:
                 [x[0].y, x[0].x]}, arg["objects"]))
         actors = list(map(lambda x: {"type": "player" if isinstance(x[1], Character) else "zombie" if \
                 isinstance(x[1], Zombie) else "ghost", "position": [x[0].y, x[0].x]}, arg["actors"]))
+        hitpoints = arg["hitpoints"]
         update_msg = {"type": "player-update", "layout": layout, "position": position, \
-            "objects": objects, "actors": actors, "message": None}
+            "objects": objects, "actors": actors, "message": None, "hitpoints": hitpoints}
         send(self.output, json.dumps(update_msg))
 
 # Send welcome message

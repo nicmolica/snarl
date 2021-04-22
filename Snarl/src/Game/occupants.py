@@ -1,6 +1,11 @@
 """This file holds the Occupant class and its descendants. Occupants are considered
 to be anything that can occupy a tile; for example, a Level Key is an occupant.
 """
+
+CHARACTER_HP = 5
+GHOST_DMG = 2
+ZOMBIE_DMG = 1
+
 class Occupant:
     """Represents any entity that can occupy a Tile.
     """
@@ -30,6 +35,7 @@ class Character(Entity):
     """
     def __init__(self, name):
         self.name = name
+        self.hitpoints = CHARACTER_HP
 
     def __eq__(self, other):
         return isinstance(other, Character) and self.name == other.name
@@ -59,6 +65,7 @@ class Zombie(Adversary):
     def __init__(self, name = ""):
         self.name = name + str(Zombie.zombie_count)
         Zombie.zombie_count += 1
+        self.damage = ZOMBIE_DMG
 
     def __eq__(self, other):
         return isinstance(other, Zombie) and self.name == other.name
@@ -76,6 +83,7 @@ class Ghost(Adversary):
     def __init__(self, name = ""):
         self.name = name + str(Ghost.ghost_count)
         Ghost.ghost_count += 1
+        self.damage = GHOST_DMG
     
     def __eq__(self, other):
         return isinstance(other, Ghost) and self.name == other.name

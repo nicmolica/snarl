@@ -152,7 +152,7 @@ class Gamemanager:
         player.notify({"type": "update", "layout": grid, \
                     "position": position, "name": player.name, \
                     "objects": self.game_state.objects_in_range(tile1, tile2), \
-                    "actors": actors, "message": None})
+                    "actors": actors, "message": None, "hitpoints": player.entity.hitpoints})
 
     def _notify_observers(self):
         """ Notify all Observers of a change to the Gamestate.

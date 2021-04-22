@@ -158,7 +158,16 @@ def print_layout(layout, objects, actors, position):
         printed_layout.append(new_row)
     
     print(grid_to_string(printed_layout))           
-            
+
+def print_healthbar(hp):
+    """Prints a healthbar display and a numerical value of remaining HP.
+    """
+    bar = ""
+    for i in range(hp):
+        bar += "█"
+    print(f"HP:{bar} ({hp})")
+
+
 def player_update(msg):
     """ Update the player on what the dungeon looks like after another entity has made a move.
     Expects a message of the form:
@@ -179,6 +188,8 @@ def player_update(msg):
     objects = msg["objects"]
     actors = msg["actors"]
     layout = msg["layout"]
+    hitpoints = msg["hitpoints"]
+    print_healthbar(hitpoints)
     print(f'You are now at [{position[0]}, {position[1]}]')
     print_layout(layout, objects, actors, position)
 

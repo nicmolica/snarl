@@ -2,7 +2,7 @@ import itertools
 import random
 from .room import Room
 from .hallway import Hallway
-from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant, Ghost, Door
+from .occupants import Adversary, Character, Block, LevelKey, LevelExit, Occupant, Ghost, Door, Entity, Zombie
 from .tile import Tile
 
 class Level:
@@ -143,19 +143,71 @@ class Level:
         characters = self._get_characters_on_tile(dest)
         if has_player and has_adv:
             for character in characters:
-                self._remove_from_tile(character)
-                self.characters.pop(character)
+                self._resolve_combat(character, self.get_tile(dest).get_adversary(), dest)
         elif has_player and has_key:
             self.unlocked_by = characters[0]
             self.unlock_level_exit()
         elif has_player and has_exit and self.level_exit_unlocked:
             for character in characters:
-                self._remove_from_tile(character)
-                self.completed_characters.append(character)
-                self.characters.pop(character)
+                self._remove_character(character, True)
 
         if has_ghost and has_block:
             self._teleport_ghost(self.get_tile(dest).get_adversary())
+
+    def _resolve_combat(self, character, adversary, tile):
+        """Resolves the result of a character and adversary combat. If the character's
+        HP drops to 0, expel them from the level; otherwise, decrement their HP appropriately.
+        If the player is NOT expelled, the player is thrown back in a random direction.
+        """
+        # If their HP drops to 0, they will surely die.
+        character.hitpoints -= adversary.damage
+        if character.hitpoints <= 0:
+            self._remove_character(character)
+        # If character is still alive, move them to a random destination.
+        else:
+            throw_dest = self._get_random_cardinal(tile, character)
+            self.move_occupant(character, throw_dest)
+
+    def _get_random_cardinal(self, tile, entity):
+        """Return a random cardinal move for an entity. If there are no such moves, returns
+        the starting tile.
+        """
+        # If any coordinate is 0, can't move in that axis's negative direction.
+        up = Tile(tile.x, tile.y + 1)
+        right = Tile(tile.x + 1, tile.y)
+        cardinals = [up, right]
+        if (tile.x > 0):
+            left = Tile(tile.x - 1, tile.y)
+            cardinals.append(left)
+        if (tile.y > 0):
+            down = Tile(tile.x, tile.y - 1)
+            cardinals.append(down)
+        
+        valid = lambda t : self._is_open_tile(entity, t)
+        valid_moves = list(filter(valid, cardinals))
+        if valid_moves == []:
+            return tile
+        move = random.choice(valid_moves)
+        return move
+
+    def _is_open_tile(self, entity, tile):
+        """Is the given tile open for the given entity?
+        """
+        level_tile = self.get_tile(tile)
+        if isinstance(entity, Character):
+            return not level_tile.has_block() and not level_tile.has_occupant(Entity)
+        elif isinstance(entity, Adversary):
+            return not level_tile.has_block() and not level_tile.has_occupant(Entity) and not level_tile.has_occupant(Door)
+        return False
+        
+    def _remove_character(self, character, completed = False):
+        """Remove the character from this level. Optionally may mark the character as
+        having completed the level.
+        """
+        self._remove_from_tile(character)
+        if completed:
+            self.completed_characters.append(character)
+        self.characters.pop(character)
 
     def _get_characters_on_tile(self, dest):
         """Gets any characters that are present on the tile.
