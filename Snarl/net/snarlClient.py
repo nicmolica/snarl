@@ -206,7 +206,7 @@ def handle_string(msg):
         print("Your move was invalid. Please enter another:")
     elif msg == "server-shutdown":
         print("Server has shut down, terminating this client")
-        exit(0)
+        sys.exit(0)
     else:
         print("Malformed server message:")
         print(msg)
