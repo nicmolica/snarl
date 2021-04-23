@@ -217,7 +217,7 @@ def run_games():
             for client in player_connections:
                 send(client, "server-shutdown")
                 client.close()
-            exit(0)
+            sys.exit(0)
             break
 
 run_games()
