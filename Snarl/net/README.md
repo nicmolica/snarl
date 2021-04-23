@@ -25,3 +25,16 @@ surroundings. We render with the following characters:
 - empty traversable tiles as '` `'
 
 Your player will always be in the center of this 5x5 view.
+
+# Hit Point System
+
+Your player will begin each level with 5 hit points. If you move onto a tile occupied by an adversary,
+you will lose hitpoints, and if an adversary moves onto your tile, you will lose hitpoints.
+
+Zombies will reduce your hitpoints by 1, and ghosts will reduce your hitpoints by 2. If you are not
+killed by an adversary's attack, you will be knocked back onto a random tile. The level will end as
+normal once you are reduced to 0 hitpoints.
+
+Every time you receive an update about your surroundings, you will also see a health bar displayed
+above the surroundings. If you exit a level, your health will be reset to 5 when the next level
+starts.
