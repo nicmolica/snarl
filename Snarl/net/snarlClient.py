@@ -236,7 +236,7 @@ def handle_server_message(msg):
         end_level(msg)
     elif msg["type"] == "end-game":
         end_game(msg)
-        exit(0)
+        sys.exit(0)
     elif msg["type"] == "player-update":
         player_update(msg)
     else:
