@@ -4,7 +4,7 @@ from Snarl.src.Game.level import Level
 from Snarl.src.Game.room import Room
 from Snarl.src.Game.hallway import Hallway
 from Snarl.src.Game.tile import Tile
-from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit, Ghost
+from Snarl.src.Game.occupants import Character, Adversary, LevelKey, LevelExit, Ghost, Zombie
 from Snarl.src.Game.utils import grid_to_string
 
 class TestLevel(unittest.TestCase):
@@ -169,11 +169,13 @@ class TestLevel(unittest.TestCase):
         room3 = Room(Tile(18, 0), 5, 5, [Tile(18, 2)])
         level = Level([room1, room2, room3], [hallway1, hallway2], Tile(1, 1), Tile(2, 2))
         level.add_character(Character("Nic"), Tile(5, 5))
-        level.add_adversary(Adversary(), Tile(7, 5))
+        level.add_adversary(Zombie(), Tile(7, 5))
         level.get_tile(Tile(7, 5)).add_occupant(LevelKey())
         level.get_tile(Tile(8, 5)).add_occupant(LevelExit())
         level.move_occupant(Character("Nic"), Tile(7, 5))
-        self.assertEqual(len(level.characters), 0)
+        self.assertEqual(len(level.characters), 1)
+        character = level._get_characters_on_tile(level.characters[Character("Nic")])[0]
+        self.assertEqual(character.hitpoints, 4)
         self.assertFalse(level.level_exit_unlocked)
 
     def test_cannot_create_level_with_key_on_door(self):

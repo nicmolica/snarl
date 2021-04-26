@@ -50,7 +50,7 @@ class TestPlayerImpl(unittest.TestCase):
             p._determine_move()
     
     def test_move_correctly_parses_input_to_tile(self):
-        p = Player("Player Name", "Character Name", input_func = lambda : "[2, 3]")
+        p = Player("Player Name", "Character Name", input_func = lambda : "[3, 2]")
         tile = p._determine_move()
         self.assertEqual(tile.x, 2)
         self.assertEqual(tile.y, 3)
